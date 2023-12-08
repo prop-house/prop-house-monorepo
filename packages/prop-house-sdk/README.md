@@ -41,7 +41,7 @@ To create a prop house instance, provide the chain ID and a signer/provider:
 import { ChainId, PropHouse } from '@prophouse/sdk';
 
 const propHouse = new PropHouse({
-  evmChainId: ChainId.EthereumGoerli,
+  evmChainId: ChainId.EthereumMainnet,
   evm: signer, // Alternatively, pass a provider
 });
 ```
@@ -309,7 +309,7 @@ Alternatively, the `QueryWrapper` class can be instantiated on its own:
 ```ts
 import { ChainId, QueryWrapper } from '@prophouse/sdk';
 
-const query = new QueryWrapper(ChainId.EthereumGoerli);
+const query = new QueryWrapper(ChainId.EthereumMainnet);
 ```
 
 #### Methods

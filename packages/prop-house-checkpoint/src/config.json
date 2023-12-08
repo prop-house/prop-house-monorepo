@@ -1,11 +1,11 @@
 {
-  "network_node_url": "https://starknet-goerli.infura.io/v3/596754cde02d416e925e168c720a41c2",
+  "network_node_url": "https://starknet-mainnet.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c",
   "optimistic_indexing": true,
   "sources": [
     {
-      "contract": "0x5b0b4ac85df4b47cba473a6ffaea0ae596f4b53200bc1eb81c60333772bc07d",
+      "contract": "0x54b7b08b5389709af79a65b21574231b9adb0c313c1598aac94ee44fe99d213",
       "abi": "EthereumRoundFactory",
-      "start": 869427,
+      "start": 456697,
       "events": [
         {
           "name": "RoundRegistered",

@@ -37,9 +37,7 @@ export abstract class RoundBase<
   public readonly DOMAIN = {
     name: 'prop-house',
     version: '1',
-    // TODO: Replace with `this._evmChainId.toString()` once using a
-    // deployment-time-constant on the Starknet side.
-    chainId: ChainId.EthereumGoerli.toString(),
+    chainId: this._evmChainId.toString(),
   };
 
 
@@ -61,6 +59,7 @@ export abstract class RoundBase<
    * Default Starknet relayers
    */
   public static readonly DEFAULT_STARKNET_RELAYERS: Record<number, string> = {
+    [ChainId.EthereumMainnet]: 'https://starknet-relayer-mainnet.onrender.com',
     [ChainId.EthereumGoerli]: 'https://starknet-relayer-v2.onrender.com',
   };
 

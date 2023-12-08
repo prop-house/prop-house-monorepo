@@ -1,5 +1,5 @@
 import { Maybe } from 'graphql/jsutils/Maybe';
-import { RoundType, Timed, GovPowerStrategyType, AllowlistMember, GovPowerStrategyWithID } from '../types';
+import { RoundType, Timed, GovPowerStrategyType, AllowlistMember, GovPowerStrategyWithID, Asset } from '../types';
 
 export interface GlobalStats {
   roundCount: number;
@@ -63,15 +63,20 @@ export type ParsedGovPowerStrategy = BalanceOfStrategy | BalanceOfERC1155Strateg
 export type ProposingStrategy = ParsedGovPowerStrategy;
 export type VotingStrategy = ParsedGovPowerStrategy;
 
-export interface RoundAsset {
+export interface RawRoundAsset {
   assetType: 'NATIVE' | 'ERC20' | 'ERC721' | 'ERC1155';
   token: string;
   identifier: string;
 }
 
-export interface RoundAward {
+export interface RawRoundAward {
   amount: string;
-  asset: RoundAsset;
+  asset: RawRoundAsset;
+}
+
+export interface RawRoundBalance {
+  balance: string;
+  asset: RawRoundAsset;
 }
 
 export interface TimedRoundConfig {
@@ -84,12 +89,12 @@ export interface TimedRoundConfig {
   votePeriodEndTimestamp: number;
   votePeriodDuration: number;
   claimPeriodEndTimestamp: number;
-  awards: RoundAward[];
+  awards: Asset[];
 }
 
 export type RoundConfig = TimedRoundConfig;
 
-export type RoundState = Timed.RoundState
+export type RoundState = Timed.RoundState;
 
 export interface Round {
   address: string;
@@ -99,6 +104,7 @@ export interface Round {
   createdAt: number;
   state: RoundState;
   config: RoundConfig;
+  isFullyFunded: boolean;
   proposingStrategiesRaw: RawGovPowerStrategy[];
   votingStrategiesRaw: RawGovPowerStrategy[];
   proposingStrategies: ProposingStrategy[];
@@ -107,6 +113,12 @@ export interface Round {
 
 export interface RoundWithHouse extends Round {
   house: House;
+}
+
+export interface RoundBalance {
+  round: string;
+  asset: Asset;
+  updatedAt: string;
 }
 
 export interface Proposal {
@@ -118,6 +130,7 @@ export interface Proposal {
   body: string;
   isCancelled: boolean;
   isWinner: boolean;
+  winningPosition: number | null;
   receivedAt: number;
   txHash: string;
   votingPower: string;
@@ -132,8 +145,21 @@ export interface Vote {
   txHash: string;
 }
 
-// TODO: Populate deposit and claim types
+export interface Deposit {
+  id: string;
+  txHash: string;
+  depositedAt: string;
+  depositor: string;
+  round: string;
+  asset: Asset;
+}
 
-export interface Deposit {}
-
-export interface Claim {}
+export interface Claim {
+  id: string;
+  txHash: string;
+  claimedAt: string;
+  recipient: string;
+  proposalId: string;
+  round: string;
+  asset: Asset;
+}

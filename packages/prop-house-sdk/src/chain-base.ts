@@ -20,8 +20,8 @@ export class ChainBase {
    * EVM to Starknet chain ID mappings
    */
   public static readonly EVM_TO_DEFAULT_STARKNET_RPC: Record<number, string> = {
-    [ChainId.EthereumMainnet]: 'https://starknet-mainnet.infura.io/v3/7ec322178a4849f0888bae9b59401b39',
-    [ChainId.EthereumGoerli]: 'https://starknet-goerli.infura.io/v3/7ec322178a4849f0888bae9b59401b39',
+    [ChainId.EthereumMainnet]: 'https://starknet-mainnet.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
+    [ChainId.EthereumGoerli]: 'https://starknet-goerli.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
   };
 
   /**

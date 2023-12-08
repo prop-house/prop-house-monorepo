@@ -1,17 +1,17 @@
-import { hash } from 'starknet';
+import { pedersen } from 'micro-starknet';
 
 export class MerklePedersen {
   public root: string;
 
   constructor(values: string[]) {
-    this.root = MerklePedersen.generateMerkleRoot(values);
+    this.root = MerklePedersen.computeMerkleRoot(values);
   }
 
   public getProof(values: string[], index: number): string[] {
     return MerklePedersen.getProofHelper(values, index, []);
   }
 
-  public static generateMerkleRoot(values: string[]): string {
+  public static computeMerkleRoot(values: string[]): string {
     if (values.length == 1) {
       return values[0];
     }
@@ -19,24 +19,24 @@ export class MerklePedersen {
       values.push('0x0');
     }
     const nextLevel = MerklePedersen.getNextLevel(values);
-    return MerklePedersen.generateMerkleRoot(nextLevel);
+    return MerklePedersen.computeMerkleRoot(nextLevel);
   }
 
-  public static getNextLevel(level: string[]): string[] {
+  protected static getNextLevel(level: string[]): string[] {
     const nextLevel = [];
     for (let i = 0; i < level.length; i += 2) {
       let node = '0x0';
       if (BigInt(level[i]) < BigInt(level[i + 1])) {
-        node = hash.pedersen([level[i], level[i + 1]]);
+        node = pedersen(level[i], level[i + 1]);
       } else {
-        node = hash.pedersen([level[i + 1], level[i]]);
+        node = pedersen(level[i + 1], level[i]);
       }
       nextLevel.push(node);
     }
     return nextLevel;
   }
 
-  public static getProofHelper(level: string[], index: number, proof: string[]): string[] {
+  protected static getProofHelper(level: string[], index: number, proof: string[]): string[] {
     if (level.length == 1) {
       return proof;
     }

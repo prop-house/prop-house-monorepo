@@ -6,6 +6,17 @@ import { pack, keccak256 } from '@ethersproject/solidity';
 import { isAddress } from '@ethersproject/address';
 
 /**
+ * Reverse the byte order of the provided hex values within an array
+ * This function does NOT reverse the order of the array itself
+ * @param values The array of hex values to reverse
+ */
+export const reverseByteOrder = (values: string[]) => {
+  return values.map(
+    v => `0x${Buffer.from(v.slice(2), 'hex').reverse().toString('hex')}`
+  );
+};
+
+/**
  * Convert `bytes` to a `bytes32` hex string
  * @param bytes The bytes to convert
  * @param truncate Whether bytes should be truncated if over 32 bytes
@@ -57,15 +68,21 @@ export const getAssetStruct = (asset: Asset): AssetStruct => {
 };
 
 /**
+ * Return compressed asset and amount information for the provided `asset`
+ * @param asset The asset information
+ */
+export const compressAsset = (asset: Asset) => {
+  return [
+    getAssetID(asset),
+    asset.assetType === AssetType.ERC721 ? 1 : asset.amount,
+  ];
+};
+
+/**
  * Return compressed asset and amount information for the provided `assets`
  * @param assets The asset information
  */
-export const compressAssets = (assets: Asset[]) => {
-  return assets.map(asset => [
-    getAssetID(asset),
-    asset.assetType === AssetType.ERC721 ? 1 : asset.amount,
-  ]);
-};
+export const compressAssets = (assets: Asset[]) => assets.map(asset => compressAsset(asset));
 
 /**
  * Generate an asset ID for the provided `asset`

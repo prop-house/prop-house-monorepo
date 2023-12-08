@@ -1,4 +1,6 @@
+import { constants } from 'ethers';
 import goerli from '../deployments/goerli.json';
+import mainnet from '../deployments/mainnet.json';
 
 export enum ChainId {
   EthereumMainnet = 1,
@@ -104,6 +106,48 @@ export const contracts: Record<number, ContractAddresses> = {
       classHashes: {
         infinite: goerli.starknet.classHash.infiniteRound,
         timed: goerli.starknet.classHash.timedRound,
+      },
+    },
+  },
+  [ChainId.EthereumMainnet]: {
+    evm: {
+      prophouse: mainnet.ethereum.address.propHouse,
+      messenger: mainnet.ethereum.address.messenger,
+      house: {
+        community: mainnet.ethereum.address.communityHouseImpl,
+      },
+      round: {
+        infinite: constants.HashZero,
+        timed: mainnet.ethereum.address.timedRoundImpl,
+      },
+    },
+    starknet: {
+      roundFactory: mainnet.starknet.address.roundFactory,
+      strategyRegistry: mainnet.starknet.address.strategyRegistry,
+      blockRegistry: mainnet.starknet.address.ethBlockRegistry,
+      govPower: {
+        allowlist: mainnet.starknet.address.allowlistGovPowerStrategy,
+        balanceOf: mainnet.starknet.address.ethBalanceOfGovPowerStrategy,
+        balanceOfErc1155: mainnet.starknet.address.ethBalanceOfErc1155GovPowerStrategy,
+        vanilla: constants.HashZero,
+      },
+      auth: {
+        infinite: {
+          sig: constants.HashZero,
+          tx: constants.HashZero,
+        },
+        timed: {
+          sig: mainnet.starknet.address.timedRoundEthSigAuthStrategy,
+          tx: mainnet.starknet.address.timedRoundEthTxAuthStrategy,
+        },
+      },
+      herodotus: {
+        factRegistry: mainnet.starknet.address.herodotus.factRegistry,
+        l1HeadersStore: mainnet.starknet.address.herodotus.l1HeadersStore,
+      },
+      classHashes: {
+        infinite: constants.HashZero,
+        timed: mainnet.starknet.classHash.timedRound,
       },
     },
   },

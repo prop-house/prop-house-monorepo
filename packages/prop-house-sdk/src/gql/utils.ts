@@ -11,6 +11,10 @@ export interface QueryConfig<OB, W> {
 }
 
 export const GRAPHQL_APIS: Record<number, GraphQL> = {
+  [ChainId.EthereumMainnet]: {
+    evm: 'https://api.thegraph.com/subgraphs/name/prop-house/prop-house',
+    starknet: 'https://starknet-subgraph-mainnet.onrender.com',
+  },
   [ChainId.EthereumGoerli]: {
     evm: 'https://api.thegraph.com/subgraphs/name/prop-house/prop-house-goerli-v2',
     starknet: 'https://checkpoint-v2-api.onrender.com',
@@ -67,7 +71,7 @@ export const getDefaultConfig = <OB>(orderBy: OB) => ({
  * @param config The query config
  */
 export const toPaginated = <OB, W>(config: QueryConfig<OB, W>) => ({
-  first: config.page * config.perPage,
+  first: config.perPage,
   skip: (config.page - 1) * config.perPage,
   orderBy: config.orderBy,
   orderDirection: config.orderDirection,

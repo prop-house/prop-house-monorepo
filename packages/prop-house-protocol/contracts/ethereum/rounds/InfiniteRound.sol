@@ -50,7 +50,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         address _messenger,
         uint256 _roundFactory,
         uint256 _executionRelayer,
-        address _renderer
+        address _manager
     )
         AssetRound(
             RoundType.INFINITE,
@@ -60,7 +60,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
             _messenger,
             _roundFactory,
             _executionRelayer,
-            _renderer
+            _manager
         )
     {}
 
@@ -118,16 +118,19 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @dev This function is only callable by the round manager
     /// and is only available when the round is active and no
     /// winners have been received.
-    function cancel() external onlyRoundManager {
-        if (state != RoundState.Active || currentWinnerCount != 0) {
-            revert CANCELLATION_NOT_AVAILABLE();
-        }
-        state = RoundState.Cancelled;
-
-        // Notify Starknet of the cancellation
-        _notifyRoundCancelled();
+    function cancel() external payable onlyRoundManager {
+        _cancel();
 
         emit RoundCancelled();
+    }
+
+    /// @notice Cancel the infinite round in the event of an emergency
+    /// @dev This function is only callable by the owner of the security council
+    /// and is only available when the round is active and no winners have been received.
+    function emergencyCancel() external payable onlySecurityCouncil {
+        _cancel();
+
+        emit RoundEmergencyCancelled();
     }
 
     /// @notice Start the round finalization process
@@ -249,10 +252,21 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         startTimestamp = config.startTimestamp;
         votePeriodDuration = config.votePeriodDuration;
 
+        // Forward ETH to the meta-transaction relayer, if provided.
+        uint256 etherRemaining = msg.value;
+        if (config.metaTx.deposit > 0) {
+            if (config.metaTx.relayer == address(0)) revert NO_META_TX_RELAYER_PROVIDED();
+            if (config.metaTx.deposit > etherRemaining) revert INSUFFICIENT_ETHER_SUPPLIED();
+
+            _transferETH(payable(config.metaTx.relayer), config.metaTx.deposit);
+            etherRemaining -= config.metaTx.deposit;
+        }
+
         // Register the round on L2
-        messenger.sendMessageToL2{ value: msg.value }(roundFactory, Selector.REGISTER_ROUND, getRegistrationPayload(config));
+        messenger.sendMessageToL2{ value: etherRemaining }(roundFactory, Selector.REGISTER_ROUND, getRegistrationPayload(config));
 
         emit RoundRegistered(
+            config.metaTx,
             config.proposalThreshold,
             config.proposingStrategies,
             config.proposingStrategyParamsFlat,
@@ -283,6 +297,17 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         if (config.votingStrategies.length == 0) {
             revert NO_VOTING_STRATEGIES_PROVIDED();
         }
+    }
+
+    /// @notice Cancel the infinite round
+    function _cancel() internal {
+        if (state != RoundState.Active || currentWinnerCount != 0) {
+            revert CANCELLATION_NOT_AVAILABLE();
+        }
+        state = RoundState.Cancelled;
+
+        // Notify Starknet of the cancellation
+        _notifyRoundCancelled();
     }
 
     /// @notice Claim many round award assets to a custom recipient

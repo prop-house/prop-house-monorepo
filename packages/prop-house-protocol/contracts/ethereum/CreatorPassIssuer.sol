@@ -3,10 +3,9 @@ pragma solidity >=0.8.17;
 
 import { ERC1155 } from './lib/token/ERC1155.sol';
 import { ICreatorPassIssuer } from './interfaces/ICreatorPassIssuer.sol';
-import { ITokenMetadataRenderer } from './interfaces/ITokenMetadataRenderer.sol';
 import { IPropHouse } from './interfaces/IPropHouse.sol';
+import { IManager } from './interfaces/IManager.sol';
 import { Uint256 } from './lib/utils/Uint256.sol';
-import { IHouse } from './interfaces/IHouse.sol';
 
 contract CreatorPassIssuer is ICreatorPassIssuer, ERC1155 {
     using { Uint256.toUint256 } for address;
@@ -14,8 +13,8 @@ contract CreatorPassIssuer is ICreatorPassIssuer, ERC1155 {
     /// @notice The entrypoint for all house and round creation
     IPropHouse public immutable propHouse;
 
-    /// @notice The Asset Metadata Renderer contract
-    ITokenMetadataRenderer public immutable renderer;
+    /// @notice The Prop House manager contract
+    IManager public immutable manager;
 
     /// @notice Require that the caller is a valid house
     modifier onlyHouse() {
@@ -25,17 +24,17 @@ contract CreatorPassIssuer is ICreatorPassIssuer, ERC1155 {
         _;
     }
 
-    /// @param _propHouse The address of the prop house entrypoint contract
-    /// @param _renderer The creator pass issuer renderer contract address
-    constructor(address _propHouse, address _renderer) {
+    /// @param _propHouse The address of the Prop House entrypoint contract
+    /// @param _manager The address of the Prop House manager contract
+    constructor(address _propHouse, address _manager) {
         propHouse = IPropHouse(_propHouse);
-        renderer = ITokenMetadataRenderer(_renderer);
+        manager = IManager(_manager);
     }
 
     /// @notice Returns the deposit token URI for the provided token ID
     /// @param tokenId The creator pass token ID
     function uri(uint256 tokenId) external view override returns (string memory) {
-        return renderer.tokenURI(tokenId);
+        return manager.getMetadataRenderer(address(this)).tokenURI(tokenId);
     }
 
     /// @notice Determine if the provided `creator` holds a pass with the id `id`

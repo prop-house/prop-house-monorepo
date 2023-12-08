@@ -23,7 +23,7 @@ mod EthereumBalanceOfERC1155GovernancePowerStrategy {
         /// * `timestamp` - The timestamp at which to get the governance power.
         /// * `user` - The address of the user.
         /// * `params` - The params, containing the contract address and slot index.
-        /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
+        /// * `user_params` - The user params, containing the slot and MPT proof.
         fn get_power(
             self: @ContractState, timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
         ) -> u256 {

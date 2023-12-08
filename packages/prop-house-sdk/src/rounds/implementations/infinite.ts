@@ -10,6 +10,7 @@ import { InfiniteRound__factory } from '@prophouse/protocol';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
 import { isAddress } from '@ethersproject/address';
 import { defaultAbiCoder } from '@ethersproject/abi';
+import { AddressZero } from '@ethersproject/constants';
 import { ADDRESS_ONE } from '../../constants';
 import { Account, BlockTag, hash } from 'starknet';
 import { Time, TimeUnit } from 'time-ts';
@@ -26,6 +27,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
   // prettier-ignore
   public static CONFIG_STRUCT_TYPE = `
     tuple(
+      tuple(address relayer, uint256 deposit) metaTx,
       uint248 proposalThreshold,
       uint256[] proposingStrategies,
       uint256[] proposingStrategyParamsFlat,
@@ -40,7 +42,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
   /**
    * The minimum vote period duration
    */
-  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Hours);
+  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(60, TimeUnit.Minutes);
 
   /**
    * EIP712 infinite round types
@@ -146,6 +148,9 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
     if (BigNumber.from(config.quorumAgainst).isZero()) {
       throw new Error('No AGAINST quorum provided');
     }
+    if (config.metaTx && BigNumber.from(config.metaTx.deposit ?? 0).gt(0) && !config.metaTx.relayer) {
+      throw new Error('Must provide meta-transaction relayer when deposit is non-zero');
+    }
     const proposalThreshold = BigNumber.from(config.proposalThreshold ?? 0);
     if (proposalThreshold.gt(0) && !config.proposingStrategies?.length) {
       throw new Error('Round must have at least one proposing strategy when threshold is non-zero');
@@ -163,6 +168,10 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
 
     return {
       proposalThreshold,
+      metaTx: {
+        relayer: config.metaTx?.relayer ?? AddressZero,
+        deposit: config.metaTx?.deposit ?? 0,
+      },
       proposingStrategies: proposingStrategies.map(s => s.address),
       proposingStrategyParamsFlat: encoding.flatten2DArray(proposingStrategies.map(s => s.params)),
       votingStrategies: votingStrategies.map(s => s.address),

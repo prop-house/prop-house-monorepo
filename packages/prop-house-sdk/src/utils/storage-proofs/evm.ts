@@ -1,5 +1,4 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { BALANCE_OF_FUNC, SINGLE_MAPPING_INDEX_TRACER } from '../../constants';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Interface } from '@ethersproject/abi';
 
@@ -39,17 +38,21 @@ const getEVMStorageSlotIndex = async (
  * Throw if no slots were read or if more than one slot was read.
  * @param provider The provider to use for the `debug_traceCall` call
  * @param contract The contract address
+ * @param tracer The custom Javascript tracer
+ * @param functionSignature The function signature
  * @param functionName The name of the function to call
  * @param functionParams The parameters to pass to the function
  */
 export const getSlotIndexOfQueriedMapping = async (
   provider: JsonRpcProvider,
   contract: string,
+  tracer: string,
+  functionSignature: string,
   functionName: string,
   functionParams: BigNumberish[],
 ) => {
-  const data = new Interface([BALANCE_OF_FUNC]).encodeFunctionData(functionName, functionParams);
-  const result = await getEVMStorageSlotIndex(provider, contract, data, SINGLE_MAPPING_INDEX_TRACER);
+  const data = new Interface([functionSignature]).encodeFunctionData(functionName, functionParams);
+  const result = await getEVMStorageSlotIndex(provider, contract, data, tracer);
   if (!result.readCount || result.slotIndex === '-1') {
     throw new Error(
       `No mappings read. Unexpected \`${functionName}\` implementation in contract ${contract}`,

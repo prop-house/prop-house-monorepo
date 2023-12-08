@@ -10,13 +10,14 @@ import { hexStripZeros } from '@ethersproject/bytes';
 import { Call } from 'starknet';
 import {
   BalanceOfHandler,
+  BalanceOfERC1155Handler,
   VanillaHandler,
   AllowlistHandler,
   StrategyHandlerBase,
 } from './handlers';
 
 export class GovPowerManager<CS extends Custom | void = void> {
-  private readonly _defaults = [BalanceOfHandler, VanillaHandler, AllowlistHandler];
+  private readonly _defaults = [BalanceOfHandler, BalanceOfERC1155Handler, VanillaHandler, AllowlistHandler];
   private readonly _all: StrategyHandlerBase<GovPowerStrategyConfig<CS>>[];
 
   constructor(private readonly _config: GovPowerChainConfig<CS>) {

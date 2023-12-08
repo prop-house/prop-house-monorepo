@@ -400,7 +400,6 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     await manager.registerRound(communityHouseImpl.address, timedRoundImpl.address);
     await manager.registerRound(communityHouseImpl.address, infiniteRoundImpl.address);
 
-  
     // Add Ethereum auth strategies
     await starknetDeployer.invoke(
       roundDependencyRegistry,
@@ -446,7 +445,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
         },
       );
     }
-
+  
     // Lock round dependencies
     for (const type of Object.values(RoundType)) {
       for (const key of Object.values(DEPENDENCY_KEY)) {

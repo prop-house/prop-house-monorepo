@@ -5671,7 +5671,7 @@
 
 "@pinata/sdk@^2.1.0":
   version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@pinata/sdk/-/sdk-2.1.0.tgz#d61aa8f21ec1206e867f4b65996db52b70316945"
+  resolved "https://registry.npmjs.org/@pinata/sdk/-/sdk-2.1.0.tgz#d61aa8f21ec1206e867f4b65996db52b70316945"
   integrity sha512-hkS0tcKtsjf9xhsEBs2Nbey5s+Db7x5rlOH9TaWHBXkJ7IwwOs2xnEDigNaxAHKjYAwcw+m2hzpO5QgOfeF7Zw==
   dependencies:
     axios "^0.21.1"
@@ -5700,6 +5700,37 @@
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.0.tgz#6734f8ebc106a0860dff7f92bf90df193f0935d7"
   integrity sha512-zrsUxjLOKAzdewIDRWy9nsV1GQsKBCWaGwsZQlCgr6/q+vjyZhFgqedLfFBuI9anTPEUT4APq9Mu0SZBTzIcGQ==
+
+"@prophouse/sdk@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.5.tgz#424406a837c63452421bfc19701d59d0ed0c97c4"
+  integrity sha512-JCDj4E16WsTw0m5vt5tPrVoBdCGoscuYaw8gbRS1+Qnw1JgMGccpEi7Aw9ufufD0DPM4m29aA1u4iE3gz3Q4QA==
+  dependencies:
+    "@ethersproject/abi" "~5.7.0"
+    "@ethersproject/abstract-provider" "~5.7.0"
+    "@ethersproject/abstract-signer" "~5.7.0"
+    "@ethersproject/address" "~5.7.0"
+    "@ethersproject/bignumber" "~5.7.0"
+    "@ethersproject/bytes" "~5.7.0"
+    "@ethersproject/constants" "~5.7.0"
+    "@ethersproject/contracts" "~5.7.0"
+    "@ethersproject/keccak256" "~5.7.0"
+    "@ethersproject/providers" "~5.7.0"
+    "@ethersproject/solidity" "~5.7.0"
+    "@ethersproject/strings" "~5.7.0"
+    "@ethersproject/wallet" "^5.7.0"
+    "@pinata/sdk" "^2.1.0"
+    "@prophouse/protocol" "^1.0.1"
+    bn.js "^5.2.1"
+    ethereumjs-fork-block "^4.2.4"
+    ethereumjs-fork-common "^3.1.3"
+    graphql "^16.5.0"
+    graphql-request "5.0.0"
+    merkletreejs "^0.3.11"
+    micro-starknet "^0.2.3"
+    randombytes "^2.1.0"
+    starknet "5.19.5"
+    time-ts "^0.1.0"
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
@@ -12594,6 +12625,11 @@ crypto-js@^3.1.9-1:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.3.0.tgz#846dd1cce2f68aacfa156c8578f926a609b7976b"
   integrity sha512-DIT51nX0dCfKltpRiXV+/TVZq+Qq2NgF4644+K7Ttnla7zEzqc+kjJyiB96BHNyUTBxyjzRcZYpUdZa+QAqi6Q==
+
+crypto-js@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.npmjs.org/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
+  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
 
 crypto-random-string@^1.0.0:
   version "1.0.0"
@@ -20784,6 +20820,17 @@ merkletreejs@^0.3.10:
     bignumber.js "^9.0.1"
     buffer-reverse "^1.0.1"
     crypto-js "^3.1.9-1"
+    treeify "^1.1.0"
+    web3-utils "^1.3.4"
+
+merkletreejs@^0.3.11:
+  version "0.3.11"
+  resolved "https://registry.npmjs.org/merkletreejs/-/merkletreejs-0.3.11.tgz#e0de05c3ca1fd368de05a12cb8efb954ef6fc04f"
+  integrity sha512-LJKTl4iVNTndhL+3Uz/tfkjD0klIWsHlUzgtuNnNrsf7bAlXR30m+xYB7lHr5Z/l6e/yAIsr26Dabx6Buo4VGQ==
+  dependencies:
+    bignumber.js "^9.0.1"
+    buffer-reverse "^1.0.1"
+    crypto-js "^4.2.0"
     treeify "^1.1.0"
     web3-utils "^1.3.4"
 

@@ -6,21 +6,24 @@ import { IERC165 } from '../../interfaces/IERC165.sol';
 import { AssetHelper } from '../../lib/utils/AssetHelper.sol';
 import { IAssetRound } from '../../interfaces/IAssetRound.sol';
 import { AssetController } from '../../lib/utils/AssetController.sol';
-import { ITokenMetadataRenderer } from '../../interfaces/ITokenMetadataRenderer.sol';
 import { DepositReceiver } from '../../lib/utils/DepositReceiver.sol';
 import { TokenHolder } from '../../lib/utils/TokenHolder.sol';
+import { IManager } from '../../interfaces/IManager.sol';
 import { ERC1155 } from '../../lib/token/ERC1155.sol';
 import { Asset } from '../../lib/types/Common.sol';
 
 abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder, ERC1155, DepositReceiver {
     using { AssetHelper.toID } for Asset;
 
-    /// @notice The Asset Metadata Renderer contract
-    ITokenMetadataRenderer public immutable renderer;
+    /// @notice The Prop House manager contract
+    IManager public immutable manager;
 
     /// @notice Determine if a winner has claimed their award asset
     /// @dev Proposal IDs map to bits in the uint256 mapping
     mapping(uint256 => uint256) private _assetClaimStatus;
+
+    /// @notice The round implementation contract address
+    address private immutable _implementation;
 
     constructor(
         bytes32 _kind,
@@ -30,15 +33,25 @@ abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder
         address _messenger,
         uint256 _roundFactory,
         uint256 _executionRelayer,
-        address _renderer
+        address _manager
     ) Round(_kind, _classHash, _propHouse, _starknet, _messenger, _roundFactory, _executionRelayer) {
-        renderer = ITokenMetadataRenderer(_renderer);
+        manager = IManager(_manager);
+
+        _implementation = address(this);
+    }
+
+    /// @notice Require that the caller is the prop house contract
+    modifier onlySecurityCouncil() {
+        if (msg.sender != manager.getSecurityCouncil()) {
+            revert ONLY_SECURITY_COUNCIL();
+        }
+        _;
     }
 
     /// @notice Returns the deposit token URI for the provided token ID
     /// @param tokenId The deposit token ID
     function uri(uint256 tokenId) external view override returns (string memory) {
-        return renderer.tokenURI(tokenId);
+        return manager.getMetadataRenderer(_implementation).tokenURI(tokenId);
     }
 
     // prettier-ignore

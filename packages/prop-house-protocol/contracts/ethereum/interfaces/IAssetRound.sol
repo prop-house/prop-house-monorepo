@@ -11,6 +11,9 @@ interface IAssetRound is IRound {
     /// @notice Thrown when the provided merkle proof is invalid
     error INVALID_MERKLE_PROOF();
 
+    /// @notice Thrown when the caller of a guarded function is not the security council
+    error ONLY_SECURITY_COUNCIL();
+
     /// @notice Emitted when an asset is claimed by a winner
     /// @param proposalId The ID of the winning proposal
     /// @param claimer The address of the claimer (winner)

@@ -22,6 +22,10 @@ export class SplitUint256 {
     return SplitUint256.fromUint(BigInt(hex));
   }
 
+  toString(): string {
+    return this.toUint().toString();
+  }
+
   toHex(): string {
     return `0x${this.toUint().toString(16)}`;
   }

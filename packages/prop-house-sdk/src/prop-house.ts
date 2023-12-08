@@ -12,8 +12,9 @@ import {
   RoundInfo,
   RoundType,
 } from './types';
-import { BigNumber } from '@ethersproject/bignumber';
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { Overrides } from '@ethersproject/contracts';
+import { parseEther } from '@ethersproject/units';
 import { ChainBase } from './chain-base';
 import { QueryWrapper } from './gql';
 import { encoding } from './utils';
@@ -27,6 +28,11 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
   private _govPower: GovPowerManager<CS>;
   private _house: HouseManager;
   private _round: RoundManager<CS>;
+
+  /**
+   * The current internal cap for a L1 -> L2 round creation message.
+   */
+  private static readonly _MAX_STARKNET_MESSAGE_FEE_CAP = parseEther('0.0015');
 
   /**
    * The prop house contract instance
@@ -167,7 +173,11 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     overrides: Overrides = {},
   ) {
     const struct = await this.round.getConfigStruct(round);
-    return this.contract.createRoundOnExistingHouse(
+
+    const starknetFeeEstimate = await this.round.estimateMessageFee(round.roundType, struct);
+    const cappedStarknetFee = this.min(starknetFeeEstimate, PropHouse._MAX_STARKNET_MESSAGE_FEE_CAP);
+
+    const inputs = [
       houseAddress,
       {
         title: round.title,
@@ -175,11 +185,16 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
         impl: this.round.getImpl(round.roundType),
         config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]),
       },
-      {
-        ...overrides,
-        value: await this.round.estimateMessageFee(round.roundType, struct),
-      },
-    );
+    ] as const;
+    const overridesWithValue = {
+      ...overrides,
+      value: cappedStarknetFee.add(struct.metaTx.deposit),
+    };
+    const gasLimit = await this.contract.estimateGas.createRoundOnExistingHouse(...inputs, overridesWithValue);
+    return this.contract.createRoundOnExistingHouse(...inputs, {
+      ...overridesWithValue,
+      gasLimit: gasLimit.add(30_000), // A 30,000 gas pad is used to avoid 'Out of gas' errors
+    });
   }
 
   /**
@@ -197,7 +212,11 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
   ) {
     const struct = await this.round.getConfigStruct(round);
     const { assets, value } = this.mergeAssetsAndGetTotalETHValue(funding);
-    return this.contract.createAndFundRoundOnExistingHouse(
+
+    const starknetFeeEstimate = await this.round.estimateMessageFee(round.roundType, struct);
+    const cappedStarknetFee = this.min(starknetFeeEstimate, PropHouse._MAX_STARKNET_MESSAGE_FEE_CAP);
+
+    const inputs = [
       houseAddress,
       {
         title: round.title,
@@ -206,13 +225,16 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
         config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]),
       },
       assets,
-      {
-        ...overrides,
-        value: BigNumber.from(value).add(
-          await this.round.estimateMessageFee(round.roundType, struct),
-        ),
-      },
-    );
+    ] as const;
+    const overridesWithValue = {
+      ...overrides,
+      value: BigNumber.from(value).add(cappedStarknetFee).add(struct.metaTx.deposit),
+    };
+    const gasLimit = await this.contract.estimateGas.createAndFundRoundOnExistingHouse(...inputs, overridesWithValue);
+    return this.contract.createAndFundRoundOnExistingHouse(...inputs, {
+      ...overridesWithValue,
+      gasLimit: gasLimit.add(30_000), // A 30,000 gas pad is used to avoid 'Out of gas' errors
+    });
   }
 
   /**
@@ -227,7 +249,11 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     overrides: Overrides = {},
   ) {
     const struct = await this.round.getConfigStruct(round);
-    return this.contract.createRoundOnNewHouse(
+
+    const starknetFeeEstimate = await this.round.estimateMessageFee(round.roundType, struct);
+    const cappedStarknetFee = this.min(starknetFeeEstimate, PropHouse._MAX_STARKNET_MESSAGE_FEE_CAP);
+
+    const inputs = [
       {
         impl: this.house.getImpl(house.houseType),
         config: this.house.encode(house),
@@ -238,11 +264,16 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
         impl: this.round.getImpl(round.roundType),
         config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]),
       },
-      {
-        ...overrides,
-        value: await this.round.estimateMessageFee(round.roundType, struct),
-      },
-    );
+    ] as const;
+    const overridesWithValue = {
+      ...overrides,
+      value: cappedStarknetFee.add(struct.metaTx.deposit),
+    };
+    const gasLimit = await this.contract.estimateGas.createRoundOnNewHouse(...inputs, overridesWithValue);
+    return this.contract.createRoundOnNewHouse(...inputs, {
+      ...overridesWithValue,
+      gasLimit: gasLimit.add(30_000), // A 30,000 gas pad is used to avoid 'Out of gas' errors
+    });
   }
 
   /**
@@ -260,7 +291,11 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
   ) {
     const struct = await this.round.getConfigStruct(round);
     const { assets, value } = this.mergeAssetsAndGetTotalETHValue(funding);
-    return this.contract.createAndFundRoundOnNewHouse(
+
+    const starknetFeeEstimate = await this.round.estimateMessageFee(round.roundType, struct);
+    const cappedStarknetFee = this.min(starknetFeeEstimate, PropHouse._MAX_STARKNET_MESSAGE_FEE_CAP);
+
+    const inputs = [
       {
         impl: this.house.getImpl(house.houseType),
         config: this.house.encode(house),
@@ -272,13 +307,16 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
         config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]), // TODO: Fix later
       },
       assets,
-      {
-        ...overrides,
-        value: BigNumber.from(value).add(
-          await this.round.estimateMessageFee(round.roundType, struct),
-        ),
-      },
-    );
+    ] as const;
+    const overridesWithValue = {
+      ...overrides,
+      value: BigNumber.from(value).add(cappedStarknetFee).add(struct.metaTx.deposit),
+    };
+    const gasLimit = await this.contract.estimateGas.createAndFundRoundOnNewHouse(...inputs, overridesWithValue);
+    return this.contract.createAndFundRoundOnNewHouse(...inputs, {
+      ...overridesWithValue,
+      gasLimit: gasLimit.add(30_000), // A 30,000 gas pad is used to avoid 'Out of gas' errors
+    });
   }
 
   /**
@@ -302,5 +340,14 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
       assets: Object.values(accumulator),
       value: accumulator[encoding.getETHAssetID()]?.amount ?? 0,
     };
+  }
+
+  /**
+   * Returns the smaller of two numbers
+   * @param a The first number
+   * @param b The second number
+   */
+  private min(a: BigNumberish, b: BigNumberish) {
+    return BigNumber.from(a).lt(b) ? BigNumber.from(a) : BigNumber.from(b);
   }
 }

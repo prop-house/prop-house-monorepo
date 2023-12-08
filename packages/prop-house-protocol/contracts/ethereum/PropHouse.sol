@@ -20,14 +20,20 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
     using { AssetHelper.toID } for Asset;
     using LibClone for address;
 
-    /// @notice The Prop House Manager contract
+    /// @notice The Prop House manager contract
     IManager public immutable manager;
 
-    /// @param _manager The Prop House Manager contract address
+    /// @param _manager The Prop House manager contract address
     constructor(address _manager) ERC721(PHMetadata.NAME, PHMetadata.SYMBOL) {
         manager = IManager(_manager);
 
         _setContractURI(PHMetadata.URI);
+    }
+
+    /// @notice Returns house metadata for `tokenId`
+    /// @param tokenId The token ID
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        return manager.getMetadataRenderer(address(this)).tokenURI(tokenId);
     }
 
     /// @notice Deposit an asset to the provided round and return any remaining

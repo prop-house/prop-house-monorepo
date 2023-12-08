@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { Asset } from '../lib/types/Common.sol';
+import { Asset, MetaTransaction } from '../lib/types/Common.sol';
 
 /// @notice Interface implemented by the timed round
 interface ITimedRound {
@@ -15,6 +15,7 @@ interface ITimedRound {
     /// @notice The timed round configuration
     struct RoundConfig {
         Asset[] awards;
+        MetaTransaction metaTx;
         uint248 proposalThreshold;
         uint256[] proposingStrategies;
         uint256[] proposingStrategyParamsFlat;
@@ -34,6 +35,9 @@ interface ITimedRound {
 
     /// @notice Thrown when asset reclamation is not available
     error RECLAMATION_NOT_AVAILABLE();
+
+    /// @notice Thrown when emergency withdrawal is not available
+    error EMERGENCY_WITHDRAWAL_NOT_AVAILABLE();
 
     /// @notice Thrown when the proposal period duration is too short
     error PROPOSAL_PERIOD_DURATION_TOO_SHORT();
@@ -56,8 +60,15 @@ interface ITimedRound {
     /// @notice Thrown when no voting strategies are provided
     error NO_VOTING_STRATEGIES_PROVIDED();
 
+    /// @notice Thrown when the meta-transaction deposit amount is non-zero, but no relayer address is provided.
+    error NO_META_TX_RELAYER_PROVIDED();
+
+    /// @notice Thrown when an insufficient amount of ether is provided to `msg.value`
+    error INSUFFICIENT_ETHER_SUPPLIED();
+
     /// @notice Emitted when the round is registered on L2
     /// @param awards The awards offered to round winners
+    /// @param metaTx The meta-transaction relayer and deposit amount
     /// @param proposalThreshold The proposal threshold
     /// @param proposingStrategies The proposing strategy addresses
     /// @param proposingStrategyParamsFlat The flattened proposing strategy params
@@ -69,6 +80,7 @@ interface ITimedRound {
     /// @param winnerCount The number of possible winners
     event RoundRegistered(
         Asset[] awards,
+        MetaTransaction metaTx,
         uint248 proposalThreshold,
         uint256[] proposingStrategies,
         uint256[] proposingStrategyParamsFlat,
@@ -85,6 +97,9 @@ interface ITimedRound {
 
     /// @notice Emitted when a round is cancelled by the round manager
     event RoundCancelled();
+
+    /// @notice Emitted when a round is cancelled by the security council in an emergency
+    event RoundEmergencyCancelled();
 
     /// @notice The current state of the timed round
     function state() external view returns (RoundState);

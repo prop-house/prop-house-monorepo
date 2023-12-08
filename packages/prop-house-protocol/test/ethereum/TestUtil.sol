@@ -4,13 +4,13 @@ pragma solidity >=0.8.17;
 import { Test } from 'forge-std/Test.sol';
 import { Blacksmith } from './blacksmith/Blacksmith.sol';
 import { Messenger } from '../../contracts/ethereum/Messenger.sol';
-import { Asset, AssetType } from '../../contracts/ethereum/lib/types/Common.sol';
 import { CreatorPassIssuer } from '../../contracts/ethereum/CreatorPassIssuer.sol';
 import { CommunityHouse } from '../../contracts/ethereum/houses/CommunityHouse.sol';
 import { TimedRound } from '../../contracts/ethereum/rounds/TimedRound.sol';
 import { InfiniteRound } from '../../contracts/ethereum/rounds/InfiniteRound.sol';
 import { IInfiniteRound } from '../../contracts/ethereum/interfaces/IInfiniteRound.sol';
 import { ITimedRound } from '../../contracts/ethereum/interfaces/ITimedRound.sol';
+import { Asset, AssetType, MetaTransaction } from '../../contracts/ethereum/lib/types/Common.sol';
 import { MockStarknetMessaging } from '../../contracts/ethereum/mocks/MockStarknetMessaging.sol';
 import { MockERC20, MockERC20BS } from './blacksmith/MockERC20.bs.sol';
 import { MockERC721, MockERC721BS } from './blacksmith/MockERC721.bs.sol';
@@ -83,14 +83,14 @@ contract TestUtil is Test {
         manager = new Manager();
         propHouse = new PropHouse(address(manager));
         messenger = new Messenger(starknetCore, address(propHouse));
-        creatorPassIssuer = new CreatorPassIssuer(address(propHouse), address(0));
+        creatorPassIssuer = new CreatorPassIssuer(address(propHouse), address(manager));
 
-        communityHouseImpl = address(new CommunityHouse(address(propHouse), address(0), address(creatorPassIssuer)));
+        communityHouseImpl = address(new CommunityHouse(address(propHouse), address(manager), address(creatorPassIssuer)));
         timedRoundImpl = address(
-            new TimedRound(0, address(propHouse), starknetCore, address(messenger), 0, 0, address(0))
+            new TimedRound(0, address(propHouse), starknetCore, address(messenger), 0, 0, address(manager))
         );
         infiniteRoundImpl = address(
-            new InfiniteRound(0, address(propHouse), starknetCore, address(messenger), 0, 0, address(0))
+            new InfiniteRound(0, address(propHouse), starknetCore, address(messenger), 0, 0, address(manager))
         );
 
         manager.registerHouse(address(communityHouseImpl));
@@ -109,6 +109,7 @@ contract TestUtil is Test {
         votingStrategies[0] = 1;
         return IInfiniteRound.RoundConfig({
             proposalThreshold: 0,
+            metaTx: MetaTransaction({ relayer: address(0), deposit: 0 }),
             proposingStrategies: new uint256[](0),
             proposingStrategyParamsFlat: new uint256[](0),
             votingStrategies: votingStrategies,
@@ -125,6 +126,7 @@ contract TestUtil is Test {
         votingStrategies[0] = 1;
         return ITimedRound.RoundConfig({
             awards: new Asset[](0),
+            metaTx: MetaTransaction({ relayer: address(0), deposit: 0 }),
             proposalThreshold: 0,
             proposingStrategies: new uint256[](0),
             proposingStrategyParamsFlat: new uint256[](0),

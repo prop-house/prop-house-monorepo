@@ -17,6 +17,9 @@ contract TimedRound is ITimedRound, AssetRound {
     /// @notice The amount of time before an asset provider can reclaim unclaimed assets
     uint256 public constant RECLAIM_UNCLAIMED_ASSETS_AFTER = 4 weeks;
 
+    /// @notice The amount of time before the security council can emergency withdraw assets
+    uint256 public constant EMERGENCY_WITHDRAW_ASSETS_AFTER = 8 weeks;
+
     /// @notice Maximum winner count for this strategy
     uint256 public constant MAX_WINNER_COUNT = 25;
 
@@ -51,7 +54,7 @@ contract TimedRound is ITimedRound, AssetRound {
         address _messenger,
         uint256 _roundFactory,
         uint256 _executionRelayer,
-        address _renderer
+        address _manager
     )
         AssetRound(
             RoundType.TIMED,
@@ -61,7 +64,7 @@ contract TimedRound is ITimedRound, AssetRound {
             _messenger,
             _roundFactory,
             _executionRelayer,
-            _renderer
+            _manager
         )
     {}
 
@@ -109,15 +112,17 @@ contract TimedRound is ITimedRound, AssetRound {
     /// @notice Cancel the timed round
     /// @dev This function is only callable by the round manager
     function cancel() external payable onlyRoundManager {
-        if (state != RoundState.Active) {
-            revert CANCELLATION_NOT_AVAILABLE();
-        }
-        state = RoundState.Cancelled;
-
-        // Notify Starknet of the cancellation
-        _notifyRoundCancelled();
+        _cancel();
 
         emit RoundCancelled();
+    }
+
+    /// @notice Cancel the timed round in the event of an emergency
+    /// @dev This function is only callable by the owner of the security council
+    function emergencyCancel() external payable onlySecurityCouncil {
+        _cancel();
+
+        emit RoundEmergencyCancelled();
     }
 
     /// @notice Finalize the round by consuming the merkle root from Starknet.
@@ -187,6 +192,21 @@ contract TimedRound is ITimedRound, AssetRound {
         reclaimTo(msg.sender, assets);
     }
 
+    /// @notice Emergency withdraw assets to a custom recipient
+    /// @param recipient The asset recipient
+    /// @param assets The assets to withdraw
+    /// @dev This function is only callable by the security council once enough time has passed
+    /// since the round was scheduled to end.
+    function emergencyWithdrawTo(address recipient, Asset[] calldata assets) external onlySecurityCouncil {
+        uint256 scheduledEnd = proposalPeriodStartTimestamp + proposalPeriodDuration + votePeriodDuration;
+        if (block.timestamp < scheduledEnd || block.timestamp - scheduledEnd < EMERGENCY_WITHDRAW_ASSETS_AFTER) {
+            revert EMERGENCY_WITHDRAWAL_NOT_AVAILABLE();
+        }
+        for (uint256 i = 0; i < assets.length; ++i) {
+            _transfer(assets[i], address(this), payable(recipient));
+        }
+    }
+
     // prettier-ignore
     /// @notice Generate the payload required to register the round on L2
     /// @param config The round configuration
@@ -236,11 +256,22 @@ contract TimedRound is ITimedRound, AssetRound {
         votePeriodDuration = config.votePeriodDuration;
         winnerCount = config.winnerCount;
 
+        // Forward ETH to the meta-transaction relayer, if set.
+        uint256 etherRemaining = msg.value;
+        if (config.metaTx.deposit > 0) {
+            if (config.metaTx.relayer == address(0)) revert NO_META_TX_RELAYER_PROVIDED();
+            if (config.metaTx.deposit > etherRemaining) revert INSUFFICIENT_ETHER_SUPPLIED();
+
+            _transferETH(payable(config.metaTx.relayer), config.metaTx.deposit);
+            etherRemaining -= config.metaTx.deposit;
+        }
+
         // Register the round on L2
-        messenger.sendMessageToL2{ value: msg.value }(roundFactory, Selector.REGISTER_ROUND, getRegistrationPayload(config));
+        messenger.sendMessageToL2{ value: etherRemaining }(roundFactory, Selector.REGISTER_ROUND, getRegistrationPayload(config));
 
         emit RoundRegistered(
             config.awards,
+            config.metaTx,
             config.proposalThreshold,
             config.proposingStrategies,
             config.proposingStrategyParamsFlat,
@@ -280,6 +311,17 @@ contract TimedRound is ITimedRound, AssetRound {
                 revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
             }
         }
+    }
+
+    /// @notice Cancel the timed round
+    function _cancel() internal {
+        if (state != RoundState.Active) {
+            revert CANCELLATION_NOT_AVAILABLE();
+        }
+        state = RoundState.Cancelled;
+
+        // Notify Starknet of the cancellation
+        _notifyRoundCancelled();
     }
 
     /// @notice Claim a round award asset to a custom recipient

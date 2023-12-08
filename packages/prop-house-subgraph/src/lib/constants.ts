@@ -2,6 +2,10 @@ import { BigInt } from '@graphprotocol/graph-ts';
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
+export const ZERO_BYTES_32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
+
+export const MAX_TIMED_ROUND_WINNER_COUNT = 25;
+
 export let BIGINT_ZERO = BigInt.fromI32(0);
 export let BIGINT_ONE = BigInt.fromI32(1);
 
@@ -21,6 +25,11 @@ export namespace GovPowerStrategyType {
   export const BALANCE_OF = 'BALANCE_OF';
   export const BALANCE_OF_ERC1155 = 'BALANCE_OF_ERC1155';
   export const UNKNOWN = 'UNKNOWN';
+}
+
+export namespace RoundType {
+  export const TIMED = 'TIMED';
+  export const INFINITE = 'INFINITE';
 }
 
 export enum AssetType {

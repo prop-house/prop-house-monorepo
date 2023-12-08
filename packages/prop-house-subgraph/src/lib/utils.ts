@@ -1,5 +1,5 @@
 import { Address, BigInt, ByteArray, crypto, ethereum } from '@graphprotocol/graph-ts';
-import { AssetType, AssetTypeString, BIGINT_ONE, GovPowerStrategyType } from './constants';
+import { AssetType, AssetTypeString, GovPowerStrategyType, ZERO_BYTES_32 } from './constants';
 import { poseidonHashMany } from 'as-poseidon';
 
 // Common asset struct
@@ -42,14 +42,6 @@ export function get2DArray(votingStrategyParamsFlat: BigInt[]): BigInt[][] {
 }
 
 /**
- * Pad the provided string to 32 bytes
- * @param s The string to pad
- */
-export function padBytes32(s: string): string {
-  return s.padStart(64, '0');
-}
-
-/**
  * Compute a governance power strategy ID
  * @param strategy The governance power strategy address
  * @param params The governance power strategy params
@@ -63,15 +55,18 @@ export function computeGovPowerStrategyID(strategy: BigInt, params: BigInt[]): s
  * @param asset The asset information
  */
 export function computeAssetID(asset: AssetStruct): string {
-  if (asset.assetType == AssetType.NATIVE) {
-    return padBytes32(asset.assetType.toString(16));
+  switch (asset.assetType) {
+    case AssetType.NATIVE:
+      return ZERO_BYTES_32;
+    case AssetType.ERC20:
+      return `0x${asset.assetType.toString(16)}${asset.token.toHex().substring(2)}`.padEnd(66, '0');
+    default:
+      const paddedToken = asset.token.toHex().substring(2).padStart(64, '0');
+      const paddedIdentifier = asset.identifier.toHex().substring(2).padStart(64, '0');
+      const keccakHash = crypto.keccak256(ByteArray.fromHexString(`${paddedToken}${paddedIdentifier}`)).toHex().substring(2);
+
+      return `0x${asset.assetType.toString(16)}${keccakHash}`.slice(0, 66);
   }
-  if (asset.assetType == AssetType.ERC20) {
-    return padBytes32(`${asset.assetType.toString(16)}${asset.token.toHex()}`);
-  }
-  return `${asset.assetType}${crypto.keccak256(ByteArray.fromHexString
-    (`${asset.token.toHex()}${asset.identifier.toHex()}`
-  ))}`.slice(0, 32);
 }
 
 /**
@@ -98,14 +93,14 @@ export function getAssetTypeString(assetType: AssetType): string {
  * @param addr The governance power strategy address
  */
 export function getGovPowerStrategyType(addr: string): string {
-  if (addr == '0x3d94956a6bed18f62c865f1c4c15e8197960edaa4d8b382ccc6f1fd6b9f476e' || addr == '0x77b9d96e71380b1cba3cdc6450c103c9806c7c17611fc5ac9b57943cb919cbd') {
+  if (addr == '0x6ddcc94a4225843546a9b118a2733fd924d6b8a6467279cbe6a1aea79daca54') {
     return GovPowerStrategyType.BALANCE_OF;
   }
-  if (addr == '0x37bebb719da8869531a12be866732dbaa6e840f507b94b30e0e438ac560b1a') {
-    return GovPowerStrategyType.ALLOWLIST;
+  if (addr == '0x6d22f17522d6992eb479deb850e96f9454fc2f6c127993ab2ef9d411f467e8') {
+    return GovPowerStrategyType.BALANCE_OF_ERC1155;
   }
-  if (addr == '0x23a5d2474eb348d62d9da78c9383abfe557e7b95999edc6b261bae81bf3a769') {
-    return GovPowerStrategyType.VANILLA;
+  if (addr == '0x3daa40ef909961a576f9ba58eb063d5ebc85411063a8b29435f05af6167079c') {
+    return GovPowerStrategyType.ALLOWLIST;
   }
   return GovPowerStrategyType.UNKNOWN;
 }

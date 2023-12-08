@@ -123,8 +123,10 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
           govPower: {
             allowlist: constants.HashZero,
             balanceOf: constants.HashZero,
+            balanceOfErc1155: constants.HashZero,
             vanilla: vanillaGovPowerStrategy.address,
           },
+          blockRegistry: constants.HashZero,
           auth: {
             infinite: {
               sig: constants.HashZero,
@@ -459,7 +461,7 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     const assetId = utils.encoding.getETHAssetID();
     const amount = ONE_ETHER.toHexString();
-    const { transaction_hash } = await propHouse.round.timed.finalizeRound(starknetAccount, {
+    const { transaction_hash } = await propHouse.round.timed.determineWinners(starknetAccount, {
       round: timedRoundContract.address,
       awards: [
         {
@@ -491,11 +493,11 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
       position: 1,
       proposalId: winningProposalIds[0],
       proposer: BigNumber.from(proposer).toHexString(),
-      votingPower: uint256.uint256ToBN({ low: vpLow, high: vpHigh }).toNumber(),
+      votingPower: uint256.uint256ToBN({ low: vpLow, high: vpHigh }),
     };
     expect(winner.proposalId).to.equal(1);
     expect(winner.proposer).to.equal(signer.address.toLowerCase());
-    expect(winner.votingPower).to.equal(1);
+    expect(winner.votingPower).to.equal(1n);
 
     const { consumed_messages } = await starknet.devnet.flush();
 

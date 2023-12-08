@@ -27,7 +27,7 @@ export const commonL1Setup = async () => {
   ]);
 
   const [creatorPassIssuer, starknetCommit] = await Promise.all([
-    creatorPassIssuerFactory.deploy(propHouse.address, constants.AddressZero),
+    creatorPassIssuerFactory.deploy(propHouse.address, manager.address),
     starknetCommitFactory.deploy(mockStarknetMessaging.address),
   ]);
   const messenger = await messengerFactory.deploy(mockStarknetMessaging.address, propHouse.address);

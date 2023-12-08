@@ -1,7 +1,7 @@
 import { log } from '@graphprotocol/graph-ts';
 import { BatchDepositToRound, DepositToRound, HouseCreated, RoundCreated, Transfer } from '../generated/PropHouse/PropHouse';
-import { Account, Asset, Balance, Deposit, House, Round } from '../generated/schema';
-import { BIGINT_ZERO, RoundEventState, ZERO_ADDRESS } from './lib/constants';
+import { Account, Asset, Award, Balance, Deposit, House, Round } from '../generated/schema';
+import { BIGINT_ZERO, MAX_TIMED_ROUND_WINNER_COUNT, RoundEventState, RoundType, ZERO_ADDRESS } from './lib/constants';
 import {
   CommunityHouse as CommunityHouseTemplate,
   TimedRound as TimedRoundTemplate,
@@ -21,7 +21,7 @@ export function handleHouseCreated(event: HouseCreated): void {
   house.creator = creator.id;
   house.owner = creator.id;
   house.createdAt = event.block.timestamp;
-  house.creationTx = event.transaction.hash;
+  house.creationTxHash = event.transaction.hash;
   house.roundCount = 0;
 
   CommunityHouseTemplate.create(event.params.house);
@@ -57,7 +57,8 @@ export function handleRoundCreated(event: RoundCreated): void {
   round.creator = creator.id;
   round.manager = creator.id;
   round.createdAt = event.block.timestamp;
-  round.creationTx = event.transaction.hash;
+  round.creationTxHash = event.transaction.hash;
+  round.isFullyFunded = false;
 
   TimedRoundTemplate.create(event.params.round);
 
@@ -111,6 +112,7 @@ export function handleDepositToRound(event: DepositToRound): void {
     asset.save();
   }
 
+  deposit.txHash = event.transaction.hash;
   deposit.depositor = depositor.id;
   deposit.depositedAt = event.block.timestamp;
   deposit.asset = asset.id;
@@ -130,6 +132,8 @@ export function handleDepositToRound(event: DepositToRound): void {
   balance.balance = balance.balance.plus(event.params.asset.amount);
   balance.updatedAt = event.block.timestamp;
   balance.save();
+
+  checkIfRoundIsFullyFunded(event.params.round.toHex());
 }
 
 export function handleBatchDepositToRound(event: BatchDepositToRound): void {
@@ -156,6 +160,7 @@ export function handleBatchDepositToRound(event: BatchDepositToRound): void {
       asset.save();
     }
   
+    deposit.txHash = event.transaction.hash;
     deposit.depositor = depositor.id;
     deposit.depositedAt = event.block.timestamp;
     deposit.asset = asset.id;
@@ -175,5 +180,30 @@ export function handleBatchDepositToRound(event: BatchDepositToRound): void {
     balance.balance = balance.balance.plus(assetStruct.amount);
     balance.updatedAt = event.block.timestamp;
     balance.save();
+  }
+
+  checkIfRoundIsFullyFunded(event.params.round.toHex());
+}
+
+function checkIfRoundIsFullyFunded(roundAddress: string): void {
+  const round = Round.load(roundAddress)!;
+  if (round.type == RoundType.TIMED) {
+    if (!round.timedConfig) return; // The deposit is part of round creation.
+
+    let i = 0;
+    let isFullyFunded = true;
+    while (isFullyFunded && i < MAX_TIMED_ROUND_WINNER_COUNT) {
+      const award = Award.load(`${round.id}-${i}`);
+      if (!award) break; // Exit loop if no more awards
+  
+      const balance = Balance.load(`${round.id}-${award.asset}`);
+      if (!balance || balance.balance.lt(award.amount)) {
+        isFullyFunded = false; // Set to false if balance is insufficient
+      }
+      i++;
+    }
+  
+    round.isFullyFunded = isFullyFunded;
+    round.save();
   }
 }

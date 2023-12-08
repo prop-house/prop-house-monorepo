@@ -87,6 +87,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
   }
 
   // Store awards
+  round.isFullyFunded = true;
   for (let i = 0; i < event.params.awards.length; i++) {
     const awardStruct = event.params.awards[i];
     const assetId = computeAssetID(changetype<AssetStruct>(awardStruct));
@@ -105,6 +106,12 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     award.amount = awardStruct.amount;
     award.round = config.id;
     award.save();
+
+    // Determine if the round was fully funded during creation.
+    const balance = Balance.load(`${round.id}-${assetId}`);
+    if (balance == null || balance.balance.lt(award.amount)) {
+      round.isFullyFunded = false;
+    }
   }
 
   round.timedConfig = config.id;
@@ -172,6 +179,7 @@ export function handleAssetClaimed(event: AssetClaimed): void {
   const claim = new Claim(
     `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
   );
+  claim.txHash = event.transaction.hash;
   claim.claimer = claimer.id;
   claim.claimedAt = event.block.timestamp;
   claim.recipient = event.params.recipient;
@@ -196,6 +204,7 @@ export function handleSingleTransfer(event: TransferSingle): void {
     const reclaim = new Reclaim(
       `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
     );
+    reclaim.txHash = event.transaction.hash;
     reclaim.reclaimer = reclaimer.id;
     reclaim.reclaimedAt = event.block.timestamp;
     reclaim.asset = event.params.id.toHex();
@@ -242,6 +251,7 @@ export function handleSingleTransfer(event: TransferSingle): void {
       return;
     }
 
+    transfer.txHash = event.transaction.hash;
     transfer.from = from.id;
     transfer.to = to.id;
     transfer.transferredAt = event.block.timestamp;
@@ -269,6 +279,7 @@ export function handleBatchTransfer(event: TransferBatch): void {
       const reclaim = new Reclaim(
         `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
       );
+      reclaim.txHash = event.transaction.hash;
       reclaim.reclaimer = reclaimer.id;
       reclaim.reclaimedAt = event.block.timestamp;
       reclaim.asset = assetId;
@@ -318,6 +329,7 @@ export function handleBatchTransfer(event: TransferBatch): void {
         return;
       }
   
+      transfer.txHash = event.transaction.hash;
       transfer.from = from.id;
       transfer.to = to.id;
       transfer.transferredAt = event.block.timestamp;

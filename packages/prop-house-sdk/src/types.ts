@@ -80,6 +80,26 @@ export interface PackedAsset {
 
 //#endregion
 
+//#region Meta Transactions
+
+export interface MetaTransaction {
+  relayer: string;
+  deposit: BigNumberish;
+}
+
+//#endregion
+
+//#region Storage Proofs
+
+export enum AccountField {
+  StorageHash,
+  CodeHash,
+  Balance,
+  Nonce,
+}
+
+//#endregion
+
 //#region Houses
 
 export enum HouseType {
@@ -119,6 +139,7 @@ export namespace Timed {
   }
   export interface Config<CS extends Custom | void> {
     awards: Asset[];
+    metaTx?: MetaTransaction;
     proposalThreshold?: BigNumberish;
     proposingStrategies?: GovPowerStrategyConfig<CS>[];
     votingStrategies: GovPowerStrategyConfig<CS>[];
@@ -129,6 +150,7 @@ export namespace Timed {
   }
   export interface ConfigStruct {
     awards: AssetStruct[];
+    metaTx: MetaTransaction;
     proposalThreshold: BigNumberish;
     proposingStrategies: BigNumberish[];
     proposingStrategyParamsFlat: BigNumberish[];
@@ -155,6 +177,11 @@ export namespace Timed {
     proposalId: number;
     metadataUri: string;
   }
+  export interface CancelProposalMessage {
+    round: string;
+    authStrategy: string;
+    proposalId: number;
+  }
   export interface VoteMessage {
     round: string;
     authStrategy: string;
@@ -166,6 +193,10 @@ export namespace Timed {
     salt: string | number;
   }
   export interface EVMSigEditProposalMessage extends EditProposalMessage {
+    proposer: string;
+    salt: string | number;
+  }
+  export interface EVMSigCancelProposalMessage extends CancelProposalMessage {
     proposer: string;
     salt: string | number;
   }
@@ -186,14 +217,34 @@ export namespace Timed {
     proposalId: number;
     metadataUri: string;
   }
+  export interface CancelProposalConfig {
+    round: string;
+    proposalId: number;
+  }
+  export interface ClaimAwardConfig {
+    round: string;
+    proposalId: number;
+  }
+  export interface ClaimAwardToConfig extends Timed.ClaimAwardConfig {
+    recipient: string;
+  }
+  export interface RoundWinner {
+    proposalId: BigNumberish;
+    position: BigNumberish;
+    proposer: string;
+    assetId: string;
+    assetAmount: BigNumberish;
+  }
   export enum Action {
     PROPOSE = 'PROPOSE',
     EDIT_PROPOSAL = 'EDIT_PROPOSAL',
+    CANCEL_PROPOSAL = 'CANCEL_PROPOSAL',
     VOTE = 'VOTE',
   }
   export interface ActionData {
     [Action.PROPOSE]: EVMSigProposeMessage;
     [Action.EDIT_PROPOSAL]: EVMSigEditProposalMessage;
+    [Action.CANCEL_PROPOSAL]: EVMSigCancelProposalMessage;
     [Action.VOTE]: EVMSigVoteMessage;
   }
   export interface RequestParams<A extends Action = Action> {
@@ -212,6 +263,10 @@ export namespace Timed {
     proposer: string;
     proposalId: number;
     metadataUri: string;
+  }
+  export interface CancelProposalCalldataConfig {
+    proposer: string;
+    proposalId: number;
   }
   export interface VoteCalldataConfig {
     voter: string;
@@ -237,6 +292,7 @@ export namespace Infinite {
     COMPLETE,
   }
   export interface Config<CS extends Custom | void> {
+    metaTx?: MetaTransaction;
     proposalThreshold?: BigNumberish;
     proposingStrategies?: GovPowerStrategyConfig<CS>[];
     votingStrategies: GovPowerStrategyConfig<CS>[];
@@ -246,6 +302,7 @@ export namespace Infinite {
     quorumAgainst: BigNumberish;
   }
   export interface ConfigStruct {
+    metaTx: MetaTransaction;
     proposalThreshold: BigNumberish;
     proposingStrategies: BigNumberish[];
     proposingStrategyParamsFlat: BigNumberish[];
@@ -463,6 +520,15 @@ export interface GovPowerConfig {
   timestamp: string | number;
   address: string;
   params: (string | number)[];
+}
+
+export interface AllowlistJson {
+  strategyType: GovPowerStrategyType.ALLOWLIST;
+  members: AllowlistMember[];
+  tree: {
+    root: string;
+    values: string[];
+  };
 }
 
 //#region Helpers

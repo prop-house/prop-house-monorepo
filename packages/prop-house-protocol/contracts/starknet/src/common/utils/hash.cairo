@@ -2,7 +2,25 @@ use starknet::EthAddress;
 use prop_house::common::utils::integer::as_u256;
 use keccak::keccak_u256s_be_inputs;
 use integer::u128_byte_reverse;
+use array::SpanTrait;
 use hash::LegacyHash;
+
+/// Computes the pedersen hash of an array of felts.
+/// * `elements` - The elements to hash.
+fn compute_hash_on_elements(mut elements: Span<felt252>) -> felt252 {
+    let mut len = elements.len();
+    let mut state = 0;
+    loop {
+        match elements.pop_front() {
+            Option::Some(element) => {
+                state = LegacyHash::hash(state, *element);
+            },
+            Option::None(_) => {
+                break LegacyHash::hash(state, len);
+            },
+        };
+    }
+}
 
 /// Computes the keccak256 of multiple uint256 values.
 /// The values are interpreted as big-endian.

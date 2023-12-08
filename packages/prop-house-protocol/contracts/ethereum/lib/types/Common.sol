@@ -28,3 +28,9 @@ struct IncrementalTreeProof {
     bytes32[] siblings;
     uint8[] pathIndices;
 }
+
+/// @notice A meta-transaction relayer address and deposit amount
+struct MetaTransaction {
+    address relayer;
+    uint256 deposit;
+}

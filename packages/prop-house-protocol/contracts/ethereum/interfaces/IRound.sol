@@ -18,6 +18,9 @@ interface IRound is IERC165 {
     /// @notice The round type
     function kind() external view returns (bytes32);
 
+    /// @notice Get the round title
+    function title() external pure returns (string memory);
+
     /// @notice Initialize the round
     /// @param data The optional round data. If empty, round registration is deferred.
     function initialize(bytes calldata data) external payable;

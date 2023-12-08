@@ -12,6 +12,8 @@
     "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 prop-house",
     "build:goerli": "graph build --network goerli",
     "deploy:goerli": "graph deploy --network goerli --product hosted-service prop-house/prop-house-goerli-v2",
+    "build:mainnet": "graph build --network mainnet",
+    "deploy:mainnet": "graph deploy --network mainnet --product hosted-service prop-house/prop-house",
     "test": "graph test"
   },
   "dependencies": {

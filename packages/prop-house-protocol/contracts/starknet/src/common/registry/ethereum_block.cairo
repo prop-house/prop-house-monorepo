@@ -1,6 +1,6 @@
 #[starknet::interface]
 trait IL1HeadersStore<TContractState> {
-    fn get_latest_l1_block(self: @TContractState) -> felt252;
+    fn get_latest_processed_block(self: @TContractState) -> u256;
 }
 
 #[starknet::interface]
@@ -12,6 +12,7 @@ trait IEthereumBlockRegistry<TContractState> {
 mod EthereumBlockRegistry {
     use starknet::{ContractAddress, get_block_timestamp};
     use super::{IEthereumBlockRegistry, IL1HeadersStoreDispatcherTrait, IL1HeadersStoreDispatcher};
+    use option::OptionTrait;
     use zeroable::Zeroable;
     use traits::TryInto;
 
@@ -45,7 +46,7 @@ mod EthereumBlockRegistry {
 
                 let number = IL1HeadersStoreDispatcher {
                     contract_address: self._l1_headers_store.read()
-                }.get_latest_l1_block();
+                }.get_latest_processed_block().try_into().unwrap();
                 self._timestamp_to_eth_block_number.write(timestamp, number);
                 number
             }

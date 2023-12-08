@@ -2,6 +2,7 @@
 mod AllowlistGovernancePowerStrategy {
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::traits::IGovernancePowerStrategy;
+    use prop_house::common::utils::hash::compute_hash_on_elements;
     use array::{ArrayTrait, SpanTrait};
     use traits::{TryInto, Into};
     use option::OptionTrait;
@@ -38,14 +39,12 @@ mod AllowlistGovernancePowerStrategy {
         assert(user_params_len >= leaf_len && params.len() >= 1, 'Allowlist: Invalid parameters');
 
         let leaf_user = *user_params.at(0);
-        let leaf_governance_power = u256 {
-            low: (*user_params.at(1)).try_into().unwrap(),
-            high: (*user_params.at(2)).try_into().unwrap()
-        };
-
+        let leaf_gov_power_low = *user_params.at(1);
+        let leaf_gov_power_high = *user_params.at(2);
         assert(leaf_user == user, 'Allowlist: Invalid leaf');
-
-        let leaf = LegacyHash::hash(leaf_user, leaf_governance_power);
+        
+        let leaf_inputs = array![leaf_user, leaf_gov_power_low, leaf_gov_power_high];
+        let leaf = compute_hash_on_elements(leaf_inputs.span());
         let proof = user_params.slice(leaf_len, user_params_len - leaf_len);
 
         let merkle_root = *params.at(0);
@@ -55,6 +54,6 @@ mod AllowlistGovernancePowerStrategy {
         assert(merkle_tree.verify_proof(merkle_root, leaf, proof), 'Allowlist: Invalid proof');
 
         // Return the governance power
-        leaf_governance_power
+        u256 { low: leaf_gov_power_low.try_into().unwrap(), high: leaf_gov_power_high.try_into().unwrap() }
     }
 }

@@ -61,6 +61,7 @@ export const RoundFields = graphql(`
     description
     createdAt
     eventState
+    isFullyFunded
     manager {
       id
     }
@@ -186,6 +187,9 @@ export const ManyBalancesQuery = graphql(`
       where: $where
     ) {
       id
+      round {
+        id
+      }
       asset {
         assetType
         token
@@ -233,7 +237,11 @@ export const ManyDepositsQuery = graphql(`
       where: $where
     ) {
       id
+      txHash
       depositedAt
+      depositor {
+        id
+      }
       asset {
         assetType
         token
@@ -263,6 +271,7 @@ export const ManyClaimsQuery = graphql(`
       where: $where
     ) {
       id
+      txHash
       claimedAt
       recipient
       proposalId

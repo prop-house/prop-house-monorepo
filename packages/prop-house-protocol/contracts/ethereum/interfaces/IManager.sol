@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
+import { ITokenMetadataRenderer } from './ITokenMetadataRenderer.sol';
+
 /// @notice Interface for the Manager contract
 interface IManager {
     /// @notice Emitted when a house implementation is registered
@@ -23,6 +25,15 @@ interface IManager {
     /// @param roundImpl The round implementation address
     event RoundUnregistered(address houseImpl, address roundImpl);
 
+    /// @notice Emitted when a metadata renderer is set for a contract
+    /// @param addr The contract address
+    /// @param renderer The renderer address
+    event MetadataRendererSet(address addr, address renderer);
+
+    /// @notice Emitted when the security council address is set
+    /// @param securityCouncil The security council address
+    event SecurityCouncilSet(address securityCouncil);
+
     /// @notice Determine if a house implementation is registered
     /// @param houseImpl The house implementation address
     function isHouseRegistered(address houseImpl) external view returns (bool);
@@ -31,4 +42,11 @@ interface IManager {
     /// @param houseImpl The house implementation address
     /// @param roundImpl The round implementation address
     function isRoundRegistered(address houseImpl, address roundImpl) external view returns (bool);
+
+    /// @notice Get the metadata renderer for a contract
+    /// @param contract_ The contract address
+    function getMetadataRenderer(address contract_) external view returns (ITokenMetadataRenderer);
+
+    /// @notice Get the security council address
+    function getSecurityCouncil() external view returns (address);
 }
