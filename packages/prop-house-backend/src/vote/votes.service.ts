@@ -11,8 +11,10 @@ import { CreateVoteDto, GetVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
 import { ethers } from 'ethers';
 import config from 'src/config/configuration';
-import { getVotingPower } from '@prophouse/communities';
+import { execStrategy } from '@prophouse/communities';
 import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
+import { Auction } from 'src/auction/auction.entity';
+import { InfiniteAuction } from 'src/infinite-auction/infinite-auction.entity';
 
 @Injectable()
 export class VotesService {
@@ -97,19 +99,6 @@ export class VotesService {
       .andWhere('v.auctionId = :roundId', { roundId })
       .getMany();
     return votes.reduce((sum, vote) => sum + Number(vote.weight), 0);
-  }
-
-  async getVotingPower(
-    dto: Pick<CreateVoteDto, 'address' | 'communityAddress'>,
-    balanceblockTag: number,
-  ): Promise<number> {
-    const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
-    return await getVotingPower(
-      dto.address,
-      dto.communityAddress,
-      provider,
-      balanceblockTag,
-    );
   }
 
   async createNewVote(

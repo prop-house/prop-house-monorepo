@@ -1,0 +1,25 @@
+.img {
+  height: 12.5rem !important;
+  width: 12.5rem !important;
+  object-fit: cover;
+  border-radius: 40px;
+  box-shadow: 0 4px 6px 2px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.15s ease-in-out;
+  cursor: default;
+  background: white;
+}
+
+.hoverImg:hover {
+  transform: scale(102%);
+  cursor: pointer;
+}
+
+.loadingImg {
+  background-color: rgb(230, 230, 230);
+}
+@media (max-width: 992px) {
+  .img {
+    width: 100% !important;
+    height: auto !important;
+  }
+}

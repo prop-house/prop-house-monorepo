@@ -1,6 +1,6 @@
 import React from 'react';
 import classes from './AddressAvatar.module.css';
-import { useEnsAvatar } from 'wagmi';
+import { useEnsAvatar, useEnsName } from 'wagmi';
 import type { GlassesParts, GlassesBgColors } from '../../utils/getNoggles';
 import { Factory } from '@cloudnouns/factory';
 import NogglesData from './noggles.json';
@@ -9,7 +9,10 @@ import clsx from 'clsx';
 const AddressAvatar: React.FC<{ address: string; size?: number }> = props => {
   const { address, size: s = 24 } = props;
 
-  const { data: avatar } = useEnsAvatar({ address: address as `0x${string}` });
+  const { data: ensName } = useEnsName({
+    address: address as `0x${string}`,
+  });
+  const { data: avatar } = useEnsAvatar({ name: ensName });
 
   const factory = new Factory<GlassesParts, GlassesBgColors>(NogglesData);
   const generateGlasses = () => factory.createItem();

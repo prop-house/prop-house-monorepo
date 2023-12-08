@@ -1,30 +1,36 @@
 import classes from './Footer.module.css';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
-import bgColorForFooter from '../../utils/bgColorForFooter';
-import { FaDiscord, FaTwitter, FaGithub } from 'react-icons/fa';
+import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
 import { externalURL, ExternalURL } from '../../utils/externalURLs';
+import tos from '../../assets/files/prophouse-tos.pdf';
+import { isMobile } from 'web3modal';
 
 const Footer = () => {
   const location = useLocation();
 
-  const twitterURL = externalURL(ExternalURL.twitter);
-  const discordURL = externalURL(ExternalURL.discord);
-  const githubURL = externalURL(ExternalURL.github);
-
   return (
-    <div className={clsx(classes.footerContainer, bgColorForFooter(location.pathname))}>
+    <div
+      className={clsx(
+        classes.footerContainer,
+        bgColorFor(BgColorElement.Footer, location.pathname),
+      )}
+    >
       <div className={classes.footer}>
-        <a href={twitterURL} target="_blank" rel="noreferrer">
-          <FaTwitter />
+        <a href={externalURL(ExternalURL.gitbook)} target="_blank" rel="noreferrer">
+          FAQs
         </a>
-
-        <a href={discordURL} target="_blank" rel="noreferrer">
-          <FaDiscord />
+        ·
+        <a href={externalURL(ExternalURL.twitter)} target="_blank" rel="noreferrer">
+          @nounsprophouse
         </a>
-
-        <a href={githubURL} target="_blank" rel="noreferrer">
-          <FaGithub />
+        ·
+        <a href={externalURL(ExternalURL.github)} target="_blank" rel="noreferrer">
+          github
+        </a>
+        ·
+        <a href={tos} download>
+          {isMobile() ? 'ToS' : 'terms of service'}
         </a>
       </div>
     </div>

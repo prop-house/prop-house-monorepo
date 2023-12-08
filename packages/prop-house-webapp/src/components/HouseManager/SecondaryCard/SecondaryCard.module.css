@@ -1,0 +1,48 @@
+.secondaryCard {
+  width: 33.333333%;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-low);
+  height: max-content;
+  color: var(--brand-black);
+}
+.secondaryCard p {
+  margin-bottom: 0;
+}
+.title {
+  font-weight: 700;
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  .secondaryCard {
+    min-height: 200px;
+  }
+}
+
+@media (min-width: 768px) {
+  .fullCard {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .secondaryCard {
+    width: 100%;
+    display: flex;
+    gap: 35px;
+    max-width: none !important;
+    overflow: hidden;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    width: 100vw;
+  }
+  .fullCard {
+    width: 100vw;
+    max-width: none !important;
+    position: relative;
+    left: calc(-1 * (100vw - 100%) / 2);
+    height: max-content !important;
+    border-radius: 0px;
+  }
+  .hideOnMobile {
+    display: none;
+  }
+}

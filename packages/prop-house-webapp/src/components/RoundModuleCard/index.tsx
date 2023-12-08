@@ -5,13 +5,24 @@ import { MdOutlineLightbulb as BulbIcon } from 'react-icons/md';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { FiAward } from 'react-icons/fi';
 import { GiDeadHead } from 'react-icons/gi';
+import { AiOutlineClockCircle } from 'react-icons/ai';
+import { IoGameControllerOutline } from 'react-icons/io5';
 import clsx from 'clsx';
 
 const RoundModuleCard: React.FC<{
   title: string | ReactElement;
   subtitle?: string | ReactElement;
   content: ReactElement;
-  type: 'proposing' | 'voting' | 'ended' | 'winner' | 'stale';
+  type:
+    | 'unknown'
+    | 'cancelled'
+    | 'proposing'
+    | 'voting'
+    | 'ended'
+    | 'winner'
+    | 'rejected'
+    | 'stale'
+    | 'not started';
 }> = props => {
   const { title, subtitle, content, type } = props;
   return (
@@ -25,11 +36,14 @@ const RoundModuleCard: React.FC<{
           <div
             className={clsx(
               classes.icon,
-              type === 'proposing' || type === 'winner'
+              type === 'proposing' || type === 'winner' || type === 'not started'
                 ? classes.greenIcon
                 : type === 'voting'
                 ? classes.purpleIcon
-                : type === 'stale'
+                : type === 'stale' ||
+                  type === 'rejected' ||
+                  type === 'cancelled' ||
+                  type === 'unknown'
                 ? classes.grayIcon
                 : classes.blackIcon,
             )}
@@ -38,8 +52,12 @@ const RoundModuleCard: React.FC<{
               <BulbIcon />
             ) : type === 'winner' ? (
               <FiAward />
-            ) : type === 'stale' ? (
+            ) : type === 'rejected' || type === 'cancelled' || type === 'unknown' ? (
               <GiDeadHead />
+            ) : type === 'stale' ? (
+              <AiOutlineClockCircle />
+            ) : type === 'not started' ? (
+              <IoGameControllerOutline />
             ) : (
               <VoteIcon />
             )}

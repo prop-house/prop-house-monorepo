@@ -1,22 +1,17 @@
 import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
 import { ButtonColor } from '../Button';
-import { Dispatch, SetStateAction, useEffect } from 'react';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import { Dispatch, SetStateAction } from 'react';
 import { useAppSelector } from '../../hooks';
-import { useDispatch } from 'react-redux';
-import { getVotingPower } from '@prophouse/communities';
-import { setVotingPower } from '../../state/slices/voting';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
-import ProposalModalVotingModule from '../ProposalModalVotingModule';
 import ProposalModalNavButtons from '../ProposalModalNavButtons';
 import VotesDisplay from '../VotesDisplay';
 import { useTranslation } from 'react-i18next';
 import ProposalWindowButtons from '../ProposalWindowButtons';
 import ConnectButton from '../ConnectButton';
-import { useAccount, useProvider } from 'wagmi';
-import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
-import { isActiveProp } from '../../utils/isActiveProp';
+import { useAccount } from 'wagmi';
+import { RoundType, Timed } from '@prophouse/sdk-react';
+import ProposalModalTimedVotingModule from '../ProposalModalTimedVotingModule';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -25,7 +20,6 @@ const ProposalModalFooter: React.FC<{
   propIndex: number | undefined;
   numberOfProps: number;
   handleDirectionalArrowClick: (e: any) => void;
-  isWinner?: boolean;
   editProposalMode: boolean;
   setEditProposalMode: (e: any) => void;
   setShowSavePropModal: (e: any) => void;
@@ -37,57 +31,31 @@ const ProposalModalFooter: React.FC<{
     propIndex,
     numberOfProps,
     handleDirectionalArrowClick,
-    isWinner,
     editProposalMode,
     setEditProposalMode,
     setShowSavePropModal,
     setShowDeletePropModal,
   } = props;
 
-  const { address: account } = useAccount();
-  const provider = useProvider();
-
-  const dispatch = useDispatch();
+  const account = useAccount();
   const { t } = useTranslation();
 
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
 
-  const isProposingWindow = round && auctionStatus(round) === AuctionStatus.AuctionAcceptingProps;
-  const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
-  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
-
-  useEffect(() => {
-    if (!account || !provider || !community) return;
-
-    const fetchVotes = async () => {
-      try {
-        const votes = await getVotingPower(
-          account,
-          community.contractAddress,
-          provider,
-          round!.balanceBlockTag,
-        );
-        dispatch(setVotingPower(votes));
-      } catch (e) {
-        console.log('error fetching votes: ', e);
-      }
-    };
-    fetchVotes();
-  }, [account, provider, dispatch, community, round]);
+  const isProposingWindow = round && round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const isVotingWindow = round && round.state === Timed.RoundState.IN_VOTING_PERIOD;
+  const isRoundOver = round && round.state > Timed.RoundState.IN_VOTING_PERIOD;
 
   const noVotesDiv = proposal && (
     <div className={classes.noVotesContainer}>
       <p className={classes.noVotesMessage}>
-        <b>
-          {t('youDontHaveAny')} {community?.name ?? 'tokens'} {t('requiredToVote')}.
-        </b>
+        <b>Your account does not have any votes in this round.</b>
       </p>
 
       <div className={classes.voteCount}>
-        {isWinner && (
+        {proposal.isWinner && (
           <div className={classes.crownNoun}>
             <img src="/heads/crown.png" alt="crown" />
           </div>
@@ -109,7 +77,7 @@ const ProposalModalFooter: React.FC<{
       />
 
       <div className={classes.voteCount}>
-        {isWinner && (
+        {proposal.isWinner && (
           <div className={classes.crownNoun}>
             <img src="/heads/crown.png" alt="crown" />
           </div>
@@ -131,10 +99,10 @@ const ProposalModalFooter: React.FC<{
           <div className={classes.footerPadding}>
             {/** TIMED ROUND */}
             {round &&
-              isTimedAuction(round) &&
-              (isRoundOver && isWinner ? (
-                <WinningProposalBanner numOfVotes={proposal.voteCount} />
-              ) : !isRoundOver && !account ? (
+              round.type === RoundType.TIMED &&
+              (isRoundOver && proposal.isWinner ? (
+                <WinningProposalBanner numOfVotes={Number(proposal.votingPower)} />
+              ) : !isRoundOver && !account.isConnected ? (
                 connectDiv
               ) : isProposingWindow ? (
                 <ProposalWindowButtons
@@ -145,22 +113,21 @@ const ProposalModalFooter: React.FC<{
                   setShowDeletePropModal={setShowDeletePropModal}
                 />
               ) : isVotingWindow && votingPower > 0 ? (
-                <ProposalModalVotingModule
+                <ProposalModalTimedVotingModule
                   proposal={proposal}
                   setShowVotingModal={setShowVotingModal}
                   setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-                  isWinner={isWinner && isWinner}
                 />
               ) : (
                 noVotesDiv
               ))}
 
             {/** INF ROUND */}
-            {round &&
+            {/* {round &&
               isInfAuction(round) &&
               (isWinner ? (
-                <WinningProposalBanner numOfVotes={proposal.voteCount} />
-              ) : !isRoundOver && !account ? (
+                <WinningProposalBanner numOfVotes={proposal.voteCountFor} />
+              ) : !isRoundOver && account.isConnected ? (
                 connectDiv
               ) : (
                 isActiveProp(proposal, round) &&
@@ -180,7 +147,7 @@ const ProposalModalFooter: React.FC<{
                     isWinner={isWinner && isWinner}
                   />
                 ))
-              ))}
+              ))} */}
           </div>
 
           <ProposalModalNavButtons

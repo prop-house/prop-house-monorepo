@@ -1,0 +1,48 @@
+.houseCard {
+  padding: 0;
+  text-align: center;
+  padding-bottom: 12px;
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid var(--border-dark);
+  position: relative;
+}
+
+.star {
+  background-color: white;
+  padding: 4px 6px 6px 6px;
+  border-radius: 18px;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  transition: transform 0.3s;
+}
+
+.star:hover {
+  transform: scale(1.1);
+}
+
+.houseProfImg {
+  width: 100% !important;
+  height: auto;
+
+  border-radius: 10px 10px 0 0;
+}
+.houseProfImg:hover {
+  cursor: pointer;
+}
+.title {
+  margin: 12px 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+.houseDataContainer {
+  display: flex;
+  flex-direction: column;
+}
+.houseDataItem {
+  font-size: 14px;
+}
+.houseDataItem span:first-child {
+  color: var(--brand-gray);
+}

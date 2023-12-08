@@ -1,0 +1,16 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+}
+.justifyEnd {
+  justify-content: flex-end;
+}
+.btns {
+  display: flex;
+  gap: 20px;
+  margin: 0 25px;
+}
+
+.noEditingCopy {
+  margin: 12px 0 !important;
+}

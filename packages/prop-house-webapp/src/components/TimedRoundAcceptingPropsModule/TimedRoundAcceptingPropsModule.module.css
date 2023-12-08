@@ -1,0 +1,50 @@
+.sideCardHeader {
+  font-weight: 700;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.title {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+
+.subtitle {
+  margin-bottom: 0;
+  font-size: 14px;
+  color: var(--brand-gray);
+}
+
+.list {
+  color: var(--brand-gray);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.list b {
+  color: var(--brand-black);
+}
+
+.listItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.loadingCopy {
+  display: flex;
+}
+.icon {
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-gray-hint);
+  border: 1px solid var(--brand-gray-semi-transparent);
+  color: var(--brand-black);
+}

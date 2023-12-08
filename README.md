@@ -3,7 +3,7 @@
     <a href="https://prop.house/" target="blank"><img src="https://i.imgur.com/tPLjLwA.png" width="200" alt="Prop House Logo" /></a>
   </p>
   <h1>Prop House</h1>
-  <p>A public infrastructure project by <a href="https://nouns.wtf/" target="blank">Nouns DAO</a></p>
+  <p>A project born in and funded by <a href="https://nouns.wtf/" target="blank">Nouns DAO</a></p>
 
   <a href="./packages/prop-house-protocol">Protocol</a>
   &nbsp;&nbsp;&nbsp;

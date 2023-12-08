@@ -1,0 +1,71 @@
+.row {
+  all: unset;
+  background: #ffffff;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: var(--shadow-low) !important;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+.img {
+  width: 42px;
+  height: 42px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.textContainer {
+  justify-content: center;
+}
+.houseName {
+  font-size: 16px;
+}
+.houseContainer {
+  max-height: 380px;
+  overflow-y: scroll;
+}
+.houseContainer::-webkit-scrollbar {
+  width: 7px;
+  height: 0px;
+}
+.houseContainer::-webkit-scrollbar-track {
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.houseContainer::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: white;
+  background: var(--brand-gray-semi-transparent);
+}
+.houseInfo {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-break: anywhere;
+  line-height: normal !important;
+}
+.createNew p {
+  align-self: center;
+}
+.icon {
+  color: var(--brand-gray);
+  font-size: 22px;
+}
+.message {
+  color: var(--brand-gray);
+  font-weight: 500 !important;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  margin-top: 16px;
+}
+.message a {
+  color: var(--brand-pink) !important;
+}

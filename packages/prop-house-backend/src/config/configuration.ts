@@ -10,11 +10,18 @@ export interface FileConfig {
   basePath: string;
 }
 
+export interface DiscordBotConfig {
+  appId: string | undefined,
+  publicKey: string | undefined,
+  token: string | undefined,
+}
+
 export interface Config {
   database: DbConfig;
   env: string;
   JSONRPC: string;
   file: FileConfig;
+  discordBot: DiscordBotConfig
 }
 
 const config = (): Config => ({
@@ -28,7 +35,12 @@ const config = (): Config => ({
   env: process.env.NODE_ENV ?? 'development',
   JSONRPC: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   file: {
-    basePath: process.env.FILE_BASE_PATH ?? '/data'
+    basePath: process.env.FILE_BASE_PATH ?? '/data',
+  },
+  discordBot: {
+    appId: process.env.DISCORD_APP_ID,
+    publicKey: process.env.DISCORD_PUBLIC_KEY,
+    token: process.env.DISCORD_TOKEN
   }
 });
 

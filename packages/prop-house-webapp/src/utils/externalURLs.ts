@@ -2,6 +2,8 @@ export enum ExternalURL {
   discord,
   twitter,
   github,
+  offchain,
+  gitbook,
 }
 
 export const externalURL = (externalURL: ExternalURL) => {
@@ -12,5 +14,9 @@ export const externalURL = (externalURL: ExternalURL) => {
       return 'https://twitter.com/nounsprophouse';
     case ExternalURL.github:
       return 'https://github.com/Prop-House';
+    case ExternalURL.offchain:
+      return 'https://offchain--prop-house.netlify.app';
+    case ExternalURL.gitbook:
+      return 'https://prop-house.gitbook.io/';
   }
 };

@@ -10,7 +10,7 @@ const RoundModuleStale: React.FC<{ auction: StoredInfiniteAuction }> = ({ auctio
         <>
           <p style={{ fontWeight: 'bold' }}>What is a stale proposal?</p>
           <br />
-          <p>{`Stale proposals are those that did not meet quorum (${auction.quorum} votes) within the round's voting period.`}</p>
+          <p>{`Stale proposals are those that did not meet quorum (${auction.quorumFor} votes) within the round's voting period.`}</p>
         </>
       }
       type="stale"

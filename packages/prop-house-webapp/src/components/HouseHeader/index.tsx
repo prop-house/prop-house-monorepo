@@ -1,24 +1,18 @@
 import classes from './HouseHeader.module.css';
-import trimEthAddress from '../../utils/trimEthAddress';
-import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import { useState } from 'react';
-import CommunityProfImg from '../CommunityProfImg';
 import clsx from 'clsx';
-import Tooltip from '../Tooltip';
-import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { isMobile } from 'web3modal';
 import ReadMore from '../ReadMore';
 import { isLongName } from '../../utils/isLongName';
 import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
+import { House } from '@prophouse/sdk-react';
+import HouseProfImg from '../HouseProfImg';
 
 const HouseHeader: React.FC<{
-  community: Community;
+  house: House;
 }> = props => {
-  const { community } = props;
-
-  const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
+  const { house } = props;
 
   const communityDescription = (
     <div className={classes.communityDescriptionRow}>
@@ -31,62 +25,37 @@ const HouseHeader: React.FC<{
               props: {
                 target: '_blank',
                 rel: 'noreferrer',
-              }
-            }
+              },
+            },
           },
         }}
       >
-        {sanitizeHtml(community.description as any, {
+        {sanitizeHtml(house.description as any, {
           allowedAttributes: {
             a: ['href', 'target'],
           },
-
         })}
       </Markdown>
     </div>
   );
 
-  const { t } = useTranslation();
-
   return (
     <div className={classes.profileHeaderRow}>
       <div className={classes.profilePicCol}>
-        <CommunityProfImg community={community} />
+        <HouseProfImg house={house} />
       </div>
 
       <div className={classes.communityInfoCol}>
         <div className={classes.houseTitleInfo}>
-          <div className={clsx(classes.titleRow, isLongName(community.name) && classes.longName)}>
-            <div className={classes.title}>{community.name} House</div>
-            <Tooltip
-              content={
-                <div
-                  className={classes.contractAddressPill}
-                  onMouseEnter={() => setAddressTooltipCopy(t('clickToCopy'))}
-                  onClick={() => {
-                    setAddressTooltipCopy(t('copied'));
-                    navigator.clipboard.writeText(
-                      community
-                        ? community.contractAddress
-                        : '0x0000000000000000000000000000000000000000',
-                    );
-                  }}
-                >
-                  {trimEthAddress(
-                    community
-                      ? community.contractAddress
-                      : '0x0000000000000000000000000000000000000000',
-                  )}{' '}
-                </div>
-              }
-              tooltipContent={addressTooltipCopy}
-            />
+          <div className={clsx(classes.titleRow, isLongName(house.name ?? '') && classes.longName)}>
+            <div className={classes.title}>{house.name}</div>
           </div>
 
-          <div className={classes.propHouseDataRow}>
-            <div className={classes.itemData}>{community.numAuctions ?? 0}</div>
+          {/** todo: resolve for community.numProposals. removed all because # of rounds alone doesn't look good */}
+          {/* <div className={classes.propHouseDataRow}>
+            <div className={classes.itemData}>{house.roundCount}</div>
             <div className={classes.itemTitle}>
-              {Number(community?.numAuctions) === 1 ? t('roundCap') : t('roundsCap')}
+              {house.roundCount === 1 ? t('roundCap') : t('roundsCap')}
             </div>
             <span className={classes.bullet}>{' • '}</span>
 
@@ -94,7 +63,7 @@ const HouseHeader: React.FC<{
             <div className={classes.itemTitle}>
               {community.numProposals === 1 ? t('proposalCap') : t('proposalsCap')}
             </div>
-          </div>
+          </div> */}
         </div>
         {!isMobile() && <ReadMore description={communityDescription} />}
       </div>

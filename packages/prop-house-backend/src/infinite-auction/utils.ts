@@ -8,7 +8,7 @@ import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity
  */
 export const isProposalOverQuorum =
   (quorum: number) => (proposal: InfiniteAuctionProposal) =>
-    proposal.voteCount >= quorum;
+    proposal.voteCountFor >= quorum;
 
 /**
  * Test if a proposal has/should be funded based on its vote

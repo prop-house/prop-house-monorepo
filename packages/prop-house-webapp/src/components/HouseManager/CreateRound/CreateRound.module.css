@@ -1,0 +1,7 @@
+.titleAndEditIcon {
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.titleAndEditIcon svg {
+  margin-top: 12px;
+}

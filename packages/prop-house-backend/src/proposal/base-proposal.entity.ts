@@ -15,6 +15,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { ProposalParent } from './proposal.types';
+import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 
 @ObjectType()
 export abstract class BaseProposal extends SignedEntity {
@@ -48,12 +49,22 @@ export abstract class BaseProposal extends SignedEntity {
 
   @Column({ type: 'integer', default: 0 })
   @Field(() => Int)
-  voteCount: number;
+  voteCountFor: number;
+
+  @Column({ type: 'integer', default: 0 })
+  @Field(() => Int)
+  voteCountAgainst: number;
 
   @BeforeUpdate()
   updateVoteCount() {
-    this.voteCount = this.votes.reduce((acc, vote) => {
+    this.voteCountFor = this.votes.reduce((acc, vote) => {
       if (vote.signatureState !== SignatureState.VALIDATED) return acc;
+      if (vote.direction !== Direction.Up) return acc;
+      return Number(acc) + Number(vote.weight);
+    }, 0);
+    this.voteCountAgainst = this.votes.reduce((acc, vote) => {
+      if (vote.signatureState !== SignatureState.VALIDATED) return acc;
+      if (vote.direction !== Direction.Down) return acc;
       return Number(acc) + Number(vote.weight);
     }, 0);
   }

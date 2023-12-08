@@ -1,14 +1,14 @@
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { getLastUpdatedDate } from './getLastUpdatedDate';
 import dayjs from 'dayjs';
+import { ProposalWithTldr } from '../types/ProposalWithTldr';
 
 export const sortByVotesAndHandleTies = (
-  proposals: StoredProposalWithVotes[],
+  proposals: ProposalWithTldr[],
   ascending: boolean,
-) =>
+): ProposalWithTldr[] =>
   proposals.sort((a, b) => {
-    const gt = a.voteCount > b.voteCount;
-    const eq = a.voteCount === b.voteCount;
+    const gt = a.votingPower > b.votingPower;
+    const eq = a.votingPower === b.votingPower;
     const sortedByUpdatedAsc =
       (dayjs(getLastUpdatedDate(b)) as any) - (dayjs(getLastUpdatedDate(a)) as any);
     const sortedByUpdatedDes =

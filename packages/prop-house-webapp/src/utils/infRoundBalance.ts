@@ -1,22 +1,17 @@
-import {
-  StoredInfiniteAuction,
-  StoredProposalWithVotes,
-} from '@nouns/prop-house-wrapper/dist/builders';
-import getWinningIds from './getWinningIds';
+import { StoredInfiniteAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Proposal } from '@prophouse/sdk-react';
 
 /**
  * Caluclates remaining balance of infinite round (fundingAmount - winnerProposals.fundReq)
  */
-export const infRoundBalance = (
-  proposals: StoredProposalWithVotes[],
-  round: StoredInfiniteAuction,
-): number => {
-  const winners = getWinningIds(proposals, round);
+export const infRoundBalance = (proposals: Proposal[], round: StoredInfiniteAuction): number => {
+  const winners = proposals.filter(p => p.isWinner);
   return (
     round.fundingAmount -
     proposals.reduce((prev, prop) => {
-      const won = winners.includes(prop.id);
-      const reqAmount = Number(prop.reqAmount);
+      const won = winners.includes(prop);
+      // const reqAmount = Number(prop.reqAmount); // todo: solve for reqamount
+      const reqAmount = 1;
       return !won && reqAmount !== null ? prev : prev + reqAmount;
     }, 0)
   );

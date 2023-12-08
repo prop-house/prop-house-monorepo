@@ -1,41 +1,13 @@
-.container {
-  margin-top: 2rem;
+.cardsContainer {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  color: var(--brand-black);
 }
-.container h1 {
-  font-size: 25px;
-  font-weight: bold;
-}
-.card {
-  margin: 2rem 0;
-  padding: 10px !important;
-  border: 1px rgba(0, 0, 0, 0.1) solid;
-}
-.card h2 {
-  font-size: 14px;
-  font-weight: bold;
-}
-.card p {
-  font-size: 12px;
-  font-weight: medium;
-}
-
-.step {
-  margin: 1rem 0;
-}
-.step h2 {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.step p {
-  font-size: 16px;
-  font-weight: medium;
-}
-.step p a {
-  color: var(--brand-purple) !important;
-  font-weight: bold;
-  text-decoration: underline;
-}
-.step button {
-  margin: 1rem 1rem 1rem 0;
+@media (max-width: 767px) {
+  .cardsContainer {
+    flex-direction: column-reverse;
+    gap: 0px;
+    position: relative;
+  }
 }

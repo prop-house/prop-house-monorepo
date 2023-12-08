@@ -19,7 +19,7 @@ export abstract class Signable {
 
     // parse reqAmount to support decimal values when signing an uint256 type
     let payload = this.toPayload();
-    if (payload.hasOwnProperty('reqAmount')) payload.reqAmount = payload.reqAmount.toString();
+    if (payload.reqAmount) payload.reqAmount = payload.reqAmount.toString();
 
     return await typedSigner._signTypedData(domainSeparator, eip712MessageType, payload);
   }
@@ -95,6 +95,11 @@ export class TimedAuction extends Signable {
     public readonly communityId: number,
     public readonly balanceBlockTag: number,
     public readonly description: string,
+    public readonly propStrategy: any,
+    public readonly voteStrategy: any,
+    public readonly displayComments: boolean,
+    public readonly propStrategyDescription: string,
+    public readonly voteStrategyDescription: string,
   ) {
     super();
   }
@@ -113,6 +118,11 @@ export class TimedAuction extends Signable {
       communityId: this.communityId,
       balanceBlockTag: this.balanceBlockTag,
       description: this.description,
+      propStrategy: this.propStrategy,
+      voteStrategy: this.voteStrategy,
+      displayComments: this.displayComments,
+      propStrategyDescription: this.propStrategyDescription,
+      voteStrategyDescription: this.voteStrategyDescription,
     };
   }
 }
@@ -146,8 +156,14 @@ export class InfiniteAuction extends Signable {
     public readonly communityId: number,
     public readonly balanceBlockTag: number,
     public readonly description: string,
-    public readonly quorum: number,
+    public readonly quorumFor: number,
+    public readonly quorumAgainst: number,
     public readonly votingPeriod: number,
+    public readonly propStrategy: any,
+    public readonly voteStrategy: any,
+    public readonly displayComments: boolean,
+    public readonly propStrategyDescription: string,
+    public readonly voteStrategyDescription: string,
   ) {
     super();
   }
@@ -162,8 +178,14 @@ export class InfiniteAuction extends Signable {
       communityId: this.communityId,
       balanceBlockTag: this.balanceBlockTag,
       description: this.description,
-      quorum: this.quorum,
+      quorumFor: this.quorumFor,
+      quorumAgainst: this.quorumAgainst,
       votingPeriod: this.votingPeriod,
+      propStrategy: this.propStrategy,
+      voteStrategy: this.voteStrategy,
+      displayComments: this.displayComments,
+      propStrategyDescription: this.propStrategyDescription,
+      voteStrategyDescription: this.voteStrategyDescription,
     };
   }
 }
@@ -262,7 +284,8 @@ export interface StoredProposal extends Proposal {
   id: number;
   address: string;
   createdDate: Date;
-  voteCount: number;
+  voteCountFor: number;
+  voteCountAgainst: number;
   lastUpdatedDate: Date;
   deletedAt: Date;
   reqAmount: number | null;
@@ -286,7 +309,7 @@ export class DeleteProposal extends Signable {
 
 export enum Direction {
   Up = 1,
-  Down = -1,
+  Down = 2,
   Abstain = 0,
 }
 
