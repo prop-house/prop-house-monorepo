@@ -11,7 +11,8 @@
   },
   "workspaces": {
     "packages": [
-      "packages/**"
+      "packages/**",
+      "!packages/prop-house-sdk-react"
     ],
     "nohoist": [
       "**/@nestjs/**"
