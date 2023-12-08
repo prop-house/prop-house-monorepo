@@ -3,7 +3,11 @@
     <a href="https://prop.house/" target="blank"><img src="https://i.imgur.com/tPLjLwA.png" width="200" alt="Prop House Logo" /></a>
   </p>
   <h1>Prop House</h1>
-  <p>A public infrastructure project by <a href="https://nouns.wtf/" target="blank">Nouns DAO</a></p>
+  <p>A project born in and funded by <a href="https://nouns.wtf/" target="blank">Nouns DAO</a></p>
+
+  <a href="./packages/prop-house-protocol">Protocol</a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="./packages/prop-house-sdk">SDK</a>
 </div>
 
 ## About
@@ -12,21 +16,29 @@ Prop House offers a novel mechanism for communities to deploy capital within the
 
 ## Packages
 
-### prop-house-backend
+### @prophouse/backend
 
-The [prop house backend](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-backend) is implemented using Nestjs and handles CRUD actions for storing prop house data. It provides a [GraphQL interface](https://prod.backend.prop.house/graphql) for querying data.
+The [Prop House backend](./packages/prop-house-backend) is implemented using Nestjs and handles CRUD actions for storing prop house data. It provides a [GraphQL interface](https://prod.backend.prop.house/graphql) for querying data.
 
-### prop-house-wrapper
+### @prophouse/wrapper
 
-The [prop house wrapper](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-wrapper) is a convenience class that wraps the HTTP interaction with a prop house backend and performs the signing of payloads. It also provides types for the response and input objects. The package also includes examples for creating proposals, uploading files, and voting.
+The [Prop House wrapper](./packages/prop-house-wrapper) is a convenience class that wraps the HTTP interaction with a prop house backend and performs the signing of payloads. It also provides types for the response and input objects. The package also includes examples for creating proposals, uploading files, and voting.
 
-### prop-house-webapp
+### @prophouse/webapp
 
-The [prop house webapp](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-webapp) is the frontend for interacting with houses as hosted at [prop.house](https://prop.house).
+The [Prop House webapp](./packages/prop-house-webapp) is the frontend for interacting with houses as hosted at [prop.house](https://prop.house).
 
 ### @prophouse/communities
 
-The [prop house communities](https://github.com/cryptoseneca/prop-house/tree/master/packages/@prophouse/communities) package contains the logic to fetch voting data for individuals within the scope of their own communities.
+The [Prop House communities](./packages/prop-house-communities) package contains the logic to fetch voting data for individuals within the scope of their own communities.
+
+### @prophouse/protocol
+
+The [Prop House protocol](./packages/prop-house-protocol) package contains the Solidity and Cairo contracts that power the Prop House protocol.
+
+### @prophouse/sdk
+
+The [Prop House SDK](./prop-house-sdk) package contains utilities that simplify interaction with the Prop House protocol.
 
 ## Quick Start
 

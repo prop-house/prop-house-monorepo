@@ -1,0 +1,18 @@
+[package]
+name = "prop_house"
+version = "0.1.0"
+description = "Public infrastructure by Nouns DAO"
+
+[dependencies]
+starknet = ">=2.1.1"
+
+[[target.starknet-contract]]
+
+# Enable Sierra codegen.
+sierra = true
+
+# Enable CASM codegen.
+casm = true
+
+# Emit Python-powered hints in order to run compiled CASM class with legacy Cairo VM.
+casm-add-pythonic-hints = true

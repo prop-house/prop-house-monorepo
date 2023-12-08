@@ -1,6 +1,17 @@
-## Description
-
-The `prop-house-community` package manages the voting strategies for Prop House communities.
+<h1 align="center">
+  @prophouse/communities
+</h1>
+<p align="center">
+  A package that manages community voting strategies for Prop House
+</p>
+<p align="center">
+  <a href="https://www.npmjs.com/package/@prophouse/communities">
+    <img src="https://img.shields.io/npm/v/@prophouse/communities.svg?style=flat" />
+  </a>
+  <a href="https://prop.house/">
+    <img src="https://img.shields.io/badge/website-prop.house-blue?style=flat-square">
+  </a>
+</p>
 
 ## Development
 

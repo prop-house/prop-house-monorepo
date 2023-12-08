@@ -1,0 +1,44 @@
+{
+  "network_node_url": "https://starknet-mainnet.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c",
+  "optimistic_indexing": true,
+  "sources": [
+    {
+      "contract": "0x54b7b08b5389709af79a65b21574231b9adb0c313c1598aac94ee44fe99d213",
+      "abi": "EthereumRoundFactory",
+      "start": 456697,
+      "events": [
+        {
+          "name": "RoundRegistered",
+          "fn": "handleEthereumRoundRegistered"
+        }
+      ]
+    }
+  ],
+  "templates": {
+    "TimedRound": {
+      "abi": "TimedRound",
+      "events": [
+        {
+          "name": "ProposalCreated",
+          "fn": "handleProposalCreated"
+        },
+        {
+          "name": "ProposalEdited",
+          "fn": "handleProposalEdited"
+        },
+        {
+          "name": "ProposalCancelled",
+          "fn": "handleProposalCancelled"
+        },
+        {
+          "name": "VoteCast",
+          "fn": "handleVoteCast"
+        },
+        {
+          "name": "RoundFinalized",
+          "fn": "handleRoundFinalized"
+        }
+      ]
+    }
+  }
+}

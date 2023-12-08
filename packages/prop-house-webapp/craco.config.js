@@ -9,4 +9,10 @@ module.exports = {
       return webpackConfig;
     },
   },
+  eslint: {
+    enable: true,
+    configure: {
+      parser: '@babel/eslint-parser',
+    },
+  },
 };

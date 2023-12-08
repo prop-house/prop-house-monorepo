@@ -1,0 +1,378 @@
+[
+  {
+    "type": "impl",
+    "name": "TimedRound",
+    "interface_name": "prop_house::rounds::timed::config::ITimedRound"
+  },
+  {
+    "type": "struct",
+    "name": "core::starknet::eth_address::EthAddress",
+    "members": [
+      {
+        "name": "address",
+        "type": "core::felt252"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "prop_house::rounds::timed::config::Proposal",
+    "members": [
+      {
+        "name": "proposer",
+        "type": "core::starknet::eth_address::EthAddress"
+      },
+      {
+        "name": "last_updated_at",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "is_cancelled",
+        "type": "core::bool"
+      },
+      {
+        "name": "voting_power",
+        "type": "core::integer::u256"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::array::Span::<core::felt252>",
+    "members": [
+      {
+        "name": "snapshot",
+        "type": "@core::array::Array::<core::felt252>"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "prop_house::common::libraries::round::UserStrategy",
+    "members": [
+      {
+        "name": "id",
+        "type": "core::felt252"
+      },
+      {
+        "name": "user_params",
+        "type": "core::array::Span::<core::felt252>"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "prop_house::rounds::timed::config::ProposalVote",
+    "members": [
+      {
+        "name": "proposal_id",
+        "type": "core::integer::u32"
+      },
+      {
+        "name": "voting_power",
+        "type": "core::integer::u256"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "prop_house::common::libraries::round::Asset",
+    "members": [
+      {
+        "name": "asset_id",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "amount",
+        "type": "core::integer::u256"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "prop_house::rounds::timed::config::ITimedRound",
+    "items": [
+      {
+        "type": "function",
+        "name": "get_proposal",
+        "inputs": [
+          {
+            "name": "proposal_id",
+            "type": "core::integer::u32"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "prop_house::rounds::timed::config::Proposal"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "propose",
+        "inputs": [
+          {
+            "name": "proposer",
+            "type": "core::starknet::eth_address::EthAddress"
+          },
+          {
+            "name": "metadata_uri",
+            "type": "core::array::Array::<core::felt252>"
+          },
+          {
+            "name": "used_proposing_strategies",
+            "type": "core::array::Array::<prop_house::common::libraries::round::UserStrategy>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "edit_proposal",
+        "inputs": [
+          {
+            "name": "proposer",
+            "type": "core::starknet::eth_address::EthAddress"
+          },
+          {
+            "name": "proposal_id",
+            "type": "core::integer::u32"
+          },
+          {
+            "name": "metadata_uri",
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "cancel_proposal",
+        "inputs": [
+          {
+            "name": "proposer",
+            "type": "core::starknet::eth_address::EthAddress"
+          },
+          {
+            "name": "proposal_id",
+            "type": "core::integer::u32"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "vote",
+        "inputs": [
+          {
+            "name": "voter",
+            "type": "core::starknet::eth_address::EthAddress"
+          },
+          {
+            "name": "proposal_votes",
+            "type": "core::array::Array::<prop_house::rounds::timed::config::ProposalVote>"
+          },
+          {
+            "name": "used_voting_strategies",
+            "type": "core::array::Array::<prop_house::common::libraries::round::UserStrategy>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "cancel_round",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "finalize_round",
+        "inputs": [
+          {
+            "name": "awards",
+            "type": "core::array::Array::<prop_house::common::libraries::round::Asset>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "name": "round_params",
+        "type": "core::array::Array::<core::felt252>"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "prop_house::rounds::timed::round::TimedRound::ProposalCreated",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "proposal_id",
+        "type": "core::integer::u32",
+        "kind": "data"
+      },
+      {
+        "name": "proposer",
+        "type": "core::starknet::eth_address::EthAddress",
+        "kind": "data"
+      },
+      {
+        "name": "metadata_uri",
+        "type": "core::array::Array::<core::felt252>",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "prop_house::rounds::timed::round::TimedRound::ProposalEdited",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "proposal_id",
+        "type": "core::integer::u32",
+        "kind": "data"
+      },
+      {
+        "name": "updated_metadata_uri",
+        "type": "core::array::Array::<core::felt252>",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "prop_house::rounds::timed::round::TimedRound::ProposalCancelled",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "proposal_id",
+        "type": "core::integer::u32",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "prop_house::rounds::timed::round::TimedRound::VoteCast",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "proposal_id",
+        "type": "core::integer::u32",
+        "kind": "data"
+      },
+      {
+        "name": "voter",
+        "type": "core::starknet::eth_address::EthAddress",
+        "kind": "data"
+      },
+      {
+        "name": "voting_power",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::array::Span::<core::integer::u32>",
+    "members": [
+      {
+        "name": "snapshot",
+        "type": "@core::array::Array::<core::integer::u32>"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "prop_house::rounds::timed::round::TimedRound::RoundFinalized",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "winning_proposal_ids",
+        "type": "core::array::Span::<core::integer::u32>",
+        "kind": "data"
+      },
+      {
+        "name": "merkle_root",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "prop_house::rounds::timed::round::TimedRound::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "ProposalCreated",
+        "type": "prop_house::rounds::timed::round::TimedRound::ProposalCreated",
+        "kind": "nested"
+      },
+      {
+        "name": "ProposalEdited",
+        "type": "prop_house::rounds::timed::round::TimedRound::ProposalEdited",
+        "kind": "nested"
+      },
+      {
+        "name": "ProposalCancelled",
+        "type": "prop_house::rounds::timed::round::TimedRound::ProposalCancelled",
+        "kind": "nested"
+      },
+      {
+        "name": "VoteCast",
+        "type": "prop_house::rounds::timed::round::TimedRound::VoteCast",
+        "kind": "nested"
+      },
+      {
+        "name": "RoundFinalized",
+        "type": "prop_house::rounds::timed::round::TimedRound::RoundFinalized",
+        "kind": "nested"
+      }
+    ]
+  }
+]
