@@ -1,14 +1,10 @@
 import classes from './ActivityFeed.module.css';
-import { OrderDirection, Proposal, Vote, usePropHouse } from '@prophouse/sdk-react';
+import { OrderDirection, Proposal, Vote, usePropHouse, Vote_Order_By, Proposal_Order_By } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import EthAddress from '../EthAddress';
 import { timeFromNow } from '../../utils/timeFromNow';
 import { useNavigate } from 'react-router-dom';
-import {
-  OrderByVoteFields,
-  OrderByProposalFields,
-} from '@prophouse/sdk/dist/gql/starknet/graphql';
 import Button, { ButtonColor } from '../Button';
 
 const ActivityFeed: React.FC<{}> = () => {
@@ -31,7 +27,7 @@ const ActivityFeed: React.FC<{}> = () => {
 
         const votes = await propHouse.query.getVotes({
           page: votesPageIndex,
-          orderBy: OrderByVoteFields.ReceivedAt,
+          orderBy: Vote_Order_By.ReceivedAt,
           orderDirection: OrderDirection.Desc,
         });
 
@@ -58,7 +54,7 @@ const ActivityFeed: React.FC<{}> = () => {
 
         const props = await propHouse.query.getProposals({
           page: propsPageIndex,
-          orderBy: OrderByProposalFields.ReceivedAt,
+          orderBy: Proposal_Order_By.ReceivedAt,
           orderDirection: OrderDirection.Desc,
         });
 
