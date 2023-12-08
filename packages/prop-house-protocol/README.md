@@ -171,8 +171,8 @@ This contract registers governance strategies by inserting them in storage, keye
 
 ### Current Versions
 
-* Scarb: [d4e43e07](https://github.com/software-mansion/scarb/commit/d4e43e07)
-* Cairo: [b4c156ff](https://github.com/starkware-libs/cairo/commit/b4c156ff)
+* Scarb: [0.6.2](https://github.com/software-mansion/scarb/releases/tag/v0.6.2)
+* Cairo: [2.1.1](https://github.com/starkware-libs/cairo/releases/tag/v2.1.1)
 
 ### Installing Dependencies
 
