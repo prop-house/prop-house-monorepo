@@ -98,7 +98,7 @@ function App() {
                   <Banner
                     content={
                       <div>
-                        The offchain version of Prop House has been depreceated. Explore old rounds{' '}
+                        The offchain version of Prop House has been deprecated. Explore old rounds{' '}
                         <a
                           href={externalURL(ExternalURL.offchain)}
                           target="_blank"
