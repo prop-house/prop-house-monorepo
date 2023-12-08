@@ -5971,6 +5971,13 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.0.tgz#6734f8ebc106a0860dff7f92bf90df193f0935d7"
   integrity sha512-zrsUxjLOKAzdewIDRWy9nsV1GQsKBCWaGwsZQlCgr6/q+vjyZhFgqedLfFBuI9anTPEUT4APq9Mu0SZBTzIcGQ==
 
+"@prophouse/sdk-react@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.3.tgz#56e1e67f24e5a5680646d5a2599cacc338929b98"
+  integrity sha512-xUxmD/A/OSj5fzORCeuE9rAKsRy8K0LV7CyY1HlwWIVS/v+K8pbOE8z5FWwI9pUkvzBuMBeSpSVA0s3FczRnWQ==
+  dependencies:
+    "@prophouse/sdk" "1.0.5"
+
 "@prophouse/sdk@1.0.5":
   version "1.0.5"
   resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.5.tgz#424406a837c63452421bfc19701d59d0ed0c97c4"
