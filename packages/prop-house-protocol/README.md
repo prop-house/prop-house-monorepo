@@ -70,9 +70,13 @@ Every Prop House [round](#Rounds) interacts with two chains:
 1. **Starknet**, which handles core round logic like proposing, voting, and winner determination.
 2. An **origin chain**, where houses are deployed, assets are held, and execution (payouts) occur.
 
+This approach utilizes the cheaper execution cost of Starknet to make proposing, voting, and winner calculations more affordable.
+
 Currently, Ethereum is the only supported origin chain.
 
 ### Ethereum Contracts
+
+![](https://1369598456-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FmBmOglaY02TEQ8yWLUbk%2Fuploads%2Fk7MjupfRa1sblorDLx48%2Fethereum.png?alt=media&token=63392099-b121-4c76-a20f-e57003abb4a3)
 
 #### [Prop House](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/ethereum/PropHouse.sol)
 
@@ -86,7 +90,7 @@ The `Manager` contract controls which house and round implementation contracts c
 
 #### [Messenger](https://github.com/Prop-House/prop-house-monorepo/tree/main/packages/prop-house-protocol/contracts/ethereum/Messenger.sol)
 
-The `Messenger` acts as a L1<->L2 message pass-through contract between rounds and the Starknet Core contract. It uses the `PropHouse` contract to authenticate rounds and inserts the `msg.sender` in the first index of the payload that's passed to starknet to ensure that the manager can't register a malicious round implementation that acts as another round.
+The `Messenger` acts as a L1<>L2 message pass-through contract between rounds and the Starknet Core contract. It uses the `PropHouse` contract to authenticate rounds and inserts the `msg.sender` in the first index of the payload that's passed to Starknet to ensure that the manager can't register a malicious round implementation that acts as another round.
 
 #### [Community House](https://github.com/Prop-House/prop-house-monorepo/tree/main/packages/prop-house-protocol/contracts/ethereum/houses/CommunityHouse.sol)
 
@@ -106,19 +110,21 @@ This contract handles continual asset deposits and payouts (claims) to winners, 
 
 In this round type, no awards are specified during round creation. Instead, proposers can request any assets that the round holds.
 
-Winners are reported to this contract from Starknet in batches of one or more. The payload from Starknet includes the new winner count and the latest merkle root. If the new winner count is greater than the previous winner count, anyone can consume the new root and open up claiming for the latest batch of winners. For now, the incremental merkle tree is capped at 2^10 leaves, which feels sufficient until proven otherwise.
+Winners are reported to this contract from Starknet in batches of one or more. The payload from Starknet includes the new winner count and the latest merkle root. If the new winner count is greater than the previous winner count, anyone can consume the new root and open up claiming for the latest batch of winners. For now, the incremental merkle tree is capped at 2^10 leaves.
 
 #### [Timed Round](https://github.com/Prop-House/prop-house-monorepo/tree/main/packages/prop-house-protocol/contracts/ethereum/rounds/TimedRound.sol)
 
 Mostly covered [above](#timed-round)
 
-This contract handles asset deposits and payouts (claims) to winners, and enables the round manager, holder of the round NFT, to cancel or finalize the round.
+This contract handles asset deposits and payouts (claims) to winners, enables the round manager, holder of the round NFT, to cancel the round, and allows anyone to finalize the round.
 
-Unlike infinite rounds, this contract receives a list of all winners during finalization and allows 4 weeks for claiming before depositors can reclaim their assets.
+Unlike infinite rounds, this contract receives a list of all winners during finalization and allows 4 weeks for claiming before depositors can reclaim unclaimed assets.
 
 In addition, this contract supports rounds that offer no assets. When no assets are offered, the utility of this contract is the `isWinner` function, which can be used by 3rd party contracts to enable new use-cases. For example, a contract that allows the winner of the timed round to receive a streamed payment.
 
 ### Starknet Contracts
+
+![](https://1369598456-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FmBmOglaY02TEQ8yWLUbk%2Fuploads%2Fngz4Mq2RD3YpmNGrTFHK%2Fstarknet.png?alt=media&token=ce20e09c-e102-4279-a5b9-08bc99355c0b)
 
 #### [EthereumRoundFactory](https://github.com/Prop-House/prop-house-monorepo/tree/main/packages/prop-house-protocol/contracts/starknet/src/factories/ethereum.cairo)
 
@@ -147,15 +153,16 @@ Users can not choose their own auth strategies. They are forever bound to a roun
 
 #### Governance Power Strategies
 
-These strategies can be consumed to determine proposing or voting power. There are currently three governance power strategies in the repo:
+These strategies can be consumed to determine proposing or voting power. There are currently four governance power strategies in use:
 
-- Vanilla: For testing only. Gives all users a power of 1.
-- Allowlist: Enables a predefined list of accounts to have a specific governance power.
-- Ethereum Balance Of: Uses storage proofs to determine governance power using ERC20/ERC721 balances on Ethereum.
+- **Allowlist**: Enables a predefined list of accounts to have a specific governance power.
+- **Ethereum Balance Of**: Uses storage proofs to determine governance power using ERC20/ERC721 balances on Ethereum.
+- **Ethereum Balance Of ERC1155**: Uses storage proofs to determine governance power using ERC1155 balances on Ethereum.
+- **Vanilla**: For testing only. Gives all users a power of 1.
 
 #### [EthereumBlockRegistry](https://github.com/Prop-House/prop-house-monorepo/tree/main/packages/prop-house-protocol/contracts/starknet/src/common/libraries/ethereum_block.cairo)
 
-This contract maps timestamps to block numbers by reading from the storage proof headers store. It is used in the Ethereum balance of governance power strategy
+This contract maps timestamps to block numbers by reading from the storage proof headers store. It is used in the Ethereum balance of governance power strategies.
 
 #### [RoundDependencyRegistry](https://github.com/Prop-House/prop-house-monorepo/tree/main/packages/prop-house-protocol/contracts/starknet/src/common/libraries/round_dependency.cairo)
 
