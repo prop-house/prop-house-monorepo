@@ -657,7 +657,6 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       action: Timed.Action.VOTE,
     };
 
-    // TODO: Avoid calling these twice.
     const timestamp = await this.getVotingPeriodSnapshotTimestamp(params.data.round);
     const { govPowerStrategiesRaw } = await this._query.getGovPowerStrategies({
       where: {

@@ -260,7 +260,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
         assetId,
         amount,
       })),
-      usedProposingStrategies: [], // TODO: Add SDK support for proposing strategies
+      usedProposingStrategies: [], // TODO: SDK support for proposing strategies.
       salt: this.generateSalt(),
     };
     const signature = await this.signer._signTypedData(
@@ -410,16 +410,12 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
       action: Infinite.Action.VOTE,
     };
 
-    // TODO: Avoid calling these twice...
     const timestamp = await this.getSnapshotTimestamp(params.data.round);
     const { govPowerStrategiesRaw } = await this._query.getGovPowerStrategies({
       where: {
         id_in: params.data.usedVotingStrategies.map(({ id }) => id),
       },
     });
-
-    // TODO: We only need to do this if they haven't voted before.
-    // Remove asap.
     const preCalls = await this._govPower.getPreCallsForStrategies(
       params.data.voter,
       timestamp,

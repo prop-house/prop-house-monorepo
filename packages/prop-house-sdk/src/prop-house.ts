@@ -304,7 +304,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
         title: round.title,
         description: round.description,
         impl: this.round.getImpl(round.roundType),
-        config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]), // TODO: Fix later
+        config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]),
       },
       assets,
     ] as const;
