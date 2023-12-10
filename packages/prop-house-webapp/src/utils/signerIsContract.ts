@@ -1,4 +1,5 @@
-import { Provider, Signer } from '@wagmi/core';
+import { Provider } from '@ethersproject/abstract-provider';
+import { Signer } from '@ethersproject/abstract-signer';
 
 export const signerIsContract = async (
   signer: Signer | undefined,
