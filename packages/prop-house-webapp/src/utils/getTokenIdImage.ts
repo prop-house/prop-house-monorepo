@@ -1,4 +1,4 @@
-import { Provider } from '@wagmi/core';
+import { Provider } from '@ethersproject/abstract-provider';
 
 // Get contract Name and Image from OpenSea API
 export const getTokenIdImage = async (address: string, tokenId: string, provider: Provider) => {

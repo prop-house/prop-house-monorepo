@@ -1,5 +1,5 @@
 import { AssetType } from '@prophouse/sdk-react';
-import { Provider } from '@wagmi/core';
+import { Provider } from '@ethersproject/abstract-provider';
 
 // Get USD price from CoinGecko API
 export const getUSDPrice = async (type: AssetType, address: string, provider: Provider) => {

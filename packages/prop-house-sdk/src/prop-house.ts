@@ -13,6 +13,7 @@ import {
   RoundType,
 } from './types';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
+import { Signer } from '@ethersproject/abstract-signer';
 import { Overrides } from '@ethersproject/contracts';
 import { parseEther } from '@ethersproject/units';
 import { ChainBase } from './chain-base';
@@ -188,6 +189,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     ] as const;
     const overridesWithValue = {
       ...overrides,
+      from: (this._evm as Signer).getAddress(),
       value: cappedStarknetFee.add(struct.metaTx.deposit),
     };
     const gasLimit = await this.contract.estimateGas.createRoundOnExistingHouse(...inputs, overridesWithValue);
@@ -228,6 +230,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     ] as const;
     const overridesWithValue = {
       ...overrides,
+      from: (this._evm as Signer).getAddress(),
       value: BigNumber.from(value).add(cappedStarknetFee).add(struct.metaTx.deposit),
     };
     const gasLimit = await this.contract.estimateGas.createAndFundRoundOnExistingHouse(...inputs, overridesWithValue);
@@ -267,6 +270,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     ] as const;
     const overridesWithValue = {
       ...overrides,
+      from: (this._evm as Signer).getAddress(),
       value: cappedStarknetFee.add(struct.metaTx.deposit),
     };
     const gasLimit = await this.contract.estimateGas.createRoundOnNewHouse(...inputs, overridesWithValue);
@@ -310,6 +314,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     ] as const;
     const overridesWithValue = {
       ...overrides,
+      from: (this._evm as Signer).getAddress(),
       value: BigNumber.from(value).add(cappedStarknetFee).add(struct.metaTx.deposit),
     };
     const gasLimit = await this.contract.estimateGas.createAndFundRoundOnNewHouse(...inputs, overridesWithValue);
