@@ -11,7 +11,7 @@ export abstract class Signable {
   abstract toPayload(): any;
 
   async typedSignature(
-    signer: Signer,
+    signer: Signer | Wallet,
     domainSeparator: TypedDataDomain,
     eip712MessageType: Record<string, TypedDataField[]>,
   ) {
