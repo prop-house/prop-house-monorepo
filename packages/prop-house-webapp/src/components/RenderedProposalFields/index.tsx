@@ -6,7 +6,6 @@ import ReactMarkdown from 'react-markdown';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
-import { pipe } from 'ramda';
 import { replaceIpfsGateway } from '../../utils/ipfs';
 import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 
@@ -67,26 +66,22 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
              * <Markdown/> component used to render HTML, while supporting Markdown.
              */}
             <Markdown>
-              {pipe(
-                (whatText: string) =>
-                  sanitizeHtml(whatText, {
-                    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-                    allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
-                    allowedAttributes: {
-                      img: ['src', 'alt', 'height', 'width'],
-                      a: ['href', 'target'],
-                    },
-                    allowedClasses: {
-                      code: ['language-*', 'lang-*'],
-                      pre: ['language-*', 'lang-*'],
-                    },
-                  }),
-                // edge case: handle ampersands in img links encoded from sanitization
-                (whatText: string) => whatText.replaceAll('&amp;', '&'),
-                // Pinata requires crossorigin attribute on images
-                (whatText: string) => whatText.replaceAll(/<img/g, '<img crossorigin="anonymous"'),
-                (whatText: string) => replaceIpfsGateway(whatText),
-              )(fields.what)}
+              {replaceIpfsGateway(
+                sanitizeHtml(fields.what, {
+                  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+                  allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
+                  allowedAttributes: {
+                    img: ['src', 'alt', 'height', 'width'],
+                    a: ['href', 'target'],
+                  },
+                  allowedClasses: {
+                    code: ['language-*', 'lang-*'],
+                    pre: ['language-*', 'lang-*'],
+                  },
+                // Handle ampersands in img links encoded from sanitization and
+                // add crossorigin attribute on images for Pinata
+                }).replaceAll('&amp;', '&').replaceAll(/<img/g, '<img crossorigin="anonymous"')
+              )}
             </Markdown>
           </span>
         </Col>
