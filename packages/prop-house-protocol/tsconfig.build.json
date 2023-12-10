@@ -1,0 +1,11 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "preserveConstEnums": true,
+    "resolveJsonModule": true,
+		"declaration": true,
+    "rootDirs": ["src", "typechain", "deployments"],
+    "outDir": "dist"
+  },
+  "include": ["src", "typechain", "deployments"]
+}

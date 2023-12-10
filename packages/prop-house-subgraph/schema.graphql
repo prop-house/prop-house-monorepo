@@ -1,0 +1,445 @@
+enum AssetType {
+  NATIVE
+  ERC20
+  ERC721
+  ERC1155
+}
+
+enum GovPowerStrategyType {
+  VANILLA
+  ALLOWLIST
+  BALANCE_OF
+  BALANCE_OF_ERC1155
+  UNKNOWN
+}
+
+enum RoundEventState {
+  CREATED
+  FINALIZED
+  CANCELLED
+}
+
+type Administrative @entity {
+  "The manager contract address"
+  id: ID!
+
+  "The account who controls house and round registration"
+  manager: Bytes!
+  
+  "All registered house implementations"
+  houseImpls: [HouseImplementation!]
+}
+
+type HouseImplementation @entity {
+  "The address of the house implementation contract"
+  id: ID!
+
+  "The house type (COMMUNITY)"
+  type: String!
+
+  "Whether the house is currently registered"
+  isRegistered: Boolean!
+
+  "The administrative entity"
+  admin: Administrative!
+
+  "All round implementations registered on the house implementation"
+  roundImpls: [RoundImplementation!]! @derivedFrom(field: "houseImpl")
+}
+
+type RoundImplementation @entity {
+  "A concatenation of the house and round implementation contracts"
+  id: ID!
+
+  "The round type (TIMED)"
+  type: String!
+
+  "Whether the round is currently registered"
+  isRegistered: Boolean!
+
+  "The house implementation that the round is registered upon"
+  houseImpl: HouseImplementation!
+}
+
+type House @entity {
+  "The address of the house contract"
+  id: ID!
+
+  "The house type (COMMUNITY)"
+  type: String!
+
+  "The house metadata URI"
+  contractURI: String
+
+  "The house metadata (stored on IPFS)"
+  metadata: HouseMetadata
+
+  "The account who currently owns the house"
+  owner: Account
+
+  "The account who created the house"
+  creator: Account
+
+  "The unix timestamp when the house was created"
+  createdAt: BigInt!
+
+  "The creation transaction hash"
+  creationTxHash: Bytes!
+
+  "The number of rounds that have been created on the house"
+  roundCount: Int!
+
+  "All rounds on the house"
+  rounds: [Round!]! @derivedFrom(field: "house")
+
+  "All accounts who currently have permission to create rounds on the house (in addition to the owner)"
+  roundCreators: [RoundCreator!]! @derivedFrom(field: "house")
+}
+
+type HouseMetadata @entity {
+  "The IPFS content hash that contains the house metadata"
+  id: ID!
+
+  "The house name, pulled from the contract URI"
+  name: String!
+
+  "The house description, pulled from the contract URI"
+  description: String!
+
+  "The house image URI, pulled from the contract URI"
+  imageURI: String!
+}
+
+type Round @entity {
+  "The address of the round contract"
+  id: ID!
+
+  "The round type (TIMED)"
+  type: String!
+
+  "The round title"
+  title: String!
+
+  "The round description"
+  description: String!
+
+  "The round event state (States shared across all round types, triggered by events)"
+  eventState: RoundEventState!
+
+  "The house that the round belongs to"
+  house: House!
+
+  "The account who created the round"
+  creator: Account
+
+  "The unix timestamp when the round was created"
+  createdAt: BigInt!
+
+  "The creation transaction hash"
+  creationTxHash: Bytes!
+
+  "The round manager"
+  manager: Account
+
+  "Whether the round has been fully funded"
+  isFullyFunded: Boolean!
+
+  "The configuration for a timed round (Null if type != TIMED)"
+  timedConfig: TimedRoundConfig
+
+  "The selected proposing strategies"
+  proposingStrategies: [RoundProposingStrategy!]! @derivedFrom(field: "round")
+
+  "The selected voting strategies"
+  votingStrategies: [RoundVotingStrategy!]! @derivedFrom(field: "round")
+
+  "Up-to-date round balances"
+  balances: [Balance!]! @derivedFrom(field: "round")
+
+  "All round asset deposits"
+  deposits: [Deposit!]! @derivedFrom(field: "round")
+
+  "All round asset reclamations"
+  reclamations: [Reclaim!] @derivedFrom(field: "round")
+
+  "All round asset receipt transfers"
+  transfers: [Transfer!]! @derivedFrom(field: "round")
+
+  "All round award claims"
+  claims: [Claim!]! @derivedFrom(field: "round")
+}
+
+type Balance @entity {
+  "A concatenation of the round address and asset ID"
+  id: String!
+
+  "The asset information"
+  asset: Asset!
+
+  "The asset balance (base units)"
+  balance: BigInt!
+
+  "The round that holds the balance"
+  round: Round!
+
+  "The unix timestamp at which the balance was last updated"
+  updatedAt: BigInt!
+}
+
+type TimedRoundConfig @entity {
+  "A concatenation of the round address and '-config'"
+  id: ID!
+
+  "The round that the config belongs to"
+  round: Round!
+    
+  "The number of possible round winners"
+  winnerCount: Int!
+
+  "The minimum governance power required to propose"
+  proposalThreshold: BigInt!
+
+  "The timestamp at which the proposal period starts"
+  proposalPeriodStartTimestamp: BigInt!
+
+  "The timestamp at which the proposal period ends"
+  proposalPeriodEndTimestamp: BigInt!
+
+  "The proposal period duration in seconds"
+  proposalPeriodDuration: BigInt!
+
+  "The timestamp at which the vote period starts"
+  votePeriodStartTimestamp: BigInt!
+
+  "The timestamp at which the vote period ends"
+  votePeriodEndTimestamp: BigInt!
+
+  "The vote period duration in seconds"
+  votePeriodDuration: BigInt!
+
+  "The timestamp at which the claim period ends"
+  claimPeriodEndTimestamp: BigInt!
+  
+  "The unix timestamp when the round configuration was registered"
+  registeredAt: BigInt!
+
+  "The registration transaction hash"
+  registrationTx: Bytes!
+
+  "The awards offered in the round"
+  awards: [Award!]! @derivedFrom(field: "round")
+}
+
+type RoundCreator @entity {
+  "A concatenation of the house address and creator account id"
+  id: ID!
+
+  "The house that the creator belongs to"
+  house: House!
+
+  "The creator account"
+  creator: Account!
+
+  "The number of passes that the creator holds"
+  passCount: Int!
+}
+
+type RoundProposingStrategy @entity {
+  "A concatenation of the round address, strategy ID, and '-proposing'"
+  id: ID!
+
+  "The round that the voting strategy belongs to"
+  round: Round!
+
+  "The voting strategy"
+  strategy: GovPowerStrategy!
+}
+
+type RoundVotingStrategy @entity {
+  "A concatenation of the round address, strategy ID, and '-voting'"
+  id: ID!
+
+  "The round that the voting strategy belongs to"
+  round: Round!
+
+  "The voting strategy"
+  strategy: GovPowerStrategy!
+}
+
+type Account @entity {
+  "The account address"
+  id: ID!
+
+  "Houses owned by the account"
+  ownedHouses: [House!]! @derivedFrom(field: "owner")
+
+  "Houses on which the account can create rounds"
+  creatorOnHouses: [RoundCreator!]! @derivedFrom(field: "creator")
+
+  "Rounds created by the account"
+  createdRounds: [Round!]! @derivedFrom(field: "creator")
+
+  "Deposits made by the account"
+  deposits: [Deposit!]! @derivedFrom(field: "depositor")
+
+  "Reclamations made by the account"
+  reclamations: [Reclaim!]! @derivedFrom(field: "reclaimer")
+
+  "Outgoing asset receipt transfers involving the account"
+  outgoingTransfers: [Transfer!]! @derivedFrom(field: "from")
+
+  "Incoming asset receipt transfers involving the account"
+  incomingTransfers: [Transfer!]! @derivedFrom(field: "to")
+
+  "Claims made by the account"
+  claims: [Claim!]! @derivedFrom(field: "claimer")
+}
+
+type Deposit @entity(immutable: true) {
+  "A concatenation of the deposit tx hash and the the event log index"
+  id: String!
+
+  "The deposit transaction hash"
+  txHash: Bytes!
+
+  "The account who made the deposit"
+  depositor: Account!
+
+  "The unix timestamp when this deposit was performed"
+  depositedAt: BigInt!
+
+  "The asset that was deposited"
+  asset: Asset!
+
+  "The deposit amount"
+  amount: BigInt!
+
+  "The round that received the deposit"
+  round: Round!
+}
+
+type Reclaim @entity(immutable: true) {
+  "A concatenation of the reclamation tx hash and the the event log index"
+  id: String!
+
+  "The reclamation transaction hash"
+  txHash: Bytes!
+
+  "The account who reclaimed the asset"
+  reclaimer: Account!
+
+  "The unix timestamp when this reclamation was performed"
+  reclaimedAt: BigInt!
+
+  "The asset that was reclaimed"
+  asset: Asset!
+
+  "The reclamation amount"
+  amount: BigInt!
+
+  "The round that the asset was reclaimed from"
+  round: Round!
+}
+
+type Transfer @entity(immutable: true) {
+  "A concatenation of the transfer tx hash and the the event log index"
+  id: String!
+
+  "The transfer transaction hash"
+  txHash: Bytes!
+
+  "The account who sent the asset receipt token"
+  from: Account!
+
+  "The account who received the asset receipt token"
+  to: Account!
+
+  "The unix timestamp when this transfer was performed"
+  transferredAt: BigInt!
+
+  "The asset that was transferred"
+  asset: Asset!
+
+  "The transfer amount"
+  amount: BigInt!
+
+  "The round on which the underlying asset exists"
+  round: Round!
+}
+
+type GovPowerStrategy @entity {
+  "The governance power strategy ID (pedersen(address,params))"
+  id: ID!
+
+  "The governance power strategy type (UNKNOWN if it cannot be determined)"
+  type: GovPowerStrategyType!
+
+  "The governance power strategy Starknet address"
+  address: BigInt!
+
+  "The governance power strategy params"
+  params: [BigInt!]!
+
+  "Rounds that use this strategy for proposing"
+  proposingStrategyRounds: [RoundProposingStrategy!]! @derivedFrom(field: "strategy")
+
+  "Rounds that use this strategy for voting"
+  votingStrategyRounds: [RoundVotingStrategy!]! @derivedFrom(field: "strategy")
+}
+
+type Asset @entity {
+  "The asset ID (as defined in the `AssetController`)"
+  id: ID!
+
+  "The asset type (Native | ERC20 | ERC721 | ERC1155)"
+  assetType: AssetType!
+
+  "The token address (`0` if N/A)"
+  token: Bytes!
+
+  "The token ID (`0` if N/A)"
+  identifier: BigInt!
+}
+
+type Award @entity {
+  "A concatenation of the round address and award index"
+  id: ID!
+
+  "The asset information"
+  asset: Asset!
+
+  "The amount of the asset offered"
+  amount: BigInt!
+
+  "The configuration in which the awards exist"
+  round: TimedRoundConfig!
+}
+
+type Claim @entity {
+  "A concatenation of the claim tx hash and the the event log index"
+  id: ID!
+
+  "The claim transaction hash"
+  txHash: Bytes!
+
+  "The account who claimed the asset"
+  claimer: Account!
+
+  "The unix timestamp when this claim was performed"
+  claimedAt: BigInt!
+
+  "The recipient of the asset"
+  recipient: Bytes!
+
+  "The winning proposal ID"
+  proposalId: BigInt!
+
+  "The round on which the asset was claimed"
+  round: Round!
+
+  "The asset that was claimed"
+  asset: Asset!
+  
+  "The amount of the asset that was claimed"
+  amount: BigInt!
+}

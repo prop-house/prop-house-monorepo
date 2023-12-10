@@ -1,0 +1,9 @@
+# yarn
+node_modules
+
+# graph generated outputs
+generated
+build
+
+# docker
+data

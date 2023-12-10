@@ -11,7 +11,14 @@ export const resolveUri = async (uriData: string) => {
 
     return json.image;
   }
+  if (uriData.startsWith('https://')) {
+    const result = await fetch(uriData);
+    const json = await result.json();
 
+    if (json.image.startsWith('ipfs://')) return generateIpfsUri(json.image.split('ipfs://')[1]);
+
+    return json.image;
+  }
   if (uriData.startsWith('data:')) {
     const decodedUri = Buffer.from(uriData.split('base64,')[1], 'base64').toString('utf-8');
     return JSON.parse(decodedUri).image;
