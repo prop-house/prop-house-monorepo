@@ -1,7 +1,6 @@
 export const generateIpfsUri = (ipfsHash: string) => `https://ipfs.io/ipfs/${ipfsHash}`;
 
 export const resolveUri = async (uriData: string) => {
-  console.log('uriData', uriData);
   if (uriData.startsWith('ipfs://')) {
     const ipfsHash = uriData.split('ipfs://')[1];
     const ipfsUri = generateIpfsUri(ipfsHash);
