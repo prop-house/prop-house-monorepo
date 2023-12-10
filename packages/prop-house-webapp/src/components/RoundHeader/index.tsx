@@ -111,6 +111,7 @@ const RoundHeader: React.FC<{
           <div className={classes.awardsSubtitle}>Props with the most votes win awards.</div>
           <RoundAwardsDisplay
             round={round}
+            linkAwardsToEtherscan={true}
             breakout={isMobile()}
             slidesOffsetBefore={isMobile() ? 12 : 0}
             showNav={!isMobile()}
