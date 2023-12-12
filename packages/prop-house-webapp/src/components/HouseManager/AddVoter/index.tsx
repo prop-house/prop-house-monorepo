@@ -211,8 +211,12 @@ const AddVoter: React.FC<{
       return;
     } else {
       // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
-      const { name, image } = await getTokenInfo(voter.address, provider);
-      setVoter({ ...voter, state: 'success', name, image });
+      try {
+        const { name, image } = await getTokenInfo(voter.address, provider);
+        setVoter({ ...voter, state: 'success', name, image });
+      } catch (e) {
+        setVoter({ ...voter, state: 'success', name: 'undef', image: '/manager/fallback.png' });
+      }
     }
   };
 
