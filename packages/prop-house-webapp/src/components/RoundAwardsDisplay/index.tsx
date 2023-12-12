@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 import useAssetsWithMetadata, { AssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
 import buildEtherscanPath from '../../utils/buildEtherscanPath';
+import buildOpenSeaPath from '../../utils/buildOpenSeaPath';
 
 const RoundAwardsDisplay: React.FC<{
   round: Round;
@@ -16,7 +17,7 @@ const RoundAwardsDisplay: React.FC<{
   breakout?: boolean;
   hidePlace?: boolean;
   showNav?: boolean;
-  linkAwardsToEtherscan?: boolean;
+  openLinkOnAwardsClick?: boolean;
   slidesPerView?: number;
   spaceBetween?: number;
 }> = props => {
@@ -26,7 +27,7 @@ const RoundAwardsDisplay: React.FC<{
     hidePlace,
     slidesOffsetBefore,
     slidesOffsetAfter,
-    linkAwardsToEtherscan,
+    openLinkOnAwardsClick,
     showNav,
     slidesPerView,
     spaceBetween,
@@ -38,15 +39,18 @@ const RoundAwardsDisplay: React.FC<{
   );
 
   const renderAwardImage = (award: AssetWithMetadata, showFullImg: boolean | '' | undefined) => {
-    const address = (award as { address?: string }).address;
     const imgClass = clsx({ [classes.fullImg]: showFullImg });
 
-    return linkAwardsToEtherscan && address ? (
-      <a href={buildEtherscanPath(address)} target="_blank" rel="noopener noreferrer">
+    if (award.assetType === AssetType.ETH || !openLinkOnAwardsClick) {
+      return (<img src={award.tokenImg} alt="token logo" className={imgClass} />);
+    }
+
+    const { assetType, address } = award
+    const link = assetType === AssetType.ERC20 ? buildEtherscanPath(address) : buildOpenSeaPath(address, award.tokenId.toString());
+    return (
+      <a href={link} target="_blank" rel="noopener noreferrer">
         <img src={award.tokenImg} alt="token logo" className={imgClass} />
       </a>
-    ) : (
-      <img src={award.tokenImg} alt="token logo" className={imgClass} />
     );
   };
 
