@@ -35,7 +35,6 @@ const CreateProp: React.FC<{}> = () => {
 
   const round = useAppSelector(state => state.propHouse.activeRound);
   const house = useAppSelector(state => state.propHouse.activeHouse);
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const [showProposalSuccessModal, setShowProposalSuccessModal] = useState(false);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
@@ -50,27 +49,6 @@ const CreateProp: React.FC<{}> = () => {
 
   const onDataChange = (data: Partial<ProposalFields>) => {
     dispatch(patchProposal(data));
-  };
-
-  const sleep = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-  const trySyncProposalData = async (txHash: string, retries = 10): Promise<void> => {
-    try {
-      const proposal = await propHouse.query.getProposals({ where: { txHash } });
-      if (!proposal.length && retries > 0) {
-        await sleep(1_000);
-        return trySyncProposalData(txHash, retries - 1);
-      }
-    
-      if (proposal.length) {
-        const updatedProposals = (proposals ?? []).map(p => 
-          p.id === 0 ? { ...proposal[0], tldr: p.tldr } : p,
-        );
-        dispatch(setOnChainActiveProposals([...updatedProposals]));
-      }
-    } catch (error) {
-      await sleep(1_000);
-      return trySyncProposalData(txHash, retries - 1);
-    }
   };
 
   const submitProposal = async () => {
@@ -112,8 +90,6 @@ const CreateProp: React.FC<{}> = () => {
       dispatch(setOnChainActiveProposals([...state.proposals, newProp]));
       dispatch(clearProposal());
       setShowProposalSuccessModal(true);
-
-      trySyncProposalData(propResult.transaction_hash);
     } catch (e) {
       setShowLoadingModal(false);
       setShowProposalSuccessModal(false);
