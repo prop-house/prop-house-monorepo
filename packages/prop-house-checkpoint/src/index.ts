@@ -30,8 +30,7 @@ const checkpointOptions = {
 };
 
 const checkpoint = new Checkpoint(config, writers, schema, checkpointOptions);
-
-checkpoint.reset().then(() => checkpoint.start());
+checkpoint.start();
 
 const app = express();
 app.use(express.json({ limit: '4mb' }));
