@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Useful tools for interacting with the Prop House protocol",
   "author": "solimander",
   "homepage": "https://prop.house",
