@@ -15,6 +15,15 @@ export class ChainBase {
   protected readonly _addresses: ContractAddresses;
   protected readonly _starknet: StarknetRpcProvider;
   protected _evm: Signer | Provider;
+  protected _defaultProvider: JsonRpcProvider;
+
+  /**
+   * Default EVM provider URLs
+   */
+  public static readonly DEFAULT_EVM_RPC: Record<number, string> = {
+    [ChainId.EthereumMainnet]: 'https://mainnet.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
+    [ChainId.EthereumGoerli]: 'https://goerli.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
+  };
 
   /**
    * EVM to Starknet chain ID mappings
@@ -23,6 +32,16 @@ export class ChainBase {
     [ChainId.EthereumMainnet]: 'https://starknet-mainnet.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
     [ChainId.EthereumGoerli]: 'https://starknet-goerli.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
   };
+
+  /**
+   * A default EVM provider for the chain
+   */
+  public get defaultProvider() {
+    if (!this._defaultProvider) {
+      this._defaultProvider = new JsonRpcProvider(ChainBase.DEFAULT_EVM_RPC[this._evmChainId]);
+    }
+    return this._defaultProvider;
+  }
 
   /**
    * The EVM provider that was provided via the config
@@ -58,6 +77,7 @@ export class ChainBase {
     this._evmChainId = config.evmChainId;
     this._addresses = getContractAddressesForChainOrThrow(config.evmChainId);
     this._evm = this.toEVMSignerOrProvider(config.evm);
+    this._defaultProvider = new JsonRpcProvider(ChainBase.DEFAULT_EVM_RPC[config.evmChainId]);
     this._starknet = config.starknet instanceof StarknetRpcProvider ? config.starknet : new StarknetRpcProvider(config.starknet ?? {
       nodeUrl: ChainBase.EVM_TO_DEFAULT_STARKNET_RPC[config.evmChainId],
     });

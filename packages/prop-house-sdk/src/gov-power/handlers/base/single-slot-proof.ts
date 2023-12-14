@@ -15,7 +15,7 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
    * @param block The block number to prove
    */
   protected async fetchProofInputs(contractAddress: string, slotKey: string, block: number) {
-    const result = await this.provider.send('eth_getProof', [
+    const result = await this.defaultProvider.send('eth_getProof', [
       hexZeroPad(contractAddress, 20), // Contract Address
       [slotKey], // Storage Key
       `0x${block.toString(16)}`, // Block Number
