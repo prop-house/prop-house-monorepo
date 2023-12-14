@@ -33,9 +33,12 @@ const useVotingPower = (
 
       setLoadingVotingPower(true);
       try {
+        const timestamp = await propHouse.round.timed.getVotingPeriodSnapshotTimestamp(
+          await propHouse.query.getStarknetRoundAddress(round.address),
+        );
         const govPower = await propHouse.govPower.getTotalPower(
           account as string,
-          round.config.proposalPeriodStartTimestamp,
+          timestamp,
           round.votingStrategiesRaw,
         );
         setLoadingVotingPower(false);
@@ -49,6 +52,7 @@ const useVotingPower = (
       }
     };
     fetchVotingPower();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round, propHouse.govPower, account]);
 
   return [loadingVotingPower, errorLoadingVotingPower, votingPower];
