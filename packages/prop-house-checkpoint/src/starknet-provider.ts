@@ -61,6 +61,7 @@ export class StarknetProvider extends BaseProvider {
   }
 
   async processPool(blockNumber: number) {
+    this.log.info({ blockNumber }, 'processing pool');
     const txs = await this.provider.getPendingTransactions();
     const receipts = await Promise.all(
       txs.map(async tx => {
