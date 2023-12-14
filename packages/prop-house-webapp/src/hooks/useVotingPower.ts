@@ -35,7 +35,7 @@ const useVotingPower = (
       try {
         const govPower = await propHouse.govPower.getTotalPower(
           account as string,
-          round.config.proposalPeriodStartTimestamp,
+          round.config.proposalPeriodEndTimestamp,
           round.votingStrategiesRaw,
         );
         setLoadingVotingPower(false);
