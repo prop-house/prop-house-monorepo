@@ -33,12 +33,9 @@ const useVotingPower = (
 
       setLoadingVotingPower(true);
       try {
-        const timestamp = await propHouse.round.timed.getVotingPeriodSnapshotTimestamp(
-          await propHouse.query.getStarknetRoundAddress(round.address),
-        );
         const govPower = await propHouse.govPower.getTotalPower(
           account as string,
-          timestamp,
+          round.config.proposalPeriodEndTimestamp,
           round.votingStrategiesRaw,
         );
         setLoadingVotingPower(false);
