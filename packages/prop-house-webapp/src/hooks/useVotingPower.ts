@@ -49,7 +49,6 @@ const useVotingPower = (
       }
     };
     fetchVotingPower();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round, propHouse.govPower, account]);
 
   return [loadingVotingPower, errorLoadingVotingPower, votingPower];
