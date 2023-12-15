@@ -14,6 +14,6 @@ export const ROUND_OVERRIDES: Record<string, { state: Timed.RoundState, winners:
   // Purple
   '0xc6afa7d53c692ec7f997f2953af18dd449bfe1ed': {
     state: Timed.RoundState.COMPLETE,
-    winners: [2, 7, 3, 5, 1],
+    winners: [2, 7, 3, 5, 4],
   },
 };
