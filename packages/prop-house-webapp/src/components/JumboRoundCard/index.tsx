@@ -135,7 +135,7 @@ const JumboRoundCard: React.FC<{
           ? onClick
           : e => {
               if (cmdPlusClicked(e)) {
-                openInNewTab(`${window.location.href}/${round.address}`);
+                openInNewTab(`/${round.address}`);
                 return;
               }
               navigate(`/${round.address}`);
