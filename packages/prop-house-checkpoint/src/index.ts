@@ -21,7 +21,6 @@ if (process.env.NETWORK_NODE_URL) {
 const checkpointOptions = {
   logLevel: LogLevel.Info,
   prettifyLogs: process.env.NODE_ENV !== 'production',
-  resetOnConfigChange: true,
   abis: {
     EthereumRoundFactory: EthereumRoundFactoryABI,
     TimedRound: TimedRoundABI,
@@ -30,8 +29,7 @@ const checkpointOptions = {
 };
 
 const checkpoint = new Checkpoint(config, writers, schema, checkpointOptions);
-
-checkpoint.reset().then(() => checkpoint.start());
+checkpoint.start();
 
 const app = express();
 app.use(express.json({ limit: '4mb' }));
