@@ -1,5 +1,12 @@
 import classes from './JumboRoundCard.module.css';
-import { House, Proposal, Round, Timed, usePropHouse, Proposal_Order_By } from '@prophouse/sdk-react';
+import {
+  House,
+  Proposal,
+  Round,
+  Timed,
+  usePropHouse,
+  Proposal_Order_By,
+} from '@prophouse/sdk-react';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -20,6 +27,8 @@ import { BigNumber } from 'ethers';
 import clsx from 'clsx';
 import { useContentModeration, useIsHiddenRound } from '../../utils/supabaseModeration';
 import Button, { ButtonColor } from '../Button';
+import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
+import { openInNewTab } from '../../utils/openInNewTab';
 
 const JumboRoundCard: React.FC<{
   round: Round;
@@ -120,7 +129,19 @@ const JumboRoundCard: React.FC<{
   return isHidden === undefined || isHidden ? (
     <></>
   ) : (
-    <div onClick={onClick ? onClick : e => navigate(`/${round.address}`)}>
+    <div
+      onClick={
+        onClick
+          ? onClick
+          : e => {
+              if (cmdPlusClicked(e)) {
+                openInNewTab(`${window.location.href}/${round.address}`);
+                return;
+              }
+              navigate(`/${round.address}`);
+            }
+      }
+    >
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.twenty}
