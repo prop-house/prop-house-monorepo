@@ -1,7 +1,7 @@
 import { StoredProposalWithVotes, InfiniteAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sortTimedRoundProps } from '../../utils/sortTimedRoundProps';
-import { House, Round, Timed } from '@prophouse/sdk-react';
+import { House, Round } from '@prophouse/sdk-react';
 import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
 
