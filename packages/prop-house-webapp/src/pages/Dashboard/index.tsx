@@ -11,6 +11,7 @@ import Button, { ButtonColor } from '../../components/Button';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import HouseCard from '../../components/HouseCard';
 import JumboRoundCard from '../../components/JumboRoundCard';
+import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
 
 const Dashboard = () => {
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
@@ -45,7 +46,12 @@ const Dashboard = () => {
     const fetchRounds = async () => {
       try {
         setLoadingRounds(true);
-        const rounds = await propHouse.query.getRoundsWithHouseInfoManagedByAccount(account);
+        const rounds = (await propHouse.query.getRoundsWithHouseInfoManagedByAccount(account)).map(round => {
+          if (ROUND_OVERRIDES[round.address]) {
+            round.state = ROUND_OVERRIDES[round.address].state;
+          }
+          return round;
+        });
         setLoadingRounds(false);
         setRounds(rounds);
       } catch (e) {
