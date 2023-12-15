@@ -16,6 +16,7 @@ import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import ReactMarkdown from 'react-markdown';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
+import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
 
 const House: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -39,7 +40,12 @@ const House: React.FC<{}> = () => {
     const fetchRounds = async () => {
       setLoadingRounds(true);
       try {
-        const rounds = await propHouse.query.getRoundsForHouse(house.address);
+        const rounds = (await propHouse.query.getRoundsForHouse(house.address)).map(round => {
+          if (ROUND_OVERRIDES[round.address]) {
+            round.state = ROUND_OVERRIDES[round.address].state;
+          }
+          return round;
+        });
         setRounds(rounds);
 
         // Number of rounds under a certain status type in a House

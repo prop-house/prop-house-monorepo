@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { isMobile } from 'web3modal';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { fetchRoundsForFilter } from '../../utils/fetchRoundsForFilter';
+import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
 
 const RoundsFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -55,14 +56,19 @@ const RoundsFeed: React.FC<{}> = () => {
         setFetchingRounds(true);
         setFetchNewRounds(false);
 
-        const fetchedRounds = await fetchRoundsForFilter(
+        const fetchedRounds = (await fetchRoundsForFilter(
           propHouse,
           account,
           favorites,
           roundsFilter,
           pageIndex,
           6,
-        );
+        )).map(round => {
+          if (ROUND_OVERRIDES[round.address]) {
+            round.state = ROUND_OVERRIDES[round.address].state;
+          }
+          return round;
+        });
 
         setFetchingRounds(false);
 
