@@ -38,7 +38,7 @@ const TimedRoundProposalCard: React.FC<{
     round.state === Timed.RoundState.IN_VOTING_PERIOD;
 
   const roundEnded = round.config.votePeriodEndTimestamp < Date.now() / 1000;
-  const showVoteDisplay = round.state === Timed.RoundState.IN_VOTING_PERIOD;
+  const showVoteDisplay = round.state >= Timed.RoundState.IN_VOTING_PERIOD;
   const showVoteControls = showVoteDisplay && govPower > 0;
 
   const [imgUrlFromProp, setImgUrlFromProp] = useState<string | undefined>(undefined);
@@ -121,7 +121,11 @@ const TimedRoundProposalCard: React.FC<{
                 className={clsx(classes.date, roundIsActive && classes.hideDate)}
                 title={detailedTime(new Date(proposal.receivedAt))}
               >
-                <a href={getBlockExplorerURL(chainId, proposal.txHash)} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={getBlockExplorerURL(chainId, proposal.txHash)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {diffTime(new Date(proposal.receivedAt * 1000))}
                 </a>
               </div>
