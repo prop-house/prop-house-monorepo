@@ -11,7 +11,7 @@ const {
 
 export const CLASS_HASH_TO_ROUND_TYPE = {
   [classHashes.timed]: RoundType.TIMED,
-  '0x91fa917c9800be6c78603a53148e005b5482c5fb42350b775c2419031e34a2': RoundType.TIMED,
+  '0x683c91f8d7b069c41f6a81d9cad53b1814a9f2b9a15804c34a24a6acf798ada': RoundType.TIMED,
 };
 
 export const getRoundType = (hash: string) => {
