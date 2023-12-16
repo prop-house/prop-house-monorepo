@@ -3,7 +3,7 @@ import {
   Messenger__factory,
   CreatorPassIssuer__factory,
   PropHouse__factory,
-  StarkNetCommit__factory,
+  StarknetCommit__factory,
   CommunityHouse__factory,
   InfiniteRound__factory,
   TimedRound__factory,
@@ -146,7 +146,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const propHouseFactory = new PropHouse__factory(ethDeployer);
     const messengerFactory = new Messenger__factory(ethDeployer);
     const creatorPassIssuerFactory = new CreatorPassIssuer__factory(ethDeployer);
-    const starknetCommitFactory = new StarkNetCommit__factory(ethDeployer);
+    const starknetCommitFactory = new StarknetCommit__factory(ethDeployer);
     const communityHouseImplFactory = new CommunityHouse__factory(ethDeployer);
     const infiniteRoundImplFactory = new InfiniteRound__factory(ethDeployer);
     const timedRoundImplFactory = new TimedRound__factory(ethDeployer);

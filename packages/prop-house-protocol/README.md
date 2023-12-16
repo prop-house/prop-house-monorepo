@@ -166,7 +166,7 @@ This contract maps timestamps to block numbers by reading from the storage proof
 
 #### [RoundDependencyRegistry](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/starknet/src/common/libraries/round_dependency.cairo)
 
-This contract stores immutable dependencies, like authentication or execution strategies, for rounds. It uses a combination of the origin chain ID and round type for the depdendency key, which allows Starknet rounds to service many origin chains.
+This contract stores immutable dependencies, like authentication or execution strategies, for rounds. It uses a combination of the origin chain ID and round type for the dependency key, which allows Starknet rounds to service many origin chains.
 
 Rounds can only read dependencies from this contract if they have been permanently locked. This ensures that a malicious owner cannot add a backdoor to an existing strategy.
 
