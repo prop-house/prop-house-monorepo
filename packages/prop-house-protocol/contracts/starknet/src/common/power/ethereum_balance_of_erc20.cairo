@@ -1,5 +1,5 @@
 #[starknet::contract]
-mod EthereumBalanceOfGovernancePowerStrategy {
+mod EthereumBalanceOfERC20GovernancePowerStrategy {
     use starknet::ContractAddress;
     use prop_house::common::utils::storage::get_slot_key;
     use prop_house::common::utils::traits::IGovernancePowerStrategy;
@@ -18,7 +18,7 @@ mod EthereumBalanceOfGovernancePowerStrategy {
     }
 
     #[external(v0)]
-    impl EthereumBalanceOfGovernancePowerStrategy of IGovernancePowerStrategy<ContractState> {
+    impl EthereumBalanceOfERC20GovernancePowerStrategy of IGovernancePowerStrategy<ContractState> {
         /// Returns the governance power of the user at the given timestamp.
         /// * `timestamp` - The timestamp at which to get the governance power.
         /// * `user` - The address of the user.
@@ -30,7 +30,7 @@ mod EthereumBalanceOfGovernancePowerStrategy {
             let params_len = params.len();
 
             // Expects contract_address and slot_index, with an optional governance_power_multiplier
-            assert(params_len == 2 || params_len == 3, 'EthBO: Bad param length');
+            assert(params_len == 2 || params_len == 3, 'EthBO20: Bad param length');
 
             let contract_address = *params.at(0);
             let slot_index = *params.at(1);
@@ -40,14 +40,14 @@ mod EthereumBalanceOfGovernancePowerStrategy {
             let governance_power = SingleSlotProof::get_slot_value(
                 @SingleSlotProof::unsafe_new_contract_state(), timestamp, contract_address, valid_slot, params, user_params
             );
-            assert(governance_power.is_non_zero(), 'EthBO: No governance power');
+            assert(governance_power.is_non_zero(), 'EthBO20: No governance power');
 
             if params_len == 2 {
                 return governance_power;
             }
 
             let governance_power_multiplier = *params.at(2);
-            assert(governance_power_multiplier.is_non_zero(), 'EthBO: Invalid multiplier');
+            assert(governance_power_multiplier.is_non_zero(), 'EthBO20: Invalid multiplier');
 
             governance_power * governance_power_multiplier.into()
         }
