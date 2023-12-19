@@ -989,6 +989,7 @@ export class QueryWrapper {
       round: proposal.round.sourceChainRound,
       metadataURI: proposal.metadataUri,
       title: proposal.title,
+      tldr: proposal.tldr,
       body: proposal.body,
       isCancelled: proposal.isCancelled,
       isWinner: proposal.isWinner,

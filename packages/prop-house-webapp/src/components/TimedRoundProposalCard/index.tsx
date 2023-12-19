@@ -13,16 +13,15 @@ import { useEffect, useState } from 'react';
 import { isMobile } from 'web3modal';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { replaceIpfsGateway } from '../../utils/ipfs';
-import { Round, Timed } from '@prophouse/sdk-react';
+import { Proposal, Round, Timed } from '@prophouse/sdk-react';
 import { useAppSelector } from '../../hooks';
 import ProposalCardClaimAwardBar from '../ProposalCardClaimAwardBar';
 import { getBlockExplorerURL } from '../../utils/getBlockExplorerUrl';
 import { useAccount, useChainId } from 'wagmi';
-import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 import Button, { ButtonColor } from '../Button';
 
 const TimedRoundProposalCard: React.FC<{
-  proposal: ProposalWithTldr;
+  proposal: Proposal;
   round: Round;
   mod?: boolean;
   hideProp?: (propId: number) => void;
