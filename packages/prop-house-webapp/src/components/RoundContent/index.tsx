@@ -3,17 +3,16 @@ import { useState } from 'react';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import { Row, Col } from 'react-bootstrap';
-import { House, Round, RoundType, Timed } from '@prophouse/sdk-react';
+import { House, Proposal, Round, RoundType, Timed } from '@prophouse/sdk-react';
 import TimedRoundProposalCard from '../TimedRoundProposalCard';
 import TimedRoundModules from '../TimedRoundModules';
 import InfRoundModules from '../InfRoundModules';
-import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 import { useContentModeration, useHiddenPropIds } from '../../utils/supabaseModeration';
 
 const RoundContent: React.FC<{
   round: Round;
   house: House;
-  proposals: ProposalWithTldr[];
+  proposals: Proposal[];
 }> = props => {
   const { round, proposals, house } = props;
 

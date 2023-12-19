@@ -35,6 +35,7 @@ export const ManyProposalsQuery = graphql(`
       }
       metadataUri
       title
+      tldr
       body
       isCancelled
       isWinner
@@ -58,6 +59,7 @@ export const ProposalQuery = graphql(`
       }
       metadataUri
       title
+      tldr
       body
       isCancelled
       isWinner

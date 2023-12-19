@@ -16,10 +16,9 @@ import changeFileExtension from '../../utils/changeFileExtension';
 import getInvalidFileTypeMessage from '../../utils/getInvalidFileTypeMessage';
 import { Proposal } from '@prophouse/sdk-react';
 import { setModalActive } from '../../state/slices/propHouse';
-import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 
 interface ProposalHeaderAndBodyProps {
-  currentProposal: ProposalWithTldr;
+  currentProposal: Proposal;
   currentPropIndex: number;
   handleDirectionalArrowClick: any;
 

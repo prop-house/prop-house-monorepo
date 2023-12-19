@@ -1,4 +1,4 @@
-import { ProposalWithTldr } from '../types/ProposalWithTldr';
+import { Proposal } from '@prophouse/sdk-react';
 
 export interface ProposalFields {
   title: string;
@@ -6,7 +6,7 @@ export interface ProposalFields {
   tldr: string;
 }
 
-const proposalFields = (proposal: ProposalWithTldr): ProposalFields => {
+const proposalFields = (proposal: Proposal): ProposalFields => {
   return {
     title: proposal.title,
     what: proposal.body,
