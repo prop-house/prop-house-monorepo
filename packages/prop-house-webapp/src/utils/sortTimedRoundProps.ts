@@ -1,13 +1,13 @@
 import { TimedRoundSortProps, TimedRoundSortType } from '../state/slices/propHouse';
 import { sortByVotesAndHandleTies } from './sortByVotesAndHandleTies';
+import { Proposal } from '@prophouse/sdk-react';
 import dayjs from 'dayjs';
 import { sortHelper } from './sortHelper';
-import { ProposalWithTldr } from '../types/ProposalWithTldr';
 
 export const sortTimedRoundProps = (
-  proposals: ProposalWithTldr[],
+  proposals: Proposal[],
   props: TimedRoundSortProps,
-): ProposalWithTldr[] => {
+): Proposal[] => {
   switch (props.sortType) {
     case TimedRoundSortType.VoteCount:
       return sortByVotesAndHandleTies(proposals, props.ascending);

@@ -127,6 +127,7 @@ export interface Proposal {
   round: string;
   metadataURI: string;
   title: string;
+  tldr: string;
   body: string;
   isCancelled: boolean;
   isWinner: boolean;

@@ -7,10 +7,10 @@ import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
 import { replaceIpfsGateway } from '../../utils/ipfs';
-import { ProposalWithTldr } from '../../types/ProposalWithTldr';
+import { Proposal } from '@prophouse/sdk-react';
 
 export interface RenderedProposalProps {
-  proposal: ProposalWithTldr;
+  proposal: Proposal;
   backButton?: React.ReactNode;
 }
 
