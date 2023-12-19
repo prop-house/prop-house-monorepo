@@ -21,16 +21,16 @@ export class ChainBase {
    * Default EVM provider URLs
    */
   public static readonly DEFAULT_EVM_RPC: Record<number, string> = {
-    [ChainId.EthereumMainnet]: 'https://mainnet.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
-    [ChainId.EthereumGoerli]: 'https://goerli.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
+    [ChainId.EthereumMainnet]: 'https://mainnet.infura.io/v3/0ad93f38d5e048a19b715f15c3bbaf5e',
+    [ChainId.EthereumGoerli]: 'https://goerli.infura.io/v3/0ad93f38d5e048a19b715f15c3bbaf5e',
   };
 
   /**
    * EVM to Starknet chain ID mappings
    */
   public static readonly EVM_TO_DEFAULT_STARKNET_RPC: Record<number, string> = {
-    [ChainId.EthereumMainnet]: 'https://starknet-mainnet.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
-    [ChainId.EthereumGoerli]: 'https://starknet-goerli.infura.io/v3/af46545d4e8e42b28538eecfca42ba2c',
+    [ChainId.EthereumMainnet]: 'https://starknet-mainnet.infura.io/v3/054a6e9257a94a9d91cdcbbdf3f7c1c6',
+    [ChainId.EthereumGoerli]: 'https://starknet-goerli.infura.io/v3/054a6e9257a94a9d91cdcbbdf3f7c1c6',
   };
 
   /**
