@@ -2,19 +2,24 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
   width: 100%;
+  margin-top: 5rem;
 }
 .invalidAddressCard img {
   width: auto;
   border-radius: 25px;
   height: 15rem;
+  margin-right: 10rem;
 }
 .textContainer {
-  text-align: center;
+  text-align: left;
 }
 .textContainer p {
   margin-top: 1rem;
+}
+.textContainer button {
+  margin: 16px 12px 12px 0;
 }
 
 @media (max-width: 1200px) {
@@ -23,5 +28,19 @@
   }
   .invalidAddressCard img {
     margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .invalidAddressCard {
+    margin-top: 0;
+  }
+  .imgContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .imgContainer img {
+    margin-right: 0;
   }
 }

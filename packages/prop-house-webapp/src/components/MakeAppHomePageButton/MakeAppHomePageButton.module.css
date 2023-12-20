@@ -29,3 +29,10 @@
   opacity: 0.5;
   cursor: pointer;
 }
+
+@media (max-width: 767px) {
+  .container {
+    margin: 12px auto;
+    width: fit-content;
+  }
+}
