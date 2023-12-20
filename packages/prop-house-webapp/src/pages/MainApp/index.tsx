@@ -79,6 +79,7 @@ const MainApp = () => {
           <Col>
             <Tabs defaultActiveKey="rounds" className={classes.tabs}>
               <Tab eventKey="rounds" title="Rounds">
+                {isMobile() && showMakeAppHomePage === null && <MakeAppHomePageButton />}
                 <RoundsFeed />
               </Tab>
               <Tab eventKey="activity" title="Activity">

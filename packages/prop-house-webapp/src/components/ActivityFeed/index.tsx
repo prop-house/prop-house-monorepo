@@ -1,17 +1,27 @@
 import classes from './ActivityFeed.module.css';
-import { OrderDirection, Proposal, Vote, usePropHouse, Vote_Order_By, Proposal_Order_By } from '@prophouse/sdk-react';
+import {
+  OrderDirection,
+  Proposal,
+  Vote,
+  usePropHouse,
+  Vote_Order_By,
+  Proposal_Order_By,
+} from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import EthAddress from '../EthAddress';
 import { timeFromNow } from '../../utils/timeFromNow';
 import { useNavigate } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
+import { lumpVotes } from '../../utils/lumpVotes';
+
+type ActivityItem = Proposal | Vote;
 
 const ActivityFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
   const navigate = useNavigate();
 
-  const [activity, setActivity] = useState<(Proposal | Vote)[]>();
+  const [activity, setActivity] = useState<ActivityItem[]>();
   const [fetchMoreActivity, setFetchMoreActivity] = useState(true);
   const [votesPageIndex, setVotesPageIndex] = useState(1);
   const [propsPageIndex, setPropsPageIndex] = useState(1);
@@ -25,11 +35,13 @@ const ActivityFeed: React.FC<{}> = () => {
       try {
         setFetchMoreActivity(false);
 
-        const votes = await propHouse.query.getVotes({
-          page: votesPageIndex,
-          orderBy: Vote_Order_By.ReceivedAt,
-          orderDirection: OrderDirection.Desc,
-        });
+        const votes = lumpVotes(
+          await propHouse.query.getVotes({
+            page: votesPageIndex,
+            orderBy: Vote_Order_By.ReceivedAt,
+            orderDirection: OrderDirection.Desc,
+          }),
+        );
 
         votes.length === 0 ? setEndOfVotes(true) : setVotesPageIndex(prev => prev + 1);
 

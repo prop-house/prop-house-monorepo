@@ -46,12 +46,14 @@ const Dashboard = () => {
     const fetchRounds = async () => {
       try {
         setLoadingRounds(true);
-        const rounds = (await propHouse.query.getRoundsWithHouseInfoManagedByAccount(account)).map(round => {
-          if (ROUND_OVERRIDES[round.address]) {
-            round.state = ROUND_OVERRIDES[round.address].state;
-          }
-          return round;
-        });
+        const rounds = (await propHouse.query.getRoundsWithHouseInfoManagedByAccount(account)).map(
+          round => {
+            if (ROUND_OVERRIDES[round.address]) {
+              round.state = ROUND_OVERRIDES[round.address].state;
+            }
+            return round;
+          },
+        );
         setLoadingRounds(false);
         setRounds(rounds);
       } catch (e) {
@@ -108,7 +110,7 @@ const Dashboard = () => {
             ) : (
               houses &&
               houses.map(house => (
-                <Col lg={3}>
+                <Col xs={6} lg={3}>
                   <HouseCard house={house} pathTo="manager" />
                 </Col>
               ))
