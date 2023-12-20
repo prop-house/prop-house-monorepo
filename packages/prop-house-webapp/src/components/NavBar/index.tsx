@@ -52,7 +52,7 @@ const NavBar = () => {
               </Nav.Link>
               <Nav.Link>
                 <Button
-                  text={<IoSettingsSharp />}
+                  text={isMobile() ? 'Dashboard' : <IoSettingsSharp />}
                   bgColor={ButtonColor.White}
                   classNames={classes.createRoundBtn}
                   onClick={() => navigate('/dashboard')}
