@@ -15,7 +15,7 @@ const NotFound = () => {
           />
         </Col>
         <Col className={classes.textContainer}>
-          <h1>Seems we're lost</h1>
+          <h1>Lost in the interwebs</h1>
           <p>
             The page you're looking for does not exist. If you are here due to an old link, please
             visit the offchain version of Prop House to explore old rounds. Otherwise, please go
