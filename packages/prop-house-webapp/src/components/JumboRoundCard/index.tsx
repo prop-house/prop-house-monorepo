@@ -66,6 +66,10 @@ const JumboRoundCard: React.FC<{
     : round.config.votePeriodEndTimestamp;
 
   useEffect(() => {
+    refresh();
+  }, [round.address, refresh]);
+
+  useEffect(() => {
     if (numVotes && (!voting || !ended)) return;
     const fetchVotes = async () => {
       try {

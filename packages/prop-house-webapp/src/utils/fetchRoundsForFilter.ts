@@ -1,11 +1,11 @@
-import { Round_OrderBy } from '@prophouse/sdk-react';
+import { OrderDirection, Round_OrderBy } from '@prophouse/sdk-react';
 import { RoundsFilter } from '../hooks/useRoundsFilter';
 import { PropHouse, RoundWithHouse, Timed } from '@prophouse/sdk-react';
 
 enum RoundEventState {
   Cancelled = 'CANCELLED',
   Created = 'CREATED',
-  Finalized = 'FINALIZED'
+  Finalized = 'FINALIZED',
 }
 
 export const fetchRoundsForFilter = async (
@@ -23,7 +23,7 @@ export const fetchRoundsForFilter = async (
 
   const now = Math.round(new Date().getTime() / 1000);
 
-  const defaultQuery = propHouse.query.getRoundsWithHouseInfo({
+  const activeQuery = propHouse.query.getRoundsWithHouseInfo({
     ...queryParams,
     where: {
       eventState_not: RoundEventState.Cancelled,
@@ -36,11 +36,45 @@ export const fetchRoundsForFilter = async (
         balance_gt: 0,
       },
     },
+    orderBy: Round_OrderBy.TimedConfigProposalPeriodEndTimestamp,
+    orderDirection: OrderDirection.Asc,
+  });
+
+  const proposingQuery = propHouse.query.getRoundsWithHouseInfo({
+    ...queryParams,
+    where: {
+      eventState_not: RoundEventState.Cancelled,
+      timedConfig_: {
+        proposalPeriodEndTimestamp_gte: now,
+        proposalPeriodStartTimestamp_lte: now,
+      },
+      balances_: {
+        balance_gt: 0,
+      },
+    },
+    orderBy: Round_OrderBy.TimedConfigProposalPeriodEndTimestamp,
+    orderDirection: OrderDirection.Asc,
+  });
+
+  const votingQuery = propHouse.query.getRoundsWithHouseInfo({
+    ...queryParams,
+    where: {
+      eventState_not: RoundEventState.Cancelled,
+      timedConfig_: {
+        votePeriodEndTimestamp_gte: now,
+        votePeriodStartTimestamp_lte: now,
+      },
+      balances_: {
+        balance_gt: 0,
+      },
+    },
+    orderBy: Round_OrderBy.TimedConfigProposalPeriodEndTimestamp,
+    orderDirection: OrderDirection.Asc,
   });
 
   const query =
     filter === RoundsFilter.Active // active
-      ? defaultQuery
+      ? activeQuery
       : filter === RoundsFilter.Favorites // favorites
       ? propHouse.query.getRoundsWithHouseInfo({
           ...queryParams,
@@ -50,15 +84,17 @@ export const fetchRoundsForFilter = async (
         })
       : filter === RoundsFilter.Relevant && account // relevant + account is connected
       ? propHouse.query.getRoundsWithHouseInfoRelevantToAccount(account, queryParams)
-      : filter === RoundsFilter.Recent
-      ? propHouse.query.getRoundsWithHouseInfo({ ...queryParams, orderBy: Round_OrderBy.CreatedAt })
+      : filter === RoundsFilter.Proposing
+      ? proposingQuery
+      : filter === RoundsFilter.Voting
+      ? votingQuery
       : null; // relevant but account is not connected
 
   if (!query) return [];
 
   let rounds;
   const queryRounds = await query;
-  rounds = queryRounds.length === 0 ? await defaultQuery : queryRounds;
+  rounds = queryRounds.length === 0 ? await activeQuery : queryRounds;
 
   return rounds.filter(
     r => !(r.isFullyFunded === false && r.state === Timed.RoundState.IN_VOTING_PERIOD),
