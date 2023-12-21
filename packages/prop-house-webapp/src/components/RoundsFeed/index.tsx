@@ -66,7 +66,7 @@ const RoundsFeed: React.FC<{}> = () => {
     });
     setRoundsWereSorted(true);
     setRounds(sorted);
-  });
+  }, [rounds, featuredRoundAddresses, roundsWereSorted, roundsFilter]);
 
   useEffect(() => {
     if (!fetchNewRounds) return;

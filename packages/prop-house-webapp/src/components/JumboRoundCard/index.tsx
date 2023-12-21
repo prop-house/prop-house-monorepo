@@ -67,7 +67,7 @@ const JumboRoundCard: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [round.address]);
+  }, [round.address, refresh]);
 
   useEffect(() => {
     if (numVotes && (!voting || !ended)) return;
