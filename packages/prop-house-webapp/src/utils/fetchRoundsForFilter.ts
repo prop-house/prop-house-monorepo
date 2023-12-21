@@ -1,11 +1,11 @@
-import { Round_OrderBy } from '@prophouse/sdk-react';
+import { OrderDirection, Round_OrderBy } from '@prophouse/sdk-react';
 import { RoundsFilter } from '../hooks/useRoundsFilter';
 import { PropHouse, RoundWithHouse, Timed } from '@prophouse/sdk-react';
 
 enum RoundEventState {
   Cancelled = 'CANCELLED',
   Created = 'CREATED',
-  Finalized = 'FINALIZED'
+  Finalized = 'FINALIZED',
 }
 
 export const fetchRoundsForFilter = async (
@@ -36,6 +36,8 @@ export const fetchRoundsForFilter = async (
         balance_gt: 0,
       },
     },
+    orderBy: Round_OrderBy.TimedConfigProposalPeriodEndTimestamp,
+    orderDirection: OrderDirection.Asc,
   });
 
   const query =
