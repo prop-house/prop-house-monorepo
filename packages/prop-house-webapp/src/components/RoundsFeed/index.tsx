@@ -133,7 +133,8 @@ const RoundsFeed: React.FC<{}> = () => {
           <Dropdown.Menu className={classes.dropdownMenu}>
             {[
               RoundsFilter.Active,
-              RoundsFilter.Recent,
+              RoundsFilter.Proposing,
+              RoundsFilter.Voting,
               RoundsFilter.Favorites,
               RoundsFilter.Relevant,
             ].map((filter, i) => (
