@@ -14,9 +14,8 @@ import { Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import RoundCard from '../../components/RoundCard';
 import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
-import ReactMarkdown from 'react-markdown';
-import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
+import { removeHtmlFromString } from '../../utils/removeHtmlFromString';
 
 const House: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -109,9 +108,7 @@ const House: React.FC<{}> = () => {
       {house && (
         <OpenGraphElements
           title={house && house.name ? house.name : ''}
-          description={markdownComponentToPlainText(
-            <ReactMarkdown children={house?.description ?? ''} />,
-          )}
+          description={removeHtmlFromString(house.description ?? '')}
           imageUrl={cardServiceUrl(CardType.house, house.address).href}
         />
       )}
