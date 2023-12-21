@@ -16,6 +16,7 @@ import { isMobile } from 'web3modal';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { fetchRoundsForFilter } from '../../utils/fetchRoundsForFilter';
 import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
+import { useFeaturedRounds } from '../../utils/supabaseModeration';
 
 const RoundsFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -29,6 +30,7 @@ const RoundsFeed: React.FC<{}> = () => {
   const { openConnectModal } = useConnectModal();
   const favorites = getFavoriteCommunities();
   const { roundsFilter, updateRoundsFilter } = useRoundsFilter();
+  const { featuredRoundAddresses } = useFeaturedRounds();
 
   const [rounds, setRounds] = useState<RoundWithHouse[] | undefined>();
   const [fetchingRounds, setFetchingRounds] = useState(true);
@@ -36,6 +38,7 @@ const RoundsFeed: React.FC<{}> = () => {
   const [noMoreRounds, setNoMoreRounds] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
   const [newFilter, setNewFilter] = useState<boolean>();
+  const [roundsWereSorted, setRoundsWereSorted] = useState(false);
 
   const handleFilterChange = (filter: RoundsFilter) => {
     const isNewFilter = roundsFilter !== filter;
@@ -47,6 +50,23 @@ const RoundsFeed: React.FC<{}> = () => {
     setFetchNewRounds(true);
     setRounds(undefined);
   };
+
+  useEffect(() => {
+    if (
+      !rounds ||
+      !featuredRoundAddresses ||
+      roundsWereSorted ||
+      roundsFilter !== RoundsFilter.Active
+    )
+      return;
+    const sorted = [...rounds].sort((a, b) => {
+      if (featuredRoundAddresses.includes(a.address)) return -1;
+      if (featuredRoundAddresses.includes(b.address)) return 1;
+      return 0;
+    });
+    setRoundsWereSorted(true);
+    setRounds(sorted);
+  });
 
   useEffect(() => {
     if (!fetchNewRounds) return;
