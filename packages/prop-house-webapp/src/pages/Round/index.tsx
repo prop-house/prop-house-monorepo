@@ -8,12 +8,11 @@ import { usePropHouse } from '@prophouse/sdk-react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import ProposalModal from '../../components/ProposalModal';
 import OpenGraphElements from '../../components/OpenGraphElements';
-import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
-import ReactMarkdown from 'react-markdown';
 import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
 import { setVoteAllotments } from '../../state/slices/voting';
+import { removeHtmlFromString } from '../../utils/removeHtmlFromString';
 
 const Round: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -58,7 +57,7 @@ const Round: React.FC<{}> = () => {
       {round && (
         <OpenGraphElements
           title={round.title}
-          description={markdownComponentToPlainText(<ReactMarkdown children={round.description} />)}
+          description={removeHtmlFromString(round.description)}
           imageUrl={cardServiceUrl(CardType.round, round.address).href}
         />
       )}
