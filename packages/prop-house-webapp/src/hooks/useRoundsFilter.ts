@@ -11,6 +11,7 @@ const DEFAULT_FILTER = RoundsFilter.Recent;
 
 const getFilter = (): RoundsFilter => {
   const filter = localStorage.getItem('filter');
+  if (filter === 'Active') localStorage.setItem('filter', 'Recent'); // removing old filter default
   return filter ? (filter as RoundsFilter) : DEFAULT_FILTER;
 };
 
