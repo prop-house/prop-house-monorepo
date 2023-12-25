@@ -160,7 +160,7 @@
   "title": "Title",
   "titlePlaceholder": "Give your proposal a name",
   "tldrPlaceholder": "In the simplest language possible, explain your proposal in one sentence",
-  "descriptionPlaceholder": "What: is your project?\nWho: is on the team?\nWhen: will it be completed?\nHow: will it have impact?",
+  "descriptionPlaceholder": "Expand on your proposal. Tell us anything you think would help voters vote for your proposal (p.s. visuals always help)!",
   "titleError": "Title must be 5 characters minimum",
   "tldrError": "TLDR must be between 10 & 120 characters",
   "descriptionError": "Description must be 50 characters minimum",
