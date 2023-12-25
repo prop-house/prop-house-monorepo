@@ -116,7 +116,7 @@ const VotingStrategiesDisplay: React.FC<{
     <div onClick={() => setShowModal(true)}>
       {formattedContent(
         <>
-          Owners of multiple tokens can vote. <span>See who can vote ↗</span>
+          <span>See who can vote ↗</span>
         </>,
       )}
     </div>
