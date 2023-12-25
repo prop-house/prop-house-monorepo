@@ -19,8 +19,8 @@ const Home = () => {
           <Col lg={8}>
             <div className={classes.title}>Prop House</div>
             <p className={classes.subtitle}>
-              A simple and fun way to award builders. Set up a round, tell the internet and watch
-              magic happen.
+              A simple and fun way to award people onchain. Set up a round, tell the internet and
+              watch magic happen.
             </p>
             <div className={classes.btnContainer}>
               <Button
