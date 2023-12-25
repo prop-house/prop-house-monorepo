@@ -8,36 +8,6 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_KEY!,
 );
 
-export const useFeaturedRounds = () => {
-  const [featuredRoundAddresses, setFeaturedRoundAddresses] = useState<string[] | undefined>();
-  const [shouldFetch, setShouldFetch] = useState(true);
-
-  useEffect(() => {
-    if (!shouldFetch) return;
-
-    const fetchFeaturedRounds = async () => {
-      setShouldFetch(false);
-      try {
-        const { data: rounds } = await supabase.from('featured-rounds').select();
-
-        if (!rounds) return;
-
-        setFeaturedRoundAddresses(rounds.map(r => r.address));
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-    fetchFeaturedRounds();
-  }, [featuredRoundAddresses, shouldFetch]);
-
-  const refresh = () => {
-    setShouldFetch(true);
-  };
-
-  return { featuredRoundAddresses, refresh };
-};
-
 export const useHiddenPropIds = (roundAddress: string) => {
   const [hiddenPropIds, setHiddenPropIds] = useState<number[] | undefined>();
   const [shouldFetch, setShouldFetch] = useState(true);

@@ -1,5 +1,5 @@
 import classes from './RoundsFeed.module.css';
-import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
+import { RoundWithHouse, Timed, usePropHouse } from '@prophouse/sdk-react';
 import React, { useEffect, useState } from 'react';
 import { Col, Dropdown, Row } from 'react-bootstrap';
 import JumboRoundCard from '../JumboRoundCard';
@@ -10,13 +10,10 @@ import { getFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { RoundsFilter, useRoundsFilter } from '../../hooks/useRoundsFilter';
 import { GiSurprisedSkull } from 'react-icons/gi';
 import { FaRegSurprise } from 'react-icons/fa';
-import { TbPlugConnected } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
 import { isMobile } from 'web3modal';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { fetchRoundsForFilter } from '../../utils/fetchRoundsForFilter';
 import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
-import { useFeaturedRounds } from '../../utils/supabaseModeration';
 
 const RoundsFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -27,10 +24,9 @@ const RoundsFeed: React.FC<{}> = () => {
     },
   });
   const navigate = useNavigate();
-  const { openConnectModal } = useConnectModal();
+
   const favorites = getFavoriteCommunities();
   const { roundsFilter, updateRoundsFilter } = useRoundsFilter();
-  const { featuredRoundAddresses } = useFeaturedRounds();
 
   const [rounds, setRounds] = useState<RoundWithHouse[] | undefined>();
   const [fetchingRounds, setFetchingRounds] = useState(true);
@@ -38,7 +34,6 @@ const RoundsFeed: React.FC<{}> = () => {
   const [noMoreRounds, setNoMoreRounds] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
   const [newFilter, setNewFilter] = useState<boolean>();
-  const [roundsWereSorted, setRoundsWereSorted] = useState(false);
 
   const handleFilterChange = (filter: RoundsFilter) => {
     const isNewFilter = roundsFilter !== filter;
@@ -52,23 +47,6 @@ const RoundsFeed: React.FC<{}> = () => {
   };
 
   useEffect(() => {
-    if (
-      !rounds ||
-      !featuredRoundAddresses ||
-      roundsWereSorted ||
-      roundsFilter !== RoundsFilter.Active
-    )
-      return;
-    const sorted = [...rounds].sort((a, b) => {
-      if (featuredRoundAddresses.includes(a.address)) return -1;
-      if (featuredRoundAddresses.includes(b.address)) return 1;
-      return 0;
-    });
-    setRoundsWereSorted(true);
-    setRounds(sorted);
-  }, [rounds, featuredRoundAddresses, roundsWereSorted, roundsFilter]);
-
-  useEffect(() => {
     if (!fetchNewRounds) return;
 
     const _fetchRounds = async () => {
@@ -77,13 +55,25 @@ const RoundsFeed: React.FC<{}> = () => {
         setFetchNewRounds(false);
 
         const fetchedRounds = (
-          await fetchRoundsForFilter(propHouse, account, favorites, roundsFilter, pageIndex, 6)
+          await fetchRoundsForFilter(propHouse, account, favorites, roundsFilter, pageIndex, 10)
         ).map(round => {
           if (ROUND_OVERRIDES[round.address]) {
             round.state = ROUND_OVERRIDES[round.address].state;
           }
           return round;
         });
+
+        const active = fetchedRounds.filter(
+          round =>
+            round.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
+            round.state === Timed.RoundState.IN_VOTING_PERIOD,
+        );
+        const inactive = fetchedRounds.filter(
+          round =>
+            round.state !== Timed.RoundState.IN_PROPOSING_PERIOD &&
+            round.state !== Timed.RoundState.IN_VOTING_PERIOD,
+        );
+        const sortedRounds = [...active, ...inactive];
 
         setFetchingRounds(false);
 
@@ -93,12 +83,12 @@ const RoundsFeed: React.FC<{}> = () => {
         }
 
         if (newFilter) {
-          setRounds(fetchedRounds);
+          setRounds(sortedRounds);
         } else {
           setPageIndex(prev => prev + 1);
           setRounds(prev => {
-            if (prev) return [...prev, ...fetchedRounds];
-            return fetchedRounds;
+            if (prev) return [...prev, ...sortedRounds];
+            return sortedRounds;
           });
         }
       } catch (e) {
@@ -132,11 +122,10 @@ const RoundsFeed: React.FC<{}> = () => {
 
           <Dropdown.Menu className={classes.dropdownMenu}>
             {[
-              RoundsFilter.Active,
+              RoundsFilter.Recent,
               RoundsFilter.Proposing,
               RoundsFilter.Voting,
               RoundsFilter.Favorites,
-              RoundsFilter.Relevant,
             ].map((filter, i) => (
               <Dropdown.Item
                 key={i}
@@ -166,12 +155,6 @@ const RoundsFeed: React.FC<{}> = () => {
         <div>
           <FaRegSurprise />
           <div>Your favorite communites haven't run any rounds yet... awkward.</div>
-        </div>
-      ) : roundsFilter === RoundsFilter.Relevant && account === undefined ? (
-        <div className={classes.emptyContentContainer}>
-          <TbPlugConnected size={100} />
-          <p>Please connect your account to see relevant rounds to you!</p>
-          <Button text="Connect" bgColor={ButtonColor.Pink} onClick={openConnectModal} />
         </div>
       ) : fetchingRounds && rounds === undefined ? (
         <LoadingIndicator />
