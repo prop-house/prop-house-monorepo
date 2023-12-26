@@ -52,7 +52,11 @@ const TimedRoundAcceptingPropsModule: React.FC<{
                 <LoadingIndicator height={30} width={30} />
               </div>
             ) : canPropose && !loadingCanPropose ? (
-              'Create your proposal'
+              round.address !== '0x9a9bb3c4bb4071ad572782dae78afc128a4b5f52' ? (
+                'Create your proposal'
+              ) : (
+                'Nominate someone'
+              )
             ) : (
               'Wallet is ineligible to propose'
             )
