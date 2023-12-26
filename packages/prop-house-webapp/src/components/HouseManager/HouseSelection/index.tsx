@@ -12,6 +12,7 @@ import Markdown from 'markdown-to-jsx';
 import { changeTagToParagraph, changeTagToSpan } from '../../ChangeTo';
 import { useAccount } from 'wagmi';
 import LoadingIndicator from '../../LoadingIndicator';
+import mixpanel from 'mixpanel-browser';
 
 interface HouseSelectionProps {
   propHouse: PropHouse;
@@ -55,7 +56,17 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
           <Group gap={8} mt={6}>
             <Group gap={8} classNames={classes.houseContainer}>
               {houses.map(house => (
-                <button key={uuidv4()} onClick={() => onSelectHouse(house)} className={classes.row}>
+                <button
+                  key={uuidv4()}
+                  onClick={() => {
+                    mixpanel.track('Completed Round Creation Step', {
+                      Step: 'House Selection',
+                      Type: 'Existing House',
+                    });
+                    onSelectHouse(house);
+                  }}
+                  className={classes.row}
+                >
                   <Group row gap={8}>
                     <img
                       className={classes.img}
