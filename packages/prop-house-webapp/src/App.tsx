@@ -36,6 +36,7 @@ import HouseManager from './pages/HouseManager';
 import { useAppSelector } from './hooks';
 import Banner from './components/Banner';
 import { ExternalURL, externalURL } from './utils/externalURLs';
+import mixpanel from 'mixpanel-browser';
 
 const { chains, publicClient } = configureChains([mainnet], [publicProvider()]);
 
@@ -55,8 +56,13 @@ const config = createConfig({
 
 function App() {
   const location = useLocation();
-
   const [noActiveCommunity, setNoActiveCommunity] = useState(false);
+
+  mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN!, {
+    debug: process.env.REACT_APP_NODE_ENV === 'production' ? false : true,
+    track_pageview: true,
+    persistence: 'localStorage',
+  });
 
   useEffect(() => {
     setNoActiveCommunity(false);
