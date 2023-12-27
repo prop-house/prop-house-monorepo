@@ -21,6 +21,7 @@ import { useAccountModal } from '@rainbow-me/rainbowkit';
 import useVotingPower from '../../hooks/useVotingPower';
 import VoteConfirmationModal from '../../components/VoteConfirmationModal';
 import { Timed, usePropHouse } from '@prophouse/sdk-react';
+import useCanPropose from '../../hooks/useCanPropose';
 
 const Proposal = () => {
   const params = useParams();
@@ -39,6 +40,7 @@ const Proposal = () => {
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
 
   const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(round, account);
+  const [loadingCanPropose, errorLoadingCanPropose, canPropose] = useCanPropose(round, account);
 
   const propHouse = usePropHouse();
 
@@ -107,6 +109,44 @@ const Proposal = () => {
     </div>
   );
 
+  const proposeBar = proposal && round && round.state === Timed.RoundState.IN_PROPOSING_PERIOD && (
+    <div className={classes.votingBar}>
+      {isConnected ? (
+        errorLoadingCanPropose ? (
+          <>Error determining proposal eligibility.</>
+        ) : loadingCanPropose ? (
+          <div className={classes.loadingVoting}>
+            <LoadingIndicator height={50} width={50} />
+          </div>
+        ) : canPropose ? (
+          <div className={classes.votingBarContent}>
+            <div>
+              <b>Your wallet is eligible to submit a proposal!</b>
+            </div>
+            <ConnectButton text={'Submit a proposal'} color={ButtonColor.Green} />{' '}
+          </div>
+        ) : (
+          <div className={classes.votingBarContent}>
+            <b>Wallet is ineligible to propose.</b>
+            <div>
+              Trying with the wrong wallet? You can connect another wallet{' '}
+              <span className={classes.inlineClick} onClick={openAccountModal}>
+                here →
+              </span>
+            </div>
+          </div>
+        )
+      ) : (
+        <div className={classes.votingBarContent}>
+          <div>
+            <b>Proposing has started.</b> Connect a wallet to determine your voting eligibility.
+          </div>
+          <ConnectButton text={'Connect to propose'} color={ButtonColor.Green} />{' '}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <Container>
       {showVoteConfirmationModal && round && (
@@ -139,7 +179,7 @@ const Proposal = () => {
       ) : (
         <LoadingIndicator />
       )}
-      {votingBar}
+      {votingBar || proposeBar}
       <div className={classes.gradient} />
     </Container>
   );
