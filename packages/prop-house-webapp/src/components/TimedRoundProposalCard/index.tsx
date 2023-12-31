@@ -36,7 +36,9 @@ const TimedRoundProposalCard: React.FC<{
     round.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
     round.state === Timed.RoundState.IN_VOTING_PERIOD;
 
-  const roundEnded = round.config.votePeriodEndTimestamp < Date.now() / 1000;
+  const roundEndedAndNotCancelled =
+    round.config.votePeriodEndTimestamp < Date.now() / 1000 &&
+    round.state !== Timed.RoundState.CANCELLED;
   const showVoteDisplay = round.state >= Timed.RoundState.IN_VOTING_PERIOD;
   const showVoteControls = showVoteDisplay && govPower > 0;
 
@@ -67,7 +69,10 @@ const TimedRoundProposalCard: React.FC<{
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.thirty}
-          classNames={clsx(classes.proposalCard, proposal.isWinner && roundEnded && classes.winner)}
+          classNames={clsx(
+            classes.proposalCard,
+            proposal.isWinner && roundEndedAndNotCancelled && classes.winner,
+          )}
         >
           <div className={classes.propInfo}>
             <div className={classes.textContainter}>
@@ -148,9 +153,9 @@ const TimedRoundProposalCard: React.FC<{
             </div>
           </div>
         </Card>
-        {roundEnded && account.address === proposal.proposer && proposal.isWinner && (
-          <ProposalCardClaimAwardBar round={round} proposal={proposal} />
-        )}
+        {roundEndedAndNotCancelled &&
+          account.address === proposal.proposer &&
+          proposal.isWinner && <ProposalCardClaimAwardBar round={round} proposal={proposal} />}
       </div>
     </>
   );
