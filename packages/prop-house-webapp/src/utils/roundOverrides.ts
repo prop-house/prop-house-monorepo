@@ -1,6 +1,6 @@
 import { Timed } from '@prophouse/sdk-react';
 
-export const ROUND_OVERRIDES: Record<string, { state: Timed.RoundState, winners: number[] }> = {
+export const ROUND_OVERRIDES: Record<string, { state: Timed.RoundState; winners: number[] }> = {
   // BasePaint
   '0x2fd198c8b641180a593dceda1eaaac6bd0fc8c89': {
     state: Timed.RoundState.COMPLETE,
@@ -20,5 +20,10 @@ export const ROUND_OVERRIDES: Record<string, { state: Timed.RoundState, winners:
   '0x57347c22f0a0a764c0aa3554cc3df20ca7ceb28d': {
     state: Timed.RoundState.COMPLETE,
     winners: [10, 16, 13],
+  },
+  // qDAUs of the Year
+  '0x9a9bb3c4bb4071ad572782dae78afc128a4b5f52': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [14, 23, 6, 21, 18],
   },
 };
