@@ -450,6 +450,7 @@ export interface GovPowerChainConfig<CS extends Custom | void> extends ChainConf
 
 export enum GovPowerStrategyType {
   BALANCE_OF_ERC1155 = 'BALANCE_OF_ERC1155',
+  BALANCE_OF_ERC20 = 'BALANCE_OF_ERC20',
   BALANCE_OF = 'BALANCE_OF',
   ALLOWLIST = 'ALLOWLIST',
   VANILLA = 'VANILLA',
@@ -466,6 +467,13 @@ export const VotingStrategyType = GovPowerStrategyType;
 export interface BalanceOfConfig {
   strategyType: GovPowerStrategyType.BALANCE_OF;
   assetType: AssetType.ERC20 | AssetType.ERC721;
+  address: string;
+  multiplier?: number;
+}
+
+export interface BalanceOfERC20Config {
+  strategyType: GovPowerStrategyType.BALANCE_OF_ERC20;
+  assetType: AssetType.ERC20;
   address: string;
   multiplier?: number;
 }
