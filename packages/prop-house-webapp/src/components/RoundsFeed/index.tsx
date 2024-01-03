@@ -63,17 +63,20 @@ const RoundsFeed: React.FC<{}> = () => {
           return round;
         });
 
-        const active = fetchedRounds.filter(
-          round =>
-            round.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
-            round.state === Timed.RoundState.IN_VOTING_PERIOD,
-        );
+        const voting = fetchedRounds
+          .filter(round => round.state === Timed.RoundState.IN_VOTING_PERIOD)
+          .sort((a, b) => a.config.votePeriodEndTimestamp - b.config.votePeriodEndTimestamp);
+        const proposing = fetchedRounds
+          .filter(round => round.state === Timed.RoundState.IN_PROPOSING_PERIOD)
+          .sort(
+            (a, b) => a.config.proposalPeriodEndTimestamp - b.config.proposalPeriodEndTimestamp,
+          );
         const inactive = fetchedRounds.filter(
           round =>
             round.state !== Timed.RoundState.IN_PROPOSING_PERIOD &&
             round.state !== Timed.RoundState.IN_VOTING_PERIOD,
         );
-        const sortedRounds = [...active, ...inactive];
+        const sortedRounds = [...voting, ...proposing, ...inactive];
 
         setFetchingRounds(false);
 
