@@ -34,8 +34,6 @@ import Communities from './pages/Communities';
 import Home from './pages/Home';
 import HouseManager from './pages/HouseManager';
 import { useAppSelector } from './hooks';
-import Banner from './components/Banner';
-import { ExternalURL, externalURL } from './utils/externalURLs';
 import mixpanel from 'mixpanel-browser';
 
 const { chains, publicClient } = configureChains([mainnet], [publicProvider()]);
@@ -101,21 +99,6 @@ function App() {
                 <div
                   className={clsx(bgColorFor(BgColorElement.Home, location.pathname), 'wrapper')}
                 >
-                  <Banner
-                    content={
-                      <div>
-                        The offchain version of Prop House has been deprecated. Explore old rounds{' '}
-                        <a
-                          href={externalURL(ExternalURL.offchain)}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          here
-                        </a>
-                        .
-                      </div>
-                    }
-                  />
                   <NavBar />
                   <Routes>
                     <Route
