@@ -504,7 +504,7 @@ export interface Custom {
   strategyType: string;
 }
 
-export type DefaultGovPowerConfigs = BalanceOfConfig | BalanceOfERC1155Config | AllowlistConfig | VanillaConfig;
+export type DefaultGovPowerConfigs = BalanceOfConfig | BalanceOfERC20Config | BalanceOfERC1155Config | AllowlistConfig | VanillaConfig;
 
 // prettier-ignore
 export type GovPowerStrategyConfig<C extends Custom | void = void> = C extends void ? DefaultGovPowerConfigs : DefaultGovPowerConfigs | C;
