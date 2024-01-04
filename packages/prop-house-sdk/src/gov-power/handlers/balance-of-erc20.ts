@@ -155,7 +155,7 @@ export class BalanceOfERC20Handler extends SingleSlotProofHandler<BalanceOfERC20
     const balance = await this.contractFor(token).balanceOf(config.user, {
       blockTag: block,
     });
-    return balance.mul(config.params?.[2] ?? 1);
+    return balance.mul(config.params?.[3] ?? 1);
   }
 
   /**
