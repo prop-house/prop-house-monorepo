@@ -25,6 +25,7 @@
       "timedRoundEthSigAuthStrategy": "0x5319f36b15c6321a02746681158ba0614feecfbcf3cae67d3c167d408e26a64",
       "allowlistGovPowerStrategy": "0x3daa40ef909961a576f9ba58eb063d5ebc85411063a8b29435f05af6167079c",
       "ethBalanceOfGovPowerStrategy": "0x6ddcc94a4225843546a9b118a2733fd924d6b8a6467279cbe6a1aea79daca54",
+      "ethBalanceOfErc20GovPowerStrategy": "0x196cf5ceba8e98abe1e633d6184cd28c1e1ebd09ea71f89867dd4c5fda97bbe",
       "ethBalanceOfErc1155GovPowerStrategy": "0x6d22f17522d6992eb479deb850e96f9454fc2f6c127993ab2ef9d411f467e8",
       "herodotus": {
         "factRegistry": "0x002081b2d3de51f295e7516257f68bd9f06acbc7f19ba49410c100afbe57540f",
