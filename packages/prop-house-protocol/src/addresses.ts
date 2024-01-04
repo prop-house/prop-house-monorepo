@@ -130,7 +130,7 @@ export const contracts: Record<number, ContractAddresses> = {
       govPower: {
         allowlist: mainnet.starknet.address.allowlistGovPowerStrategy,
         balanceOf: mainnet.starknet.address.ethBalanceOfGovPowerStrategy,
-        balanceOfErc20: goerli.starknet.address.ethBalanceOfErc20GovPowerStrategy,
+        balanceOfErc20: mainnet.starknet.address.ethBalanceOfErc20GovPowerStrategy,
         balanceOfErc1155: mainnet.starknet.address.ethBalanceOfErc1155GovPowerStrategy,
         vanilla: constants.HashZero,
       },
