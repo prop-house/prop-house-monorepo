@@ -127,12 +127,18 @@ const AddVoter: React.FC<{
   const handleSelectStrategy = (selectedType: StrategyType) => {
     setSelectedStrategy(selectedType);
 
-    if (selectedType === StrategyType.ERC721 || selectedType === StrategyType.ERC20) {
+    if (selectedType === StrategyType.ERC721) {
       setVoter({
         ...newVoter,
         type: VotingStrategyType.BALANCE_OF,
-        asset: selectedType === StrategyType.ERC721 ? AssetType.ERC721 : AssetType.ERC20,
-      });
+        asset: AssetType.ERC721,
+      }) ;
+    } else if (selectedType === StrategyType.ERC20) {
+      setVoter({
+        ...newVoter,
+        type: VotingStrategyType.BALANCE_OF_ERC20,
+        asset: AssetType.ERC20,
+      }) ;
     } else if (selectedType === StrategyType.ERC1155) {
       setVoter({
         ...newVoter,

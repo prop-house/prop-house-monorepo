@@ -17,10 +17,17 @@ const createVoterStrategy = (voter: NewVoter): GovPowerStrategyConfig | null => 
       tokenId: voter.tokenId,
       multiplier: voter.multiplier,
     };
+  } else if (voter.type === VotingStrategyType.BALANCE_OF_ERC20) {
+    s = {
+      strategyType: VotingStrategyType.BALANCE_OF_ERC20,
+      assetType: AssetType.ERC20,
+      address: voter.address,
+      multiplier: voter.multiplier,
+    };
   } else if (voter.type === VotingStrategyType.BALANCE_OF) {
     s = {
       strategyType: VotingStrategyType.BALANCE_OF,
-      assetType: AssetType.ERC20,
+      assetType: AssetType.ERC721,
       address: voter.address,
       multiplier: voter.multiplier,
     };
