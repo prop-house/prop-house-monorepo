@@ -2,7 +2,7 @@ import { log, BigInt } from '@graphprotocol/graph-ts';
 import { AssetClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedRound/TimedRound';
 import { Account, Asset, Award, Balance, Claim, Reclaim, Round, RoundVotingStrategy, TimedRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
 import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType } from './lib/utils';
-import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_8_WEEKS_IN_SECONDS } from './lib/constants';
+import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_4_WEEKS_IN_SECONDS } from './lib/constants';
 
 export function storeGovPowerStrategy(addresses: BigInt[], params2D: BigInt[][], index: i32): string {
   const address = addresses[index];
@@ -50,7 +50,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     config.votePeriodDuration,
   );
   config.claimPeriodEndTimestamp = config.votePeriodEndTimestamp.plus(
-    BIGINT_8_WEEKS_IN_SECONDS, // This is an approximation and will be updated upon finalization
+    BIGINT_4_WEEKS_IN_SECONDS, // This is an approximation and will be updated upon finalization
   );
   config.registeredAt = event.block.timestamp;
   config.registrationTx = event.transaction.hash;
@@ -151,7 +151,7 @@ export function handleRoundFinalized(event: RoundFinalized): void {
       return;
     }
     timedConfig.claimPeriodEndTimestamp = event.block.timestamp.plus(
-      BIGINT_8_WEEKS_IN_SECONDS,
+      BIGINT_4_WEEKS_IN_SECONDS,
     );
     timedConfig.save();
   }

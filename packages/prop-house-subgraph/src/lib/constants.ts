@@ -9,8 +9,8 @@ export const MAX_TIMED_ROUND_WINNER_COUNT = 25;
 export let BIGINT_ZERO = BigInt.fromI32(0);
 export let BIGINT_ONE = BigInt.fromI32(1);
 
-// 60 * 60 * 24 * 7 * 8
-export const BIGINT_8_WEEKS_IN_SECONDS = BigInt.fromI32(4838400);
+// 60 * 60 * 24 * 7 * 4
+export const BIGINT_4_WEEKS_IN_SECONDS = BigInt.fromI32(2419200);
 
 // String enums are not yet supported by AssemblyScript
 export namespace RoundEventState {
