@@ -2,7 +2,7 @@ import { log, BigInt } from '@graphprotocol/graph-ts';
 import { AssetClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedRound/TimedRound';
 import { Account, Asset, Award, Balance, Claim, Reclaim, Round, RoundVotingStrategy, TimedRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
 import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType } from './lib/utils';
-import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_4_WEEKS_IN_SECONDS } from './lib/constants';
+import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_4_WEEKS_IN_SECONDS, BIGINT_ZERO } from './lib/constants';
 
 export function storeGovPowerStrategy(addresses: BigInt[], params2D: BigInt[][], index: i32): string {
   const address = addresses[index];
@@ -218,6 +218,7 @@ export function handleSingleTransfer(event: TransferSingle): void {
       balance = new Balance(balanceId);
       balance.asset = event.params.id.toHex();
       balance.round = event.address.toHex();
+      balance.balance = BIGINT_ZERO;
     }
     balance.balance = balance.balance.minus(event.params.value);
     balance.updatedAt = event.block.timestamp;
@@ -293,6 +294,7 @@ export function handleBatchTransfer(event: TransferBatch): void {
         balance = new Balance(balanceId);
         balance.asset = assetId;
         balance.round = event.address.toHex();
+        balance.balance = BIGINT_ZERO;
       }
       balance.balance = balance.balance.minus(value);
       balance.updatedAt = event.block.timestamp;
