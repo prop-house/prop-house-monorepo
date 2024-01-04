@@ -23,6 +23,7 @@ export namespace GovPowerStrategyType {
   export const VANILLA = 'VANILLA';
   export const ALLOWLIST = 'ALLOWLIST';
   export const BALANCE_OF = 'BALANCE_OF';
+  export const BALANCE_OF_ERC20 = 'BALANCE_OF_ERC20';
   export const BALANCE_OF_ERC1155 = 'BALANCE_OF_ERC1155';
   export const UNKNOWN = 'UNKNOWN';
 }

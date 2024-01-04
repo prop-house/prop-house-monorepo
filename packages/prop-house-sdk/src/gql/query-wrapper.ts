@@ -941,6 +941,15 @@ export class QueryWrapper {
           ...(multiplier ? { multiplier: Number(multiplier) } : {}),
         };
       };
+      case GovPowerStrategyType.BALANCE_OF_ERC20: {
+        const [address, , , multiplier] = strategy.params;
+        return {
+          id: strategy.id,
+          strategyType: GovPowerStrategyType.BALANCE_OF_ERC20,
+          tokenAddress: `0x${BigInt(address).toString(16)}`,
+          ...(multiplier ? { multiplier: Number(multiplier) } : {}),
+        };
+      };
       case GovPowerStrategyType.BALANCE_OF_ERC1155: {
         const [address, _, tokenId, multiplier] = strategy.params;
         return {

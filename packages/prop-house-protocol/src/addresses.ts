@@ -20,6 +20,7 @@ export interface RoundImpls {
 export interface GovPowerStrategies {
   allowlist: string;
   balanceOf: string;
+  balanceOfErc20: string;
   balanceOfErc1155: string;
   vanilla: string;
 }
@@ -86,6 +87,7 @@ export const contracts: Record<number, ContractAddresses> = {
       govPower: {
         allowlist: goerli.starknet.address.allowlistGovPowerStrategy,
         balanceOf: goerli.starknet.address.ethBalanceOfGovPowerStrategy,
+        balanceOfErc20: goerli.starknet.address.ethBalanceOfErc20GovPowerStrategy,
         balanceOfErc1155: goerli.starknet.address.ethBalanceOfErc1155GovPowerStrategy,
         vanilla: goerli.starknet.address.vanillaGovPowerStrategy,
       },
@@ -128,6 +130,7 @@ export const contracts: Record<number, ContractAddresses> = {
       govPower: {
         allowlist: mainnet.starknet.address.allowlistGovPowerStrategy,
         balanceOf: mainnet.starknet.address.ethBalanceOfGovPowerStrategy,
+        balanceOfErc20: goerli.starknet.address.ethBalanceOfErc20GovPowerStrategy,
         balanceOfErc1155: mainnet.starknet.address.ethBalanceOfErc1155GovPowerStrategy,
         vanilla: constants.HashZero,
       },
