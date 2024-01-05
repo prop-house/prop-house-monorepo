@@ -9,6 +9,7 @@ import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 import useAssetsWithMetadata, { AssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
 import buildEtherscanPath from '../../utils/buildEtherscanPath';
 import buildOpenSeaPath from '../../utils/buildOpenSeaPath';
+import { truncateThousands } from '../../utils/truncateThousands';
 
 const RoundAwardsDisplay: React.FC<{
   round: Round;
@@ -42,18 +43,20 @@ const RoundAwardsDisplay: React.FC<{
     const imgClass = clsx({ [classes.fullImg]: showFullImg });
 
     if (award.assetType === AssetType.ETH || !openLinkOnAwardsClick) {
-      return (<img src={award.tokenImg} alt="token logo" className={imgClass} />);
+      return <img src={award.tokenImg} alt="token logo" className={imgClass} />;
     }
 
-    const { assetType, address } = award
-    const link = assetType === AssetType.ERC20 ? buildEtherscanPath(address) : buildOpenSeaPath(address, award.tokenId.toString());
+    const { assetType, address } = award;
+    const link =
+      assetType === AssetType.ERC20
+        ? buildEtherscanPath(address)
+        : buildOpenSeaPath(address, award.tokenId.toString());
     return (
       <a href={link} target="_blank" rel="noopener noreferrer">
         <img src={award.tokenImg} alt="token logo" className={imgClass} />
       </a>
     );
   };
-
 
   const handlePrev = useCallback(() => {
     if (!sliderRef.current) return;
@@ -99,7 +102,10 @@ const RoundAwardsDisplay: React.FC<{
               </>
             ) : (
               <>
-                {award.parsedAmount} {award.symbol}
+                {award.parsedAmount > 1000
+                  ? truncateThousands(award.parsedAmount)
+                  : award.parsedAmount}{' '}
+                {award.symbol}
               </>
             )}
           </div>
