@@ -1,13 +1,13 @@
 import classes from './VoterCard.module.css';
 import Text from '../Text';
 import AddressAvatar from '../../AddressAvatar';
-import { useEnsName } from 'wagmi';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { Asset, AssetType, VotingStrategyType } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import useAddressType from '../../../hooks/useAddressType';
 import useAssetImages from '../../../hooks/useAssetImages';
 import useAssetNames from '../../../hooks/useAssetNames';
+import useNnsName from '../../../hooks/useNnsName';
 
 const VoterCard: React.FC<{
   type: string;
@@ -17,7 +17,7 @@ const VoterCard: React.FC<{
 }> = props => {
   const { type, address, multiplier, tokenId } = props;
 
-  const { data: ens, isLoading } = useEnsName({ address: address as `0x${string}` });
+  const { data: ens, isLoading } = useNnsName({ address: address as `0x${string}` });
 
   // TODO: Refactor hack that takes NewVoter and converts it to an Asset to use available hooks
   const contractType = useAddressType(address);

@@ -3,8 +3,8 @@ import React from 'react';
 import { useAppSelector } from '../../hooks';
 import trimEthAddress from '../../utils/trimEthAddress';
 import classes from './EthAddress.module.css';
-import { useEnsName } from 'wagmi';
 import Avatar from '../Avatar';
+import useNnsName from '../../hooks/useNnsName';
 
 const EthAddress: React.FC<{
   address: string;
@@ -19,8 +19,8 @@ const EthAddress: React.FC<{
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
   const buildAddressHref = (address: string) => [etherscanHost, 'address', address].join('/');
 
-  // wagmi hooks to get ENS name and avatar
-  const { data: ens } = useEnsName({ address: address as `0x${string}` });
+  // fetch NNS name falling back to their ENS name
+  const { data: ens } = useNnsName({ address: address as `0x${string}` });
 
   // trim address: 0x1234567890abcdef1234567890abcdef12345678 -> 0x1234...5678
   const shortAddress = trimEthAddress(address as string);
