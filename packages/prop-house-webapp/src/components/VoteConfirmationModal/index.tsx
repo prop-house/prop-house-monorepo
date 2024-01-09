@@ -52,7 +52,7 @@ const VoteConfirmationModal: React.FC<{
           let votes = GOV_POWER_OVERRIDES[round.address]
             ? a.votes * 10 ** GOV_POWER_OVERRIDES[round.address].decimals
             : a.votes;
-          return { proposalId: a.proposalId, votingPower: votes };
+          return { proposalId: a.proposalId, votingPower: String(votes) };
         });
 
       const result = await propHouse.round.timed.voteViaSignature({
