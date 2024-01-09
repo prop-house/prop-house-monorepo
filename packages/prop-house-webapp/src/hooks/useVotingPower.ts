@@ -83,7 +83,8 @@ const useVotingPower = (
       }
     };
     fetchVotingPower();
-  }, [round, propHouse.govPower, account, erc20Decimals, erc20Addresses.length]);
+    // eslint-disable-next-line
+  }, [round, propHouse.govPower, account]);
 
   return [loadingVotingPower, errorLoadingVotingPower, votingPower];
 };
