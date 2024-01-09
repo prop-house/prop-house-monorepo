@@ -1,11 +1,17 @@
 import { HiTrophy } from 'react-icons/hi2';
 import Avatar from '../Avatar';
 import classes from './ProposalRankings.module.css';
-import { Proposal } from '@prophouse/sdk-react';
+import { Proposal, Round } from '@prophouse/sdk-react';
 import { trophyColors } from '../../utils/trophyColors';
+import { parsedPropVotingPower } from '../../utils/parsedPropVotingPower';
 
-const ProposalRankings: React.FC<{ proposals: Proposal[]; areWinners?: boolean }> = props => {
-  const { proposals, areWinners } = props;
+const ProposalRankings: React.FC<{
+  proposals: Proposal[];
+  round: Round;
+  areWinners?: boolean;
+}> = props => {
+  const { proposals, round, areWinners } = props;
+
   return (
     <div className={classes.container}>
       <div className={classes.rankingTitle}>
@@ -20,7 +26,7 @@ const ProposalRankings: React.FC<{ proposals: Proposal[]; areWinners?: boolean }
             <Avatar address={p.proposer} diameter={12} />
           </span>
           <span className={classes.title}>{p.title}</span>
-          <div className={classes.votingPower}>{p.votingPower} votes</div>
+          <div className={classes.votingPower}>{parsedPropVotingPower(p, round)} votes</div>
         </div>
       ))}
     </div>

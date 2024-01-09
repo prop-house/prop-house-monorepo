@@ -237,7 +237,11 @@ const JumboRoundCard: React.FC<{
                     <LoadingIndicator />
                   ) : (
                     topThreeProps && (
-                      <ProposalRankings proposals={topThreeProps} areWinners={ended} />
+                      <ProposalRankings
+                        proposals={topThreeProps}
+                        round={round}
+                        areWinners={ended}
+                      />
                     )
                   )}
                 </>

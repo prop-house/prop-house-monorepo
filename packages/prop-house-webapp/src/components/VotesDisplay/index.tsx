@@ -5,6 +5,7 @@ import VotesVerificationModal from '../VotesVerificationModal';
 import TruncateThousands from '../TruncateThousands';
 import { Proposal, Vote, usePropHouse } from '@prophouse/sdk-react';
 import { useAppSelector } from '../../hooks';
+import { parsedPropVotingPower } from '../../utils/parsedPropVotingPower';
 
 const TimedRoundPropVotesDisplay: React.FC<{ proposal: Proposal }> = props => {
   const { proposal } = props;
@@ -40,7 +41,7 @@ const TimedRoundPropVotesDisplay: React.FC<{ proposal: Proposal }> = props => {
       )}
       <div onClick={e => handleClick(e)}>
         <div className={classes.scoreAndIcon}>
-          <MdHowToVote /> <TruncateThousands amount={Number(proposal.votingPower)} />
+          <MdHowToVote /> <TruncateThousands amount={parsedPropVotingPower(proposal, round!)} />
         </div>
       </div>
     </>
