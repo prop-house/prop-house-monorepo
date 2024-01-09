@@ -14,6 +14,7 @@ import { timeFromNow } from '../../utils/timeFromNow';
 import { useNavigate } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
 import { lumpVotes } from '../../utils/lumpVotes';
+import { parsedVotingPower } from '../../utils/parsedVotingPower';
 
 type ActivityItem = Proposal | Vote;
 
@@ -85,6 +86,7 @@ const ActivityFeed: React.FC<{}> = () => {
   });
 
   const activityContent = (item: Proposal | Vote) => {
+    let votes = parsedVotingPower(item.votingPower, item.round);
     return 'proposer' in item ? (
       <>
         proposed&nbsp;
@@ -93,8 +95,8 @@ const ActivityFeed: React.FC<{}> = () => {
     ) : (
       <>
         cast&nbsp;
-        {item.votingPower}
-        &nbsp;vote{Number(item.votingPower) !== 1 && 's'}
+        {votes}
+        &nbsp;vote{votes !== 1 && 's'}
       </>
     );
   };

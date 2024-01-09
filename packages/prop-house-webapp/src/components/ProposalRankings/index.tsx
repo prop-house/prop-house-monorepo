@@ -3,7 +3,7 @@ import Avatar from '../Avatar';
 import classes from './ProposalRankings.module.css';
 import { Proposal, Round } from '@prophouse/sdk-react';
 import { trophyColors } from '../../utils/trophyColors';
-import { parsedPropVotingPower } from '../../utils/parsedPropVotingPower';
+import { parsedVotingPower } from '../../utils/parsedVotingPower';
 
 const ProposalRankings: React.FC<{
   proposals: Proposal[];
@@ -26,7 +26,9 @@ const ProposalRankings: React.FC<{
             <Avatar address={p.proposer} diameter={12} />
           </span>
           <span className={classes.title}>{p.title}</span>
-          <div className={classes.votingPower}>{parsedPropVotingPower(p, round)} votes</div>
+          <div className={classes.votingPower}>
+            {parsedVotingPower(p.votingPower, round.address)} votes
+          </div>
         </div>
       ))}
     </div>
