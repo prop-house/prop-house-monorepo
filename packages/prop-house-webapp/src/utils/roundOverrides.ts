@@ -27,3 +27,10 @@ export const ROUND_OVERRIDES: Record<string, { state: Timed.RoundState; winners:
     winners: [14, 23, 6, 21, 18],
   },
 };
+
+export const GOV_POWER_OVERRIDES: Record<string, { decimals: number }> = {
+  // $FARTS
+  '0x7a5a9ddbbb10726daf19aedf8d8c402e44dc5215': {
+    decimals: 18,
+  },
+};
