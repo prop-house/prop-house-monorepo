@@ -14,6 +14,7 @@ import { setOnChainActiveProposals, setOnchainActiveProposal } from '../../state
 import { clearVoteAllotments } from '../../state/slices/voting';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { GOV_POWER_OVERRIDES } from '../../utils/roundOverrides';
+import { BigNumber } from 'ethers';
 
 const VoteConfirmationModal: React.FC<{
   round: Round;
@@ -50,7 +51,7 @@ const VoteConfirmationModal: React.FC<{
         .filter(a => a.votes > 0)
         .map(a => {
           let votes = GOV_POWER_OVERRIDES[round.address]
-            ? a.votes * 10 ** GOV_POWER_OVERRIDES[round.address].decimals
+            ? BigNumber.from(a.votes).pow(GOV_POWER_OVERRIDES[round.address].decimals).toNumber()
             : a.votes;
           return { proposalId: a.proposalId, votingPower: String(votes) };
         });

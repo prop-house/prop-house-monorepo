@@ -27,7 +27,7 @@ const ProposalRankings: React.FC<{
           </span>
           <span className={classes.title}>{p.title}</span>
           <div className={classes.votingPower}>
-            {parsedVotingPower(p.votingPower, round.address)} votes
+            {parsedVotingPower(p.votingPower, round.address).toString()} votes
           </div>
         </div>
       ))}

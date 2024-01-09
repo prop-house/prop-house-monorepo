@@ -48,7 +48,7 @@ const useVotingPower = (
       let parsed;
       let counter = 0;
       if (power.strategy.type === 'BALANCE_OF_ERC20') {
-        parsed = parseFloat(ethers.utils.formatUnits(power.govPower, erc20Decimals[counter]));
+        parsed = parseInt(ethers.utils.formatUnits(power.govPower, erc20Decimals[counter]));
         counter++;
       } else {
         parsed = power.govPower.toNumber();
