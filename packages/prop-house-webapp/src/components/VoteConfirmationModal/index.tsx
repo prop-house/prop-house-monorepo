@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux';
 import { setOnChainActiveProposals, setOnchainActiveProposal } from '../../state/slices/propHouse';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import { openInNewTab } from '../../utils/openInNewTab';
+import { GOV_POWER_OVERRIDES } from '../../utils/roundOverrides';
 
 const VoteConfirmationModal: React.FC<{
   round: Round;
@@ -47,7 +48,12 @@ const VoteConfirmationModal: React.FC<{
       setCurrentModalData(loadingData);
       const votes = voteAllotments
         .filter(a => a.votes > 0)
-        .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
+        .map(a => {
+          let votes = GOV_POWER_OVERRIDES[round.address]
+            ? a.votes * 10 ** GOV_POWER_OVERRIDES[round.address].decimals
+            : a.votes;
+          return { proposalId: a.proposalId, votingPower: votes };
+        });
 
       const result = await propHouse.round.timed.voteViaSignature({
         round: round.address,
