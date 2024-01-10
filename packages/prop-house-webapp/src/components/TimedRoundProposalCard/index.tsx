@@ -19,8 +19,6 @@ import ProposalCardClaimAwardBar from '../ProposalCardClaimAwardBar';
 import { getBlockExplorerURL } from '../../utils/getBlockExplorerUrl';
 import { useAccount, useChainId } from 'wagmi';
 import Button, { ButtonColor } from '../Button';
-import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
-import { openInNewTab } from '../../utils/openInNewTab';
 
 const TimedRoundProposalCard: React.FC<{
   proposal: Proposal;
@@ -64,12 +62,6 @@ const TimedRoundProposalCard: React.FC<{
     <>
       <div
         onClick={e => {
-          if (cmdPlusClicked(e)) {
-            openInNewTab(`/${round.address}/${proposal.id}`);
-            dispatch(setModalActive(false));
-            return;
-          }
-
           dispatch(setModalActive(true));
           dispatch(setOnchainActiveProposal(proposal));
         }}
