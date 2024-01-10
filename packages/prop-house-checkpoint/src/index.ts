@@ -26,6 +26,12 @@ const checkpointOptions = {
     EthereumRoundFactory: EthereumRoundFactoryABI,
     TimedRound: TimedRoundABI,
   },
+  decimalTypes: {
+    BigDecimal: {
+      p: 65,
+      d: 0,
+    },
+  },
   NetworkProvider: StarknetProvider,
 };
 
