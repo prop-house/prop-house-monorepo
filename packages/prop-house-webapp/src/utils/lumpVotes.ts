@@ -1,4 +1,5 @@
 import { Vote } from '@prophouse/sdk-react';
+import { BigNumber } from 'ethers';
 
 /**
  * Lumps votes of the same voters that are next to each other in the array
@@ -8,9 +9,7 @@ export const lumpVotes = (votes: Vote[]) =>
     const previousVote = lumpedVotes[lumpedVotes.length - 1];
 
     if (previousVote && previousVote.voter === currentVote.voter) {
-      previousVote.votingPower = String(
-        Number(previousVote.votingPower) + Number(currentVote.votingPower),
-      );
+      previousVote.votingPower = BigNumber.from(previousVote.votingPower).add(currentVote.votingPower).toString();
     } else {
       lumpedVotes.push({ ...currentVote });
     }
