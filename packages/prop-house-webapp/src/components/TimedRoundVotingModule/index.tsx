@@ -18,6 +18,7 @@ import LoadingIndicator from '../LoadingIndicator';
 import { Round } from '@prophouse/sdk-react';
 import { setVotingPower } from '../../state/slices/voting';
 import VotingStrategiesDisplay from '../VotingStrategiesDisplay';
+import { truncateThousands } from '../../utils/truncateThousands';
 
 export interface TimedRoundVotingModuleProps {
   round: Round;
@@ -142,7 +143,9 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
       title={t('votingInProgress')}
       subtitle={
         <>
-          <span className={classes.purpleText}>{totalVotes}</span>{' '}
+          <span className={classes.purpleText}>
+            {totalVotes && totalVotes > 1000 ? truncateThousands(totalVotes) : totalVotes}
+          </span>{' '}
           {totalVotes === 1 ? t('vote') : t('votes')} {t('castSoFar')}!
         </>
       }

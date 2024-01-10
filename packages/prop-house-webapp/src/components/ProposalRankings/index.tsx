@@ -4,6 +4,7 @@ import classes from './ProposalRankings.module.css';
 import { Proposal, Round } from '@prophouse/sdk-react';
 import { trophyColors } from '../../utils/trophyColors';
 import { parsedVotingPower } from '../../utils/parsedVotingPower';
+import { truncateThousands } from '../../utils/truncateThousands';
 
 const ProposalRankings: React.FC<{
   proposals: Proposal[];
@@ -19,18 +20,24 @@ const ProposalRankings: React.FC<{
         {`${areWinners ? 'Winners' : 'Rankings'}`}
       </div>
       {proposals.length === 0 && <div className={classes.noProps}>No proposals were voted on.</div>}
-      {proposals.map((p, index) => (
-        <div key={index} className={classes.item}>
-          <span className={classes.place}>{index + 1}.</span>{' '}
-          <span className={classes.avatar}>
-            <Avatar address={p.proposer} diameter={12} />
-          </span>
-          <span className={classes.title}>{p.title}</span>
-          <div className={classes.votingPower}>
-            {parsedVotingPower(p.votingPower, round.address).toString()} votes
+      {proposals.map((p, index) => {
+        const parsedPower = parsedVotingPower(p.votingPower, round.address);
+        return (
+          <div key={index} className={classes.item}>
+            <span className={classes.place}>{index + 1}.</span>{' '}
+            <span className={classes.avatar}>
+              <Avatar address={p.proposer} diameter={12} />
+            </span>
+            <span className={classes.title}>{p.title}</span>
+            <div className={classes.votingPower}>
+              {parsedPower.gte(1000)
+                ? truncateThousands(parsedPower.toNumber())
+                : parsedPower.toString()}{' '}
+              votes
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

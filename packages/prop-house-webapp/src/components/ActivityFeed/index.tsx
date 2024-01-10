@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
 import { lumpVotes } from '../../utils/lumpVotes';
 import { parsedVotingPower } from '../../utils/parsedVotingPower';
+import { truncateThousands } from '../../utils/truncateThousands';
 
 type ActivityItem = Proposal | Vote;
 
@@ -95,8 +96,8 @@ const ActivityFeed: React.FC<{}> = () => {
     ) : (
       <>
         cast&nbsp;
-        {votes.toString()}
-        &nbsp;vote{!votes.eq(1) && 's'}
+        {votes.gte(1000) ? truncateThousands(votes.toNumber()) : votes.toString()}
+        &nbsp;vote{votes.eq(1) ? '' : 's'}
       </>
     );
   };
