@@ -23,19 +23,21 @@ const VotesVerificationModal: React.FC<{
       {votes.map((vote, index) => {
         const votingPower = parsedVotingPower(vote.votingPower, round!.address);
         return (
-          <div key={index} className={classes.votesRow}>
-            <div className={classes.voteRowTitle}>
-              <a
-                href={getBlockExplorerURL(chainId, vote.txHash)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {`${votingPower.toString()} FOR  ${votingPower.eq(1) ? 'vote' : 'votes'}`}
-              </a>
-              &nbsp;by
-              <EthAddress address={vote.voter} />
+          votingPower.gte(1) && (
+            <div key={index} className={classes.votesRow}>
+              <div className={classes.voteRowTitle}>
+                <a
+                  href={getBlockExplorerURL(chainId, vote.txHash)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {`${votingPower.toString()} FOR  ${votingPower.eq(1) ? 'vote' : 'votes'}`}
+                </a>
+                &nbsp;by
+                <EthAddress address={vote.voter} />
+              </div>
             </div>
-          </div>
+          )
         );
       })}
     </div>
