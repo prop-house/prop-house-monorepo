@@ -51,10 +51,11 @@ const VoteConfirmationModal: React.FC<{
       const votes = voteAllotments
         .filter(a => a.votes > 0)
         .map(a => {
+          const factor = BigNumber.from(10).pow(GOV_POWER_OVERRIDES[round.address].decimals);
           let votes = GOV_POWER_OVERRIDES[round.address]
-            ? BigNumber.from(a.votes).pow(GOV_POWER_OVERRIDES[round.address].decimals).toNumber()
-            : a.votes;
-          return { proposalId: a.proposalId, votingPower: String(votes) };
+            ? BigNumber.from(a.votes).mul(factor).toString()
+            : String(a.votes);
+          return { proposalId: a.proposalId, votingPower: votes };
         });
 
       const result = await propHouse.round.timed.voteViaSignature({
