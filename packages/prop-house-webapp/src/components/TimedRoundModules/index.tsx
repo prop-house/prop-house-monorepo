@@ -19,7 +19,7 @@ const TimedRoundModules: React.FC<{
   const { round, proposals, setShowVotingModal } = props;
 
   const totalVotesAcrossAllProps = proposals.reduce(
-    (total, prop) => total + parsedVotingPower(prop.votingPower, round.address),
+    (total, prop) => total + parsedVotingPower(prop.votingPower, round.address).toNumber(),
     0,
   );
 

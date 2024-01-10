@@ -42,7 +42,9 @@ const TimedRoundPropVotesDisplay: React.FC<{ proposal: Proposal }> = props => {
       <div onClick={e => handleClick(e)}>
         <div className={classes.scoreAndIcon}>
           <MdHowToVote />{' '}
-          <TruncateThousands amount={parsedVotingPower(proposal.votingPower, round!.address)} />
+          <TruncateThousands
+            amount={parsedVotingPower(proposal.votingPower, round!.address).toNumber()}
+          />
         </div>
       </div>
     </>

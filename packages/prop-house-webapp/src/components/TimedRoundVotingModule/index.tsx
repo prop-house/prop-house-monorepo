@@ -32,7 +32,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
-  const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
+  const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound, round.address);
 
   const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(round, account);
   const hasVotingPower = votingPower && votingPower > 0;
@@ -46,12 +46,17 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   useEffect(() => {
     if (!votingPower) return;
     setVotesLeftToAllot(
-      countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments),
+      countVotesRemainingForTimedRound(
+        votingPower,
+        votesByUserInActiveRound,
+        voteAllotments,
+        round.address,
+      ),
     );
     setNumAllotedVotes(countTotalVotesAlloted(voteAllotments));
 
     dispatch(setVotingPower(votingPower));
-  }, [votesByUserInActiveRound, voteAllotments, votingPower, dispatch]);
+  }, [votesByUserInActiveRound, voteAllotments, votingPower, dispatch, round.address]);
 
   const content = (
     <>

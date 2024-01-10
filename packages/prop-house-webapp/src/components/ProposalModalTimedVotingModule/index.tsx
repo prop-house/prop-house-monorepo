@@ -32,12 +32,13 @@ const ProposalModalTimedVotingModule: React.FC<{
   const { address: account } = useAccount();
   const propHouse = usePropHouse();
 
-  const numVotesCasted = countNumVotes(votesByUserInActiveRound);
+  const numVotesCasted = countNumVotes(votesByUserInActiveRound, round!.address);
 
   const votesRemaining = countVotesRemainingForTimedRound(
     votingPower,
     votesByUserInActiveRound,
     voteAllotments,
+    round!.address,
   );
 
   const votesAlloted = countTotalVotesAlloted(voteAllotments);

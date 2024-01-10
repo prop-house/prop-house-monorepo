@@ -95,8 +95,8 @@ const ActivityFeed: React.FC<{}> = () => {
     ) : (
       <>
         cast&nbsp;
-        {votes}
-        &nbsp;vote{votes !== 1 && 's'}
+        {votes.toString()}
+        &nbsp;vote{!votes.eq(1) && 's'}
       </>
     );
   };
