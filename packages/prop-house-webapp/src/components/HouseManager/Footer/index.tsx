@@ -132,9 +132,9 @@ const Footer: React.FC = () => {
       config: {
         awards: round.awards,
         votingStrategies: round.voters,
-        proposalPeriodStartUnixTimestamp: round.proposalPeriodStartUnixTimestamp,
-        proposalPeriodDurationSecs: round.proposalPeriodDurationSecs,
-        votePeriodDurationSecs: round.votePeriodDurationSecs,
+        proposalPeriodStartUnixTimestamp: 1704862800,
+        proposalPeriodDurationSecs: 208800,
+        votePeriodDurationSecs: 32400,
         winnerCount: round.numWinners,
         metaTx: { ...metaTxArgs },
       },
