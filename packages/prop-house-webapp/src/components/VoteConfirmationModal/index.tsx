@@ -35,6 +35,7 @@ const VoteConfirmationModal: React.FC<{
     votingPower,
     votesByUserInActiveRound,
     voteAllotments,
+    round.address,
   );
   const totalVotesBeingSubmitted = voteAllotments.reduce(
     (total, prop) => (total = total + prop.votes),
