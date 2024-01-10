@@ -87,7 +87,7 @@ const TimedRoundVotingControls: React.FC<{
     const value = e.currentTarget.value;
     const inputVotes = Number(value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1'));
 
-    if (inputVotes > 100000) return; // prevent overflow
+    if (inputVotes > 1000000000) return; // prevent overflow
 
     // if attempting to input more than allowed total votes
     if (inputVotes > votesRemaining + allottedVotesForProp) {
