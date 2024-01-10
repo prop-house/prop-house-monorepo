@@ -15,6 +15,7 @@ import { clearVoteAllotments } from '../../state/slices/voting';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { GOV_POWER_OVERRIDES } from '../../utils/roundOverrides';
 import { BigNumber } from 'ethers';
+import { parsedVotingPower } from '../../utils/parsedVotingPower';
 
 const VoteConfirmationModal: React.FC<{
   round: Round;
@@ -76,7 +77,9 @@ const VoteConfirmationModal: React.FC<{
         const voteForProp = votes.find(v => v.proposalId === prop.id);
         let newProp = { ...prop };
         if (voteForProp)
-          newProp.votingPower = `${Number(newProp.votingPower) + voteForProp.votingPower}`;
+          newProp.votingPower = parsedVotingPower(newProp.votingPower, round.address)
+            .add(parsedVotingPower(voteForProp.votingPower, round.address))
+            .toString();
         return newProp;
       });
       proposals
