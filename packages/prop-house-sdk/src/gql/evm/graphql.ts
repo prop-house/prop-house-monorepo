@@ -853,6 +853,7 @@ export enum GovPowerStrategyType {
   Allowlist = 'ALLOWLIST',
   BalanceOf = 'BALANCE_OF',
   BalanceOfErc1155 = 'BALANCE_OF_ERC1155',
+  CheckpointableErc721 = 'CHECKPOINTABLE_ERC721',
   Unknown = 'UNKNOWN',
   Vanilla = 'VANILLA',
 }

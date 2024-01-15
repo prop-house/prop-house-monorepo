@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk",
-  "version": "1.0.22",
+  "version": "1.0.24",
   "description": "Useful tools for interacting with the Prop House protocol",
   "author": "solimander",
   "homepage": "https://prop.house",
@@ -32,7 +32,7 @@
     "@ethersproject/strings": "~5.7.0",
     "@ethersproject/wallet": "^5.7.0",
     "@pinata/sdk": "^2.1.0",
-    "@prophouse/protocol": "1.0.6",
+    "@prophouse/protocol": "1.0.8",
     "bn.js": "^5.2.1",
     "ethereumjs-fork-block": "^4.2.4",
     "ethereumjs-fork-common": "^3.1.3",

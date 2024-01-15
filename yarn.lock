@@ -5978,17 +5978,24 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@1.0.15":
-  version "1.0.15"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.15.tgz#a9df1ee3363d0c7f0fe9bcba04a2103f090acf7d"
-  integrity sha512-CJakH5gWbyi3GVw2sZ29BnHqmow36/urenjKmrwXohTML0EAtYDy8No+fClMRL32UHWvDxMMYBqNR1yU3gEYXg==
+"@prophouse/protocol@1.0.8":
+  version "1.0.8"
+  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-1.0.8.tgz#745869a4932df727221514ece06563ed7a93a011"
+  integrity sha512-XSYA5iqrbD2pyZFD3bSoJKFOeQs/9LgElddZ1cOj6UzQhe2xA0e5ZW5aTwGqEW4eIq8Ed6Am8ruNF8SwyAcphA==
   dependencies:
-    "@prophouse/sdk" "1.0.21"
+    ethers "~5.7.2"
 
-"@prophouse/sdk@1.0.21":
-  version "1.0.21"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.21.tgz#c83c532d77d2a696c5795be3ff8880bbb53a4c82"
-  integrity sha512-ADUwQir+5QezJ/rTTcwTXCy8Ge3SAalV9dAsFOrGhenuW6E7ROUTx4PvC8BXsXdPiY5LgOivLPBYr29KbRQmdw==
+"@prophouse/sdk-react@1.0.17":
+  version "1.0.17"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.17.tgz#5d4b31962156d243197c7144dcf5db5ffee81381"
+  integrity sha512-96udnh5fIefG7+eYG/n+2WevYYogcQyE4fxYCNxBGy9zyhjUVSuieMWegwzYzRTI8GWPxHCUxFyXpaWXghCaxQ==
+  dependencies:
+    "@prophouse/sdk" "1.0.23"
+
+"@prophouse/sdk@1.0.23":
+  version "1.0.23"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.23.tgz#c24716ec419d5ff3acce985c148bfbe6e381c924"
+  integrity sha512-N/tlB+BHeUmycroErHpu8ZoP+GXFvXgc2Uowbd0HkX+JIqU5GfOP2up4dCJ+3fz6I5rPdqUA5i+G66e2+q73kA==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -6004,7 +6011,7 @@
     "@ethersproject/strings" "~5.7.0"
     "@ethersproject/wallet" "^5.7.0"
     "@pinata/sdk" "^2.1.0"
-    "@prophouse/protocol" "1.0.6"
+    "@prophouse/protocol" "1.0.8"
     bn.js "^5.2.1"
     ethereumjs-fork-block "^4.2.4"
     ethereumjs-fork-common "^3.1.3"
