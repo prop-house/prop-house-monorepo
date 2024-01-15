@@ -52,10 +52,15 @@ const VoteConfirmationModal: React.FC<{
       const votes = voteAllotments
         .filter(a => a.votes > 0)
         .map(a => {
-          const factor = BigNumber.from(10).pow(GOV_POWER_OVERRIDES[round.address].decimals);
-          let votes = GOV_POWER_OVERRIDES[round.address]
-            ? BigNumber.from(a.votes).mul(factor).toString()
-            : String(a.votes);
+          let votes;
+
+          if (GOV_POWER_OVERRIDES[round.address]) {
+            const factor = BigNumber.from(10).pow(GOV_POWER_OVERRIDES[round.address].decimals);
+            votes = BigNumber.from(a.votes).mul(factor).toString();
+          } else {
+            votes = String(a.votes);
+          }
+
           return { proposalId: a.proposalId, votingPower: votes };
         });
 
