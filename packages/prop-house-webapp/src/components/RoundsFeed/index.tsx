@@ -1,5 +1,5 @@
 import classes from './RoundsFeed.module.css';
-import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
+import { RoundWithHouse, Timed, usePropHouse } from '@prophouse/sdk-react';
 import React, { useEffect, useState } from 'react';
 import { Col, Dropdown, Row } from 'react-bootstrap';
 import JumboRoundCard from '../JumboRoundCard';
@@ -10,10 +10,8 @@ import { getFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { RoundsFilter, useRoundsFilter } from '../../hooks/useRoundsFilter';
 import { GiSurprisedSkull } from 'react-icons/gi';
 import { FaRegSurprise } from 'react-icons/fa';
-import { TbPlugConnected } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
 import { isMobile } from 'web3modal';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { fetchRoundsForFilter } from '../../utils/fetchRoundsForFilter';
 import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
 
@@ -26,7 +24,7 @@ const RoundsFeed: React.FC<{}> = () => {
     },
   });
   const navigate = useNavigate();
-  const { openConnectModal } = useConnectModal();
+
   const favorites = getFavoriteCommunities();
   const { roundsFilter, updateRoundsFilter } = useRoundsFilter();
 
@@ -56,19 +54,29 @@ const RoundsFeed: React.FC<{}> = () => {
         setFetchingRounds(true);
         setFetchNewRounds(false);
 
-        const fetchedRounds = (await fetchRoundsForFilter(
-          propHouse,
-          account,
-          favorites,
-          roundsFilter,
-          pageIndex,
-          6,
-        )).map(round => {
+        const fetchedRounds = (
+          await fetchRoundsForFilter(propHouse, account, favorites, roundsFilter, pageIndex, 10)
+        ).map(round => {
           if (ROUND_OVERRIDES[round.address]) {
             round.state = ROUND_OVERRIDES[round.address].state;
           }
           return round;
         });
+
+        const voting = fetchedRounds
+          .filter(round => round.state === Timed.RoundState.IN_VOTING_PERIOD)
+          .sort((a, b) => a.config.votePeriodEndTimestamp - b.config.votePeriodEndTimestamp);
+        const proposing = fetchedRounds
+          .filter(round => round.state === Timed.RoundState.IN_PROPOSING_PERIOD)
+          .sort(
+            (a, b) => a.config.proposalPeriodEndTimestamp - b.config.proposalPeriodEndTimestamp,
+          );
+        const inactive = fetchedRounds.filter(
+          round =>
+            round.state !== Timed.RoundState.IN_PROPOSING_PERIOD &&
+            round.state !== Timed.RoundState.IN_VOTING_PERIOD,
+        );
+        const sortedRounds = [...voting, ...proposing, ...inactive];
 
         setFetchingRounds(false);
 
@@ -78,12 +86,12 @@ const RoundsFeed: React.FC<{}> = () => {
         }
 
         if (newFilter) {
-          setRounds(fetchedRounds);
+          setRounds(sortedRounds);
         } else {
           setPageIndex(prev => prev + 1);
           setRounds(prev => {
-            if (prev) return [...prev, ...fetchedRounds];
-            return fetchedRounds;
+            if (prev) return [...prev, ...sortedRounds];
+            return sortedRounds;
           });
         }
       } catch (e) {
@@ -117,10 +125,10 @@ const RoundsFeed: React.FC<{}> = () => {
 
           <Dropdown.Menu className={classes.dropdownMenu}>
             {[
-              RoundsFilter.Active,
               RoundsFilter.Recent,
+              RoundsFilter.Proposing,
+              RoundsFilter.Voting,
               RoundsFilter.Favorites,
-              RoundsFilter.Relevant,
             ].map((filter, i) => (
               <Dropdown.Item
                 key={i}
@@ -150,12 +158,6 @@ const RoundsFeed: React.FC<{}> = () => {
         <div>
           <FaRegSurprise />
           <div>Your favorite communites haven't run any rounds yet... awkward.</div>
-        </div>
-      ) : roundsFilter === RoundsFilter.Relevant && account === undefined ? (
-        <div className={classes.emptyContentContainer}>
-          <TbPlugConnected size={100} />
-          <p>Please connect your account to see relevant rounds to you!</p>
-          <Button text="Connect" bgColor={ButtonColor.Pink} onClick={openConnectModal} />
         </div>
       ) : fetchingRounds && rounds === undefined ? (
         <LoadingIndicator />

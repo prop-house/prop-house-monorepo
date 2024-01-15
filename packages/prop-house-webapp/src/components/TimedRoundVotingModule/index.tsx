@@ -18,6 +18,7 @@ import LoadingIndicator from '../LoadingIndicator';
 import { Round } from '@prophouse/sdk-react';
 import { setVotingPower } from '../../state/slices/voting';
 import VotingStrategiesDisplay from '../VotingStrategiesDisplay';
+import { truncateThousands } from '../../utils/truncateThousands';
 
 export interface TimedRoundVotingModuleProps {
   round: Round;
@@ -32,7 +33,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
-  const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
+  const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound, round.address);
 
   const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(round, account);
   const hasVotingPower = votingPower && votingPower > 0;
@@ -46,12 +47,17 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   useEffect(() => {
     if (!votingPower) return;
     setVotesLeftToAllot(
-      countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments),
+      countVotesRemainingForTimedRound(
+        votingPower,
+        votesByUserInActiveRound,
+        voteAllotments,
+        round.address,
+      ),
     );
     setNumAllotedVotes(countTotalVotesAlloted(voteAllotments));
 
     dispatch(setVotingPower(votingPower));
-  }, [votesByUserInActiveRound, voteAllotments, votingPower, dispatch]);
+  }, [votesByUserInActiveRound, voteAllotments, votingPower, dispatch, round.address]);
 
   const content = (
     <>
@@ -137,7 +143,9 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
       title={t('votingInProgress')}
       subtitle={
         <>
-          <span className={classes.purpleText}>{totalVotes}</span>{' '}
+          <span className={classes.purpleText}>
+            {totalVotes && totalVotes > 1000 ? truncateThousands(totalVotes) : totalVotes}
+          </span>{' '}
           {totalVotes === 1 ? t('vote') : t('votes')} {t('castSoFar')}!
         </>
       }

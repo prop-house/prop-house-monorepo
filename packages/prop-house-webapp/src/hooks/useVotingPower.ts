@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Round, usePropHouse } from '@prophouse/sdk-react';
-import { BigNumber } from 'ethers';
+import { RawGovPowerStrategy, Round, usePropHouse } from '@prophouse/sdk-react';
+import { ethers, BigNumber } from 'ethers';
+import useErc20AddressDecimals from './useErc20AddressDecimals';
 
 export type UseVotingPowerResults = [
   /**
@@ -17,6 +18,13 @@ export type UseVotingPowerResults = [
   number | undefined | null,
 ];
 
+type GovPowerResult = {
+  strategy: RawGovPowerStrategy & {
+    address: string;
+  };
+  govPower: ethers.BigNumber;
+};
+
 const useVotingPower = (
   round: Round | undefined,
   account: `0x${string}` | undefined,
@@ -27,17 +35,43 @@ const useVotingPower = (
 
   const propHouse = usePropHouse();
 
+  const erc20Addresses = round
+    ? round.votingStrategies
+        .filter(s => s.strategyType === 'BALANCE_OF_ERC20')
+        .map((s: any) => s.tokenAddress)
+    : [];
+  const erc20Decimals = useErc20AddressDecimals(erc20Addresses);
+
+  const sumUpGovPowers = (powers: GovPowerResult[], erc20Decimals: number[]) => {
+    let sum = 0;
+    powers.forEach((power, i) => {
+      let parsed;
+      let counter = 0;
+      if (power.strategy.type === 'BALANCE_OF_ERC20') {
+        parsed = parseInt(ethers.utils.formatUnits(power.govPower, erc20Decimals[counter]));
+        counter++;
+      } else {
+        parsed = power.govPower.toNumber();
+      }
+      sum += parsed;
+    });
+    return sum;
+  };
+
   useEffect(() => {
+    if (erc20Addresses.length > 0 && !erc20Decimals) return;
+
     const fetchVotingPower = async () => {
       if (!round || !account) return;
 
       setLoadingVotingPower(true);
       try {
-        const govPower = await propHouse.govPower.getTotalPower(
+        const powers = await propHouse.govPower.getPowerForStrategies(
           account as string,
           round.config.proposalPeriodEndTimestamp,
           round.votingStrategiesRaw,
         );
+        const govPower = BigNumber.from(sumUpGovPowers(powers, erc20Decimals!));
         setLoadingVotingPower(false);
 
         const maxSafeInteger = BigNumber.from(Number.MAX_SAFE_INTEGER.toString());
@@ -49,6 +83,7 @@ const useVotingPower = (
       }
     };
     fetchVotingPower();
+    // eslint-disable-next-line
   }, [round, propHouse.govPower, account]);
 
   return [loadingVotingPower, errorLoadingVotingPower, votingPower];

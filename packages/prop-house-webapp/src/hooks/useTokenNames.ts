@@ -26,7 +26,8 @@ const useTokenNames = (strategies: ParsedGovPowerStrategy[]): UseTokenNamesResul
 
   const contracts = strategies
     .map(strategy => {
-      const isErc20OrErc721 = strategy.strategyType === GovPowerStrategyType.BALANCE_OF;
+      const isErc20OrErc721 = strategy.strategyType === GovPowerStrategyType.BALANCE_OF ||
+        strategy.strategyType === GovPowerStrategyType.BALANCE_OF_ERC20;
 
       if (isErc20OrErc721)
         return {

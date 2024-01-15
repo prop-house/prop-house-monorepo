@@ -16,6 +16,8 @@ import { parseEther } from 'viem';
 import Modal from '../../Modal';
 import { getRoundAddressWithContractTx } from '../../../utils/getRoundAddressWithContractTx';
 import { NounImage } from '../../../utils/getNounImage';
+import mixpanel from 'mixpanel-browser';
+import { activeStepName } from '../../../utils/activeStepName';
 
 /**
  * @overview
@@ -54,6 +56,31 @@ const Footer: React.FC = () => {
   };
 
   const handlePrev = () => dispatch(setPrevStep());
+
+  const trackEvent = (activeStep: number) => {
+    let args = {
+      Step: activeStepName(activeStep),
+    };
+    if (activeStep === 1) args = { ...args, Type: 'New House' } as { Step: string; Type: string };
+    if (activeStep === 6)
+      args = { ...args, Status: 'Clicked Create Round' } as { Step: string; Status: string };
+    mixpanel.track('Completed Round Creation Step', args);
+  };
+
+  useEffect(() => {
+    if (waitForTransaction.isIdle || activeStep !== 6) return;
+
+    mixpanel.track('Completed Round Creation Step', {
+      Step: activeStepName(activeStep),
+      Status: waitForTransaction.isLoading
+        ? 'loading'
+        : waitForTransaction.isSuccess
+        ? 'success'
+        : waitForTransaction.isError
+        ? 'error'
+        : 'unknown',
+    });
+  }, [waitForTransaction, activeStep]);
 
   useEffect(() => {
     if (!fetchNewRound || !newRoundAddress) return;
@@ -159,7 +186,6 @@ const Footer: React.FC = () => {
         />
       )}
 
-
       {!!creationError && (
         <Modal
           modalProps={{
@@ -170,7 +196,6 @@ const Footer: React.FC = () => {
           }}
         />
       )}
-
 
       <Divider />
 
@@ -188,7 +213,10 @@ const Footer: React.FC = () => {
             text="Next"
             disabled={stepDisabledArray[activeStep - 1]}
             bgColor={ButtonColor.Pink}
-            onClick={handleNext}
+            onClick={() => {
+              trackEvent(activeStep);
+              handleNext();
+            }}
           />
         )}
         {activeStep === 6 && (
@@ -215,9 +243,10 @@ const Footer: React.FC = () => {
             }
             disabled={stepDisabledArray[5]}
             bgColor={ButtonColor.Pink}
-            onClick={() =>
-              transactionHash ? setShowCreateRoundModal(true) : handleCreateRound(round)
-            }
+            onClick={() => {
+              trackEvent(activeStep);
+              transactionHash ? setShowCreateRoundModal(true) : handleCreateRound(round);
+            }}
           />
         )}
       </div>

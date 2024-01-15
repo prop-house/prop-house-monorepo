@@ -35,6 +35,13 @@ export interface BalanceOfStrategy {
   multiplier?: number;
 }
 
+export interface BalanceOfERC20Strategy {
+  id: string;
+  strategyType: GovPowerStrategyType.BALANCE_OF_ERC20;
+  tokenAddress: string;
+  multiplier?: number;
+}
+
 export interface BalanceOfERC1155Strategy {
   id: string;
   strategyType: GovPowerStrategyType.BALANCE_OF_ERC1155;
@@ -58,7 +65,7 @@ export interface UnknownStrategy extends GovPowerStrategyWithID {
   strategyType: GovPowerStrategyType.UNKNOWN;
 }
 
-export type ParsedGovPowerStrategy = BalanceOfStrategy | BalanceOfERC1155Strategy | AllowlistStrategy | VanillaStrategy | UnknownStrategy;
+export type ParsedGovPowerStrategy = BalanceOfStrategy | BalanceOfERC20Strategy | BalanceOfERC1155Strategy | AllowlistStrategy | VanillaStrategy | UnknownStrategy;
 
 export type ProposingStrategy = ParsedGovPowerStrategy;
 export type VotingStrategy = ParsedGovPowerStrategy;
@@ -127,6 +134,7 @@ export interface Proposal {
   round: string;
   metadataURI: string;
   title: string;
+  tldr: string;
   body: string;
   isCancelled: boolean;
   isWinner: boolean;

@@ -17,5 +17,5 @@ export const timeFromNow = (timestamp: number) => {
   if (minDiff > 0) return `${minDiff}m`;
 
   const secDiff = Math.abs(dayjs(timestamp).diff(dayjs(), 'second'));
-  if (secDiff > 0) return `${secDiff}m`;
+  if (secDiff > 0) return `${secDiff}s`;
 };

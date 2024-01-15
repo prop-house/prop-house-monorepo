@@ -14,6 +14,7 @@ import { countNumVotes } from '../../utils/countNumVotes';
 import { useAccount } from 'wagmi';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { Proposal, usePropHouse } from '@prophouse/sdk-react';
+import { parsedVotingPower } from '../../utils/parsedVotingPower';
 
 const ProposalModalTimedVotingModule: React.FC<{
   proposal: Proposal;
@@ -32,12 +33,13 @@ const ProposalModalTimedVotingModule: React.FC<{
   const { address: account } = useAccount();
   const propHouse = usePropHouse();
 
-  const numVotesCasted = countNumVotes(votesByUserInActiveRound);
+  const numVotesCasted = countNumVotes(votesByUserInActiveRound, round!.address);
 
   const votesRemaining = countVotesRemainingForTimedRound(
     votingPower,
     votesByUserInActiveRound,
     voteAllotments,
+    round!.address,
   );
 
   const votesAlloted = countTotalVotesAlloted(voteAllotments);
@@ -52,8 +54,7 @@ const ProposalModalTimedVotingModule: React.FC<{
           round.config.proposalPeriodStartTimestamp,
           round.votingStrategiesRaw,
         );
-
-        dispatch(setVotingPower(votes.toNumber()));
+        dispatch(setVotingPower(parsedVotingPower(votes.toString(), round.address).toNumber()));
       } catch (e) {
         console.log('error fetching votes: ', e);
       }

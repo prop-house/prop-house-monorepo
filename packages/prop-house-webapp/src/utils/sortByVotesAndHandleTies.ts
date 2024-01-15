@@ -1,11 +1,11 @@
+import { Proposal } from '@prophouse/sdk-react';
 import { getLastUpdatedDate } from './getLastUpdatedDate';
 import dayjs from 'dayjs';
-import { ProposalWithTldr } from '../types/ProposalWithTldr';
 
 export const sortByVotesAndHandleTies = (
-  proposals: ProposalWithTldr[],
+  proposals: Proposal[],
   ascending: boolean,
-): ProposalWithTldr[] =>
+): Proposal[] =>
   proposals.sort((a, b) => {
     const gt = a.votingPower > b.votingPower;
     const eq = a.votingPower === b.votingPower;

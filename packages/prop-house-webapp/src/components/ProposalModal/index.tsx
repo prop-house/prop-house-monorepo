@@ -13,9 +13,8 @@ import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
 import { Proposal } from '@prophouse/sdk-react';
-import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 
-const ProposalModal: React.FC<{ proposals: ProposalWithTldr[] }> = props => {
+const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const { proposals } = props;
 
   const [editProposalMode, setEditProposalMode] = useState(false);

@@ -4,9 +4,11 @@ mod EthereumBalanceOfERC20GovernancePowerStrategy {
     use prop_house::common::utils::storage::get_slot_key;
     use prop_house::common::utils::traits::IGovernancePowerStrategy;
     use prop_house::common::libraries::single_slot_proof::SingleSlotProof;
+    use prop_house::common::utils::integer::as_u256;
     use array::{ArrayTrait, SpanTrait};
+    use traits::{Into, TryInto};
+    use option::OptionTrait;
     use zeroable::Zeroable;
-    use traits::Into;
 
     #[storage]
     struct Storage {}
@@ -30,24 +32,26 @@ mod EthereumBalanceOfERC20GovernancePowerStrategy {
             let params_len = params.len();
 
             // Expects contract_address and slot_index, with an optional governance_power_multiplier
-            assert(params_len == 2 || params_len == 3, 'EthBO20: Bad param length');
+            assert(params_len == 3 || params_len == 4, 'EthBO: Bad param length');
 
             let contract_address = *params.at(0);
-            let slot_index = *params.at(1);
+            let slot_index_low = *params.at(1);
+            let slot_index_high = *params.at(2);
 
-            let valid_slot = get_slot_key(slot_index.into(), user.into());
+            let slot_index = u256 { low: slot_index_low.try_into().unwrap(), high: slot_index_high.try_into().unwrap() };
+            let valid_slot = get_slot_key(slot_index, user.into());
 
             let governance_power = SingleSlotProof::get_slot_value(
                 @SingleSlotProof::unsafe_new_contract_state(), timestamp, contract_address, valid_slot, params, user_params
             );
-            assert(governance_power.is_non_zero(), 'EthBO20: No governance power');
+            assert(governance_power.is_non_zero(), 'EthBO: No governance power');
 
-            if params_len == 2 {
+            if params_len == 3 {
                 return governance_power;
             }
 
-            let governance_power_multiplier = *params.at(2);
-            assert(governance_power_multiplier.is_non_zero(), 'EthBO20: Invalid multiplier');
+            let governance_power_multiplier = *params.at(3);
+            assert(governance_power_multiplier.is_non_zero(), 'EthBO: Invalid multiplier');
 
             governance_power * governance_power_multiplier.into()
         }

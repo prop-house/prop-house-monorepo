@@ -757,6 +757,7 @@ export type ManyProposalsQuery = {
     proposalId: number;
     metadataUri: string;
     title: any;
+    tldr: any;
     body: any;
     isCancelled: boolean;
     isWinner: boolean;
@@ -780,6 +781,7 @@ export type ProposalQuery = {
     proposalId: number;
     metadataUri: string;
     title: any;
+    tldr: any;
     body: any;
     isCancelled: boolean;
     isWinner: boolean;
@@ -1001,6 +1003,7 @@ export const ManyProposalsDocument = {
                 },
                 { kind: 'Field', name: { kind: 'Name', value: 'metadataUri' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'tldr' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'body' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isCancelled' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isWinner' } },
@@ -1070,6 +1073,7 @@ export const ProposalDocument = {
                 },
                 { kind: 'Field', name: { kind: 'Name', value: 'metadataUri' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'tldr' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'body' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isCancelled' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isWinner' } },

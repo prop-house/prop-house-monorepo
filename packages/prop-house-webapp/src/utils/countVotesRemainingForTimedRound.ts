@@ -10,5 +10,8 @@ export const countVotesRemainingForTimedRound = (
   votingPower: number,
   votesAlreadyCasted: Vote[],
   voteAllotments: VoteAllotment[],
+  roundAddress: string,
 ): number =>
-  votingPower - countNumVotes(votesAlreadyCasted) - countTotalVotesAlloted(voteAllotments);
+  votingPower -
+  countNumVotes(votesAlreadyCasted, roundAddress) -
+  countTotalVotesAlloted(voteAllotments);

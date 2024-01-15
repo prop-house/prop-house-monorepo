@@ -13,16 +13,17 @@ import { useEffect, useState } from 'react';
 import { isMobile } from 'web3modal';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { replaceIpfsGateway } from '../../utils/ipfs';
-import { Round, Timed } from '@prophouse/sdk-react';
+import { Proposal, Round, Timed } from '@prophouse/sdk-react';
 import { useAppSelector } from '../../hooks';
 import ProposalCardClaimAwardBar from '../ProposalCardClaimAwardBar';
 import { getBlockExplorerURL } from '../../utils/getBlockExplorerUrl';
 import { useAccount, useChainId } from 'wagmi';
-import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 import Button, { ButtonColor } from '../Button';
+import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
+import { openInNewTab } from '../../utils/openInNewTab';
 
 const TimedRoundProposalCard: React.FC<{
-  proposal: ProposalWithTldr;
+  proposal: Proposal;
   round: Round;
   mod?: boolean;
   hideProp?: (propId: number) => void;
@@ -37,7 +38,9 @@ const TimedRoundProposalCard: React.FC<{
     round.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
     round.state === Timed.RoundState.IN_VOTING_PERIOD;
 
-  const roundEnded = round.config.votePeriodEndTimestamp < Date.now() / 1000;
+  const roundEndedAndNotCancelled =
+    round.config.votePeriodEndTimestamp < Date.now() / 1000 &&
+    round.state !== Timed.RoundState.CANCELLED;
   const showVoteDisplay = round.state >= Timed.RoundState.IN_VOTING_PERIOD;
   const showVoteControls = showVoteDisplay && govPower > 0;
 
@@ -61,6 +64,12 @@ const TimedRoundProposalCard: React.FC<{
     <>
       <div
         onClick={e => {
+          if (cmdPlusClicked(e)) {
+            openInNewTab(`/${round.address}/${proposal.id}`);
+            dispatch(setModalActive(false));
+            return;
+          }
+
           dispatch(setModalActive(true));
           dispatch(setOnchainActiveProposal(proposal));
         }}
@@ -68,7 +77,10 @@ const TimedRoundProposalCard: React.FC<{
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.thirty}
-          classNames={clsx(classes.proposalCard, proposal.isWinner && roundEnded && classes.winner)}
+          classNames={clsx(
+            classes.proposalCard,
+            proposal.isWinner && roundEndedAndNotCancelled && classes.winner,
+          )}
         >
           <div className={classes.propInfo}>
             <div className={classes.textContainter}>
@@ -149,9 +161,9 @@ const TimedRoundProposalCard: React.FC<{
             </div>
           </div>
         </Card>
-        {roundEnded && account.address === proposal.proposer && proposal.isWinner && (
-          <ProposalCardClaimAwardBar round={round} proposal={proposal} />
-        )}
+        {roundEndedAndNotCancelled &&
+          account.address === proposal.proposer &&
+          proposal.isWinner && <ProposalCardClaimAwardBar round={round} proposal={proposal} />}
       </div>
     </>
   );

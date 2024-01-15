@@ -9,6 +9,7 @@ import { Proposal, Round, Timed } from '@prophouse/sdk-react';
 import RoundModuleCancelled from '../RoundModuleCancelled';
 import RoundModuleUnknownState from '../RoundModuleUnknownState';
 import dayjs from 'dayjs';
+import { parsedVotingPower } from '../../utils/parsedVotingPower';
 
 const TimedRoundModules: React.FC<{
   round: Round;
@@ -18,7 +19,7 @@ const TimedRoundModules: React.FC<{
   const { round, proposals, setShowVotingModal } = props;
 
   const totalVotesAcrossAllProps = proposals.reduce(
-    (total, prop) => (total = total + Number(prop.votingPower)),
+    (total, prop) => total + parsedVotingPower(prop.votingPower, round.address).toNumber(),
     0,
   );
 

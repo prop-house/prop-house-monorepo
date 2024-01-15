@@ -6,6 +6,7 @@ import { setOnchainActiveHouse, setOnchainActiveRound } from '../../state/slices
 import LoadingIndicator from '../LoadingIndicator';
 import House from '../../pages/House';
 import Round from '../../pages/Round';
+import NotFound from '../NotFound';
 
 const RoundOrHouseRouter: React.FC<{}> = () => {
   const { roundOrHouse: roundOrHouseAddress } = useParams();
@@ -48,7 +49,7 @@ const RoundOrHouseRouter: React.FC<{}> = () => {
     fetchRoundOrHouse();
   }, [round, house, roundOrHouseAddress, dispatch, lastAddressFetched, loading, propHouse.query]);
 
-  if (errorFetchingRoundAndHouse) return <>Error fetching round or house</>;
+  if (errorFetchingRoundAndHouse) return <NotFound />;
   if (loading) return <LoadingIndicator />;
 
   if (isRoundOrHouse === 'house' && house) return <House />;

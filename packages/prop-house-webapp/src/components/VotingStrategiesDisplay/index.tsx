@@ -58,7 +58,7 @@ const VotingStrategiesDisplay: React.FC<{
       );
     }
 
-    if (stratType === GovPowerStrategyType.BALANCE_OF)
+    if (stratType === GovPowerStrategyType.BALANCE_OF || stratType === GovPowerStrategyType.BALANCE_OF_ERC20)
       copy = (
         <>
           Owners of the{' '}
@@ -116,7 +116,7 @@ const VotingStrategiesDisplay: React.FC<{
     <div onClick={() => setShowModal(true)}>
       {formattedContent(
         <>
-          Owners of multiple tokens can vote. <span>See who can vote ↗</span>
+          <span>See who can vote ↗</span>
         </>,
       )}
     </div>

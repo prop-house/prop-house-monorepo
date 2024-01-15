@@ -5971,31 +5971,24 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.0.tgz#6734f8ebc106a0860dff7f92bf90df193f0935d7"
   integrity sha512-zrsUxjLOKAzdewIDRWy9nsV1GQsKBCWaGwsZQlCgr6/q+vjyZhFgqedLfFBuI9anTPEUT4APq9Mu0SZBTzIcGQ==
 
-"@prophouse/protocol@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-1.0.1.tgz#8ed1ea4e452d529e0cd6bb6cad5247d72beec10a"
-  integrity sha512-DbvDTQA9TJVYjOUREaog0BKBGoi4qwwt6uvRL61NwYFPIHXvD/FzUoDR8AO6DMUns0oE0INSNmVJiDQDEJx8cg==
+"@prophouse/protocol@1.0.6":
+  version "1.0.6"
+  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-1.0.6.tgz#242e27e9285eea0449065ad2e994256617e6d30d"
+  integrity sha512-ndgLCOarJpQVod2W73zhYG2k1W9GXI075VSRj/jUmqKgFjcI85ANHOfWKpB9EcL9rXMUUz/jmzZuH5uA5H8iOQ==
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/protocol@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-1.0.4.tgz#fe31ffc4bc39c76f70f019b3a81987535bbb1b17"
-  integrity sha512-+BhLmr+8HRJ27JzdBpjfcLFjQwyK1hWFFJG9eSmE7HBzg+rWq+0VWgfzzDUqKrcy9FOegXgb6yWzo2mTSWPXYw==
+"@prophouse/sdk-react@1.0.15":
+  version "1.0.15"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.15.tgz#a9df1ee3363d0c7f0fe9bcba04a2103f090acf7d"
+  integrity sha512-CJakH5gWbyi3GVw2sZ29BnHqmow36/urenjKmrwXohTML0EAtYDy8No+fClMRL32UHWvDxMMYBqNR1yU3gEYXg==
   dependencies:
-    ethers "~5.7.2"
+    "@prophouse/sdk" "1.0.21"
 
-"@prophouse/sdk-react@1.0.8":
-  version "1.0.8"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.8.tgz#080ce7d71ce71e0867a8f71211c1d14342c9a92e"
-  integrity sha512-Mux6Om1kCC1s9aulffY2W/W5TAASjjLx0GZSO7EusRUwoG/jTtGooTB1Cf80cAxsALto4AYbJ6/f8/M2Aetyrg==
-  dependencies:
-    "@prophouse/sdk" "1.0.13"
-
-"@prophouse/sdk@1.0.13":
-  version "1.0.13"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.13.tgz#1fed04683306cba279b65a05ceb49630ea9c5669"
-  integrity sha512-uXCOlIgfjy9FFheVsVD8PCCNTB2MKlvdV9zKgUni3Be/P6KoRiQOQkqIfqss57xVpiHcRxbgCOoJvkF4fZJVrQ==
+"@prophouse/sdk@1.0.21":
+  version "1.0.21"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.21.tgz#c83c532d77d2a696c5795be3ff8880bbb53a4c82"
+  integrity sha512-ADUwQir+5QezJ/rTTcwTXCy8Ge3SAalV9dAsFOrGhenuW6E7ROUTx4PvC8BXsXdPiY5LgOivLPBYr29KbRQmdw==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -6011,7 +6004,7 @@
     "@ethersproject/strings" "~5.7.0"
     "@ethersproject/wallet" "^5.7.0"
     "@pinata/sdk" "^2.1.0"
-    "@prophouse/protocol" "1.0.4"
+    "@prophouse/protocol" "1.0.6"
     bn.js "^5.2.1"
     ethereumjs-fork-block "^4.2.4"
     ethereumjs-fork-common "^3.1.3"
@@ -7419,6 +7412,11 @@
   version "3.0.5"
   resolved "https://registry.npmjs.org/@types/minimatch/-/minimatch-3.0.5.tgz#1001cc5e6a3704b83c236027e77f2f58ea010f40"
   integrity sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==
+
+"@types/mixpanel-browser@^2.48.0":
+  version "2.48.0"
+  resolved "https://registry.yarnpkg.com/@types/mixpanel-browser/-/mixpanel-browser-2.48.0.tgz#5ad5be7d6737defcc2d71e284ab2698e21d1b5eb"
+  integrity sha512-3SO/SKqVrkn8ipXHUc9ew3ZFyvIKYsIxbwhyzwqlcHdro1UC9inSwr2Cgq519bYljC/1tZA4ALZJJPQNOnhPbw==
 
 "@types/mkdirp@^0.5.2":
   version "0.5.2"
@@ -21743,6 +21741,11 @@ mixin-deep@^1.2.0:
   dependencies:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
+
+mixpanel-browser@^2.48.1:
+  version "2.48.1"
+  resolved "https://registry.yarnpkg.com/mixpanel-browser/-/mixpanel-browser-2.48.1.tgz#0fec03d87f57fe2e72c6a4b1df5924436840ece7"
+  integrity sha512-vXTuUzZMg+ht7sRqyjtc3dUDy/81Z/H6FLFgFkUZJqKFaAqcx1JSXmOdY/2kmsxCkUdy5JN5zW9m9TMCk+rxGQ==
 
 mkdirp-classic@^0.5.2:
   version "0.5.3"

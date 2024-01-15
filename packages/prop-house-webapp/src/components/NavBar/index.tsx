@@ -8,6 +8,7 @@ import { isMobile } from 'web3modal';
 import Button, { ButtonColor } from '../Button';
 import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
 import { IoSettingsSharp } from 'react-icons/io5';
+import mixpanel from 'mixpanel-browser';
 
 const NavBar = () => {
   const location = useLocation();
@@ -37,7 +38,10 @@ const NavBar = () => {
                 <Button
                   text="Create a round"
                   bgColor={ButtonColor.Purple}
-                  onClick={() => navigate('/create-round')}
+                  onClick={() => {
+                    mixpanel.track('Clicked Create Round');
+                    navigate('/create-round');
+                  }}
                   classNames={classes.createRoundBtn}
                 />
               </Nav.Link>
@@ -52,7 +56,7 @@ const NavBar = () => {
               </Nav.Link>
               <Nav.Link>
                 <Button
-                  text={<IoSettingsSharp />}
+                  text={isMobile() ? 'Dashboard' : <IoSettingsSharp />}
                   bgColor={ButtonColor.White}
                   classNames={classes.createRoundBtn}
                   onClick={() => navigate('/dashboard')}
