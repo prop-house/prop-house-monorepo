@@ -14,11 +14,12 @@ import { useNavigate } from 'react-router-dom';
 import { isMobile } from 'web3modal';
 import { fetchRoundsForFilter } from '../../utils/fetchRoundsForFilter';
 import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
+import { useFeaturedRounds } from '../../hooks/useFeaturedRounds';
 
 const RoundsFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
 
-  const { address: account } = useAccount({
+  useAccount({
     onConnect({ isReconnected }) {
       if (!isReconnected) setFetchNewRounds(true);
     },
@@ -34,6 +35,7 @@ const RoundsFeed: React.FC<{}> = () => {
   const [noMoreRounds, setNoMoreRounds] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
   const [newFilter, setNewFilter] = useState<boolean>();
+  const { featuredRounds } = useFeaturedRounds();
 
   const handleFilterChange = (filter: RoundsFilter) => {
     const isNewFilter = roundsFilter !== filter;
@@ -47,7 +49,7 @@ const RoundsFeed: React.FC<{}> = () => {
   };
 
   useEffect(() => {
-    if (!fetchNewRounds) return;
+    if (!fetchNewRounds || featuredRounds === undefined) return;
 
     const _fetchRounds = async () => {
       try {
@@ -62,6 +64,14 @@ const RoundsFeed: React.FC<{}> = () => {
           }
           return round;
         });
+
+        const updatedRounds = fetchedRounds.filter(
+          round => !featuredRounds.includes(round.address),
+        );
+        const featuredRoundsInFetched = fetchedRounds.filter(round =>
+          featuredRounds.includes(round.address),
+        );
+        setRounds([...featuredRoundsInFetched, ...updatedRounds]);
 
         setFetchingRounds(false);
 
@@ -86,18 +96,7 @@ const RoundsFeed: React.FC<{}> = () => {
       }
     };
     _fetchRounds();
-  }, [
-    pageIndex,
-    fetchingRounds,
-    fetchNewRounds,
-    propHouse.query,
-    rounds,
-    account,
-    favorites,
-    roundsFilter,
-    newFilter,
-    propHouse,
-  ]);
+  }, [fetchNewRounds, featuredRounds, pageIndex, propHouse, favorites, roundsFilter, newFilter]);
 
   return (
     <>
