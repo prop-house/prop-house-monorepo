@@ -10,7 +10,6 @@ enum RoundEventState {
 
 export const fetchRoundsForFilter = async (
   propHouse: PropHouse,
-  account: string | undefined,
   favorites: string[],
   filter: RoundsFilter,
   pageIndex: number,
@@ -23,7 +22,7 @@ export const fetchRoundsForFilter = async (
 
   const now = Math.round(new Date().getTime() / 1000);
 
-  const recentQuery = propHouse.query.getRoundsWithHouseInfo({
+  const relevantQuery = propHouse.query.getRoundsWithHouseInfo({
     ...queryParams,
     where: {
       eventState_not: RoundEventState.Cancelled,
@@ -69,8 +68,8 @@ export const fetchRoundsForFilter = async (
   });
 
   const query =
-    filter === RoundsFilter.Recent // recent
-      ? recentQuery
+    filter === RoundsFilter.Relevant
+      ? relevantQuery
       : filter === RoundsFilter.Favorites // favorites
       ? propHouse.query.getRoundsWithHouseInfo({
           ...queryParams,
@@ -88,7 +87,22 @@ export const fetchRoundsForFilter = async (
 
   let rounds;
   const queryRounds = await query;
-  rounds = queryRounds.length === 0 ? await recentQuery : queryRounds;
+  rounds = queryRounds.length === 0 ? await relevantQuery : queryRounds;
+
+  if (filter === RoundsFilter.Relevant) {
+    const voting = rounds
+      .filter(round => round.state === Timed.RoundState.IN_VOTING_PERIOD)
+      .sort((a, b) => a.config.votePeriodEndTimestamp - b.config.votePeriodEndTimestamp);
+    const proposing = rounds
+      .filter(round => round.state === Timed.RoundState.IN_PROPOSING_PERIOD)
+      .sort((a, b) => a.config.proposalPeriodEndTimestamp - b.config.proposalPeriodEndTimestamp);
+    const inactive = rounds.filter(
+      round =>
+        round.state !== Timed.RoundState.IN_PROPOSING_PERIOD &&
+        round.state !== Timed.RoundState.IN_VOTING_PERIOD,
+    );
+    rounds = [...voting, ...proposing, ...inactive];
+  }
 
   return rounds.filter(
     r => !(r.isFullyFunded === false && r.state === Timed.RoundState.IN_VOTING_PERIOD),

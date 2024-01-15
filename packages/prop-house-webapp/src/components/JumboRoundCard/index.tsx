@@ -25,10 +25,11 @@ import RoundAwardsDisplay from '../RoundAwardsDisplay';
 import dayjs from 'dayjs';
 import { BigNumber } from 'ethers';
 import clsx from 'clsx';
-import { useContentModeration, useIsHiddenRound } from '../../utils/supabaseModeration';
 import Button, { ButtonColor } from '../Button';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
+import { useContentModeration } from '../../hooks/useContentModeration';
+import { useIsHiddenRound } from '../../hooks/useIsHiddenRound';
 
 const JumboRoundCard: React.FC<{
   round: Round;

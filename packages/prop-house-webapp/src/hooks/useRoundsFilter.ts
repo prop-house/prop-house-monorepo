@@ -2,16 +2,16 @@ import { useState } from 'react';
 
 export enum RoundsFilter {
   Favorites = 'Favorites',
-  Recent = 'Recent',
+  Relevant = 'Relevant',
   Proposing = 'Proposing',
   Voting = 'Voting',
 }
 
-const DEFAULT_FILTER = RoundsFilter.Recent;
+const DEFAULT_FILTER = RoundsFilter.Relevant;
 
 const getFilter = (): RoundsFilter => {
   const filter = localStorage.getItem('filter');
-  if (filter === 'Active') localStorage.setItem('filter', 'Recent'); // removing old filter default
+  if (filter === 'Active' || filter === 'Recent') localStorage.setItem('filter', 'Relevant'); // removing old filter default
   return filter ? (filter as RoundsFilter) : DEFAULT_FILTER;
 };
 

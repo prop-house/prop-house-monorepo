@@ -7,7 +7,8 @@ import { House, Proposal, Round, RoundType, Timed } from '@prophouse/sdk-react';
 import TimedRoundProposalCard from '../TimedRoundProposalCard';
 import TimedRoundModules from '../TimedRoundModules';
 import InfRoundModules from '../InfRoundModules';
-import { useContentModeration, useHiddenPropIds } from '../../utils/supabaseModeration';
+import { useHiddenPropIds } from '../../hooks/useHiddenPropIds';
+import { useContentModeration } from '../../hooks/useContentModeration';
 
 const RoundContent: React.FC<{
   round: Round;
