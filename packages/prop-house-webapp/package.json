@@ -60,6 +60,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-jazzicon": "^1.0.4",
     "react-loading": "^2.0.3",
+    "react-loading-skeleton": "^3.3.1",
     "react-markdown": "^8.0.1",
     "react-modal": "^3.15.1",
     "react-papaparse": "^4.1.0",

@@ -3,7 +3,6 @@ import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import React, { useEffect, useState } from 'react';
 import { Col, Dropdown, Row } from 'react-bootstrap';
 import JumboRoundCard from '../JumboRoundCard';
-import LoadingIndicator from '../LoadingIndicator';
 import Button, { ButtonColor } from '../Button';
 import { useAccount } from 'wagmi';
 import { getFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
@@ -15,6 +14,7 @@ import { isMobile } from 'web3modal';
 import { fetchRoundsForFilter } from '../../utils/fetchRoundsForFilter';
 import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
 import { useFeaturedRounds } from '../../hooks/useFeaturedRounds';
+import JumboCardLoading from '../JumboCardLoading';
 
 const RoundsFeed: React.FC<{}> = () => {
   useAccount({
@@ -142,7 +142,17 @@ const RoundsFeed: React.FC<{}> = () => {
           <div>Your favorite communites haven't run any rounds yet... awkward.</div>
         </div>
       ) : fetchingRounds && rounds === undefined ? (
-        <LoadingIndicator />
+        <Row>
+          {Array(5)
+            .fill(0)
+            .map((_, i) => {
+              return (
+                <Col xl={12} key={i}>
+                  <JumboCardLoading />
+                </Col>
+              );
+            })}
+        </Row>
       ) : (
         <>
           <Row>
