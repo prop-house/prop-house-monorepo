@@ -99,7 +99,7 @@ export function getGovPowerStrategyType(addr: string): string {
   if (addr == '0x196cf5ceba8e98abe1e633d6184cd28c1e1ebd09ea71f89867dd4c5fda97bbe') {
     return GovPowerStrategyType.BALANCE_OF_ERC20;
   }
-  if (addr == '0x6d22f17522d6992eb479deb850e96f9454fc2f6c127993ab2ef9d411f467e8') {
+  if (addr == '0x6d22f17522d6992eb479deb850e96f9454fc2f6c127993ab2ef9d411f467e8' || addr == '0x44e3bdffcb6ce36596d0faa4316932c5dc47005b9eaaf0f7ce0f455c98b2e75') {
     return GovPowerStrategyType.BALANCE_OF_ERC1155;
   }
   if (addr == '0x10f7529ec5df9069a06191deb7cd2c4158c2b59879e2544cb45dc221daff429') {

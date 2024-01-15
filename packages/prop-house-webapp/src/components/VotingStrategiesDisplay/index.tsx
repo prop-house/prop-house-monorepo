@@ -81,6 +81,17 @@ const VotingStrategiesDisplay: React.FC<{
         </>
       );
 
+    if (stratType === GovPowerStrategyType.CHECKPOINTABLE_ERC721)
+      copy = (
+        <>
+          Owners or delegates of the{' '}
+          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
+            {display(strat.tokenAddress)}
+          </a>{' '}
+          token can vote. {strat.multiplier ? strat.multiplier : 1} vote per token.
+        </>
+      );
+
     if (stratType === GovPowerStrategyType.UNKNOWN) copy = <>Error reading voting strategy</>;
 
     return formattedContent(copy);

@@ -3,7 +3,7 @@ import { SingleSlotProofHandler } from './base';
 import { encoding, splitUint256, storageProofs } from '../../utils';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
-import { GET_CURRENT_VOTES_FUNC } from '../../constants';
+import { GET_CURRENT_VOTES_FUNC, NUM_CHECKPOINTS_FUNC } from '../../constants';
 import { Call } from 'starknet';
 
 export class CheckpointableERC721Handler extends SingleSlotProofHandler<CheckpointableERC721Config> {
@@ -68,10 +68,15 @@ export class CheckpointableERC721Handler extends SingleSlotProofHandler<Checkpoi
     const numCheckpointsSlotKey = encoding.getSlotKey(account, numCheckpointsSlotIndex);
     const numCheckpointsSlotKeyU256 = splitUint256.SplitUint256.fromHex(numCheckpointsSlotKey);
 
-    const checkpointsSlotKey = encoding.getSlotKey(account, checkpointsSlotIndex);
+    const block = await this.getBlockNumberForTimestamp(timestamp);
+    const numCheckpoints = await this.contractFor(contractAddress).numCheckpoints(account, {
+      blockTag: block,
+    });
+    const checkpointToQuery = `0x${(Number(numCheckpoints) - 1).toString(16)}`;
+
+    const checkpointsSlotKey = encoding.getNestedSlotKey([account, checkpointToQuery], checkpointsSlotIndex);
     const checkpointsSlotKeyU256 = splitUint256.SplitUint256.fromHex(checkpointsSlotKey);
 
-    const block = await this.getBlockNumberForTimestamp(timestamp);
     const [numCheckpointsProofInputs, checkpointsProofInputs] = await Promise.all([
       this.fetchProofInputs(contractAddress, numCheckpointsSlotKey, block),
       this.fetchProofInputs(contractAddress, checkpointsSlotKey, block),
@@ -168,6 +173,6 @@ export class CheckpointableERC721Handler extends SingleSlotProofHandler<Checkpoi
    * @param token The token address
    */
   private contractFor(token: string) {
-    return new Contract(token, [GET_CURRENT_VOTES_FUNC], this._evm);
+    return new Contract(token, [GET_CURRENT_VOTES_FUNC, NUM_CHECKPOINTS_FUNC], this._evm);
   }
 }

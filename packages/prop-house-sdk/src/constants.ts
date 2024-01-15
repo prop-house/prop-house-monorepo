@@ -24,6 +24,12 @@ export const BALANCE_OF_ERC1155_FUNC = 'function balanceOf(address account, uint
 export const GET_CURRENT_VOTES_FUNC = 'function getCurrentVotes(address account) external view returns (uint96)';
 
 /**
+ * The `numCheckpoints` function signature.
+ */
+// prettier-ignore
+export const NUM_CHECKPOINTS_FUNC = 'function numCheckpoints(address account) external view returns (uint32)';
+
+/**
  * The address used to query `balanceOf` functions to detect the slot index.
  */
 export const BALANCE_OF_SLOT_QUERY_ADDRESS = '0x123456789abcdef123456789abcdef123456789a';
