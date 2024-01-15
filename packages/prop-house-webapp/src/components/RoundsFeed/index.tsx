@@ -55,7 +55,7 @@ const RoundsFeed: React.FC<{}> = () => {
         setFetchNewRounds(false);
 
         const fetchedRounds = (
-          await fetchRoundsForFilter(propHouse, account, favorites, roundsFilter, pageIndex, 10)
+          await fetchRoundsForFilter(propHouse, favorites, roundsFilter, pageIndex, 10)
         ).map(round => {
           if (ROUND_OVERRIDES[round.address]) {
             round.state = ROUND_OVERRIDES[round.address].state;
@@ -110,7 +110,7 @@ const RoundsFeed: React.FC<{}> = () => {
 
           <Dropdown.Menu className={classes.dropdownMenu}>
             {[
-              RoundsFilter.Recent,
+              RoundsFilter.Relevant,
               RoundsFilter.Proposing,
               RoundsFilter.Voting,
               RoundsFilter.Favorites,
