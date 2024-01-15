@@ -16,6 +16,7 @@ import Button, { ButtonColor } from '../Button';
 import { lumpVotes } from '../../utils/lumpVotes';
 import { parsedVotingPower } from '../../utils/parsedVotingPower';
 import { truncateThousands } from '../../utils/truncateThousands';
+import Skeleton from 'react-loading-skeleton';
 
 type ActivityItem = Proposal | Vote;
 
@@ -106,23 +107,26 @@ const ActivityFeed: React.FC<{}> = () => {
     <Row>
       <Col>
         <div className={classes.activityContainer}>
-          {activity &&
-            activity.map((item, i) => {
-              return (
-                <div className={classes.activityItem} key={i}>
-                  <div>
-                    <EthAddress
-                      address={'proposer' in item ? item.proposer : item.voter}
-                      addAvatar={true}
-                      avatarSize={12}
-                      className={classes.address}
-                    />
-                    <div className={classes.activityContent}>{activityContent(item)}</div>
+          {!activity
+            ? Array(10)
+                .fill(0)
+                .map(i => <Skeleton height={50} />)
+            : activity.map((item, i) => {
+                return (
+                  <div className={classes.activityItem} key={i}>
+                    <div>
+                      <EthAddress
+                        address={'proposer' in item ? item.proposer : item.voter}
+                        addAvatar={true}
+                        avatarSize={12}
+                        className={classes.address}
+                      />
+                      <div className={classes.activityContent}>{activityContent(item)}</div>
+                    </div>
+                    <div className={classes.timestamp}>{timeFromNow(item.receivedAt * 1000)}</div>
                   </div>
-                  <div className={classes.timestamp}>{timeFromNow(item.receivedAt * 1000)}</div>
-                </div>
-              );
-            })}
+                );
+              })}
           <Button
             text={endOfProps && endOfVotes ? 'End of activity' : 'Load more'}
             onClick={() => setFetchMoreActivity(true)}
