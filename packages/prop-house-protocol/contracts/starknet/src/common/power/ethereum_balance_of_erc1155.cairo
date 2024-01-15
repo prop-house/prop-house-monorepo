@@ -36,7 +36,7 @@ mod EthereumBalanceOfERC1155GovernancePowerStrategy {
             let slot_index = *params.at(1);
             let token_id = *params.at(2);
 
-            let mut mapping_keys = array![user.into(), token_id.into()];
+            let mut mapping_keys = array![token_id.into(), user.into()];
             let valid_slot = get_nested_slot_key(slot_index.into(), mapping_keys.span());
 
             let governance_power = SingleSlotProof::get_slot_value(

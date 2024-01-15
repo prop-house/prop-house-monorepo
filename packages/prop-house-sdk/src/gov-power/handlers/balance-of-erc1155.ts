@@ -75,7 +75,7 @@ export class BalanceOfERC1155Handler extends SingleSlotProofHandler<BalanceOfERC
     const strategy = await this.getStrategyAddressAndParams(strategyId);
     const [contractAddress, slotIndex, tokenId] = strategy.params;
 
-    const slotKey = encoding.getNestedSlotKey([account, tokenId], slotIndex);
+    const slotKey = encoding.getNestedSlotKey([tokenId, account], slotIndex);
     const slotKeyU256 = splitUint256.SplitUint256.fromHex(slotKey);
 
     const block = await this.getBlockNumberForTimestamp(timestamp);
@@ -98,7 +98,7 @@ export class BalanceOfERC1155Handler extends SingleSlotProofHandler<BalanceOfERC
     const strategy = await this.getStrategyAddressAndParams(strategyId);
     const [contractAddress, slotIndex, tokenId] = strategy.params;
 
-    const slotKey = encoding.getNestedSlotKey([account, tokenId], slotIndex);
+    const slotKey = encoding.getNestedSlotKey([tokenId, account], slotIndex);
 
     const block = await this.getBlockNumberForTimestamp(timestamp);
     const storageHash = await this.getStorageHash(contractAddress, block);

@@ -960,6 +960,15 @@ export class QueryWrapper {
           ...(multiplier ? { multiplier: Number(multiplier) } : {}),
         };
       };
+      case GovPowerStrategyType.CHECKPOINTABLE_ERC721: {
+        const [address, , , multiplier] = strategy.params;
+        return {
+          id: strategy.id,
+          strategyType: GovPowerStrategyType.CHECKPOINTABLE_ERC721,
+          tokenAddress: `0x${BigInt(address).toString(16)}`,
+          ...(multiplier ? { multiplier: Number(multiplier) } : {}),
+        };
+      };
       case GovPowerStrategyType.ALLOWLIST: {
         const cid = encoding.stringFromLE(strategy.params.slice(1).map(p => p.toString()));
         const allowlist: AllowlistJson = await ipfs.getJSON(cid);

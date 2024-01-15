@@ -452,6 +452,7 @@ export enum GovPowerStrategyType {
   BALANCE_OF_ERC1155 = 'BALANCE_OF_ERC1155',
   BALANCE_OF_ERC20 = 'BALANCE_OF_ERC20',
   BALANCE_OF = 'BALANCE_OF',
+  CHECKPOINTABLE_ERC721 = 'CHECKPOINTABLE_ERC721',
   ALLOWLIST = 'ALLOWLIST',
   VANILLA = 'VANILLA',
   UNKNOWN = 'UNKNOWN',
@@ -486,6 +487,13 @@ export interface BalanceOfERC1155Config {
   multiplier?: number;
 }
 
+export interface CheckpointableERC721Config {
+  strategyType: GovPowerStrategyType.CHECKPOINTABLE_ERC721;
+  assetType: AssetType.ERC721;
+  address: string;
+  multiplier?: number;
+}
+
 export interface AllowlistMember {
   address: string;
   govPower: string;
@@ -504,7 +512,7 @@ export interface Custom {
   strategyType: string;
 }
 
-export type DefaultGovPowerConfigs = BalanceOfConfig | BalanceOfERC20Config | BalanceOfERC1155Config | AllowlistConfig | VanillaConfig;
+export type DefaultGovPowerConfigs = BalanceOfConfig | BalanceOfERC20Config | BalanceOfERC1155Config | CheckpointableERC721Config | AllowlistConfig | VanillaConfig;
 
 // prettier-ignore
 export type GovPowerStrategyConfig<C extends Custom | void = void> = C extends void ? DefaultGovPowerConfigs : DefaultGovPowerConfigs | C;

@@ -78,6 +78,17 @@ const ProposingStrategiesDisplay: React.FC<{
         </>
       );
 
+    if (stratType === GovPowerStrategyType.CHECKPOINTABLE_ERC721)
+      copy = (
+        <>
+          Owners or delegates of the{' '}
+          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
+            {display(strat.tokenAddress)}
+          </a>{' '}
+          token can propose. {propThreshold > 1 && `${propThreshold} tokens required`}
+        </>
+      );
+
     if (stratType === GovPowerStrategyType.UNKNOWN) copy = <>Error reading proposing strategy</>;
 
     return formattedContent(copy);

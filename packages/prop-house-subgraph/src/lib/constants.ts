@@ -25,6 +25,7 @@ export namespace GovPowerStrategyType {
   export const BALANCE_OF = 'BALANCE_OF';
   export const BALANCE_OF_ERC20 = 'BALANCE_OF_ERC20';
   export const BALANCE_OF_ERC1155 = 'BALANCE_OF_ERC1155';
+  export const CHECKPOINTABLE_ERC721 = 'CHECKPOINTABLE_ERC721';
   export const UNKNOWN = 'UNKNOWN';
 }
 

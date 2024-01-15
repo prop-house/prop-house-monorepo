@@ -132,13 +132,13 @@ const AddVoter: React.FC<{
         ...newVoter,
         type: VotingStrategyType.BALANCE_OF,
         asset: AssetType.ERC721,
-      }) ;
+      });
     } else if (selectedType === StrategyType.ERC20) {
       setVoter({
         ...newVoter,
         type: VotingStrategyType.BALANCE_OF_ERC20,
         asset: AssetType.ERC20,
-      }) ;
+      });
     } else if (selectedType === StrategyType.ERC1155) {
       setVoter({
         ...newVoter,

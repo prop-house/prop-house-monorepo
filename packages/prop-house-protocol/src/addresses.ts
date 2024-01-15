@@ -22,6 +22,7 @@ export interface GovPowerStrategies {
   balanceOf: string;
   balanceOfErc20: string;
   balanceOfErc1155: string;
+  checkpointableErc721: string;
   vanilla: string;
 }
 
@@ -89,6 +90,7 @@ export const contracts: Record<number, ContractAddresses> = {
         balanceOf: goerli.starknet.address.ethBalanceOfGovPowerStrategy,
         balanceOfErc20: goerli.starknet.address.ethBalanceOfErc20GovPowerStrategy,
         balanceOfErc1155: goerli.starknet.address.ethBalanceOfErc1155GovPowerStrategy,
+        checkpointableErc721: goerli.starknet.address.ethCheckpointableErc721GovPowerStrategy,
         vanilla: goerli.starknet.address.vanillaGovPowerStrategy,
       },
       auth: {
@@ -132,6 +134,7 @@ export const contracts: Record<number, ContractAddresses> = {
         balanceOf: mainnet.starknet.address.ethBalanceOfGovPowerStrategy,
         balanceOfErc20: mainnet.starknet.address.ethBalanceOfErc20GovPowerStrategy,
         balanceOfErc1155: mainnet.starknet.address.ethBalanceOfErc1155GovPowerStrategy,
+        checkpointableErc721: mainnet.starknet.address.ethCheckpointableErc721GovPowerStrategy,
         vanilla: constants.HashZero,
       },
       auth: {
