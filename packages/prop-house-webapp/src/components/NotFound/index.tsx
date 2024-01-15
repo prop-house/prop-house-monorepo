@@ -23,12 +23,12 @@ const NotFound = () => {
           </p>
           <Button
             text="Go Home"
-            onClick={() => window.location.replace('https://offchain.prop.house/')}
+            onClick={() => window.location.replace('/')}
             bgColor={ButtonColor.PurpleLight}
           />
           <Button
             text="Explore old rounds"
-            onClick={() => window.location.replace('/')}
+            onClick={() => window.location.replace('https://offchain.prop.house/')}
             bgColor={ButtonColor.Purple}
           />
         </Col>
