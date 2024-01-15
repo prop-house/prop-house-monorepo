@@ -102,6 +102,9 @@ export function getGovPowerStrategyType(addr: string): string {
   if (addr == '0x6d22f17522d6992eb479deb850e96f9454fc2f6c127993ab2ef9d411f467e8') {
     return GovPowerStrategyType.BALANCE_OF_ERC1155;
   }
+  if (addr == '0x10f7529ec5df9069a06191deb7cd2c4158c2b59879e2544cb45dc221daff429') {
+    return GovPowerStrategyType.CHECKPOINTABLE_ERC721;
+  }
   if (addr == '0x3daa40ef909961a576f9ba58eb063d5ebc85411063a8b29435f05af6167079c') {
     return GovPowerStrategyType.ALLOWLIST;
   }

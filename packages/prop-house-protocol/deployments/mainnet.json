@@ -27,6 +27,7 @@
       "ethBalanceOfGovPowerStrategy": "0x6ddcc94a4225843546a9b118a2733fd924d6b8a6467279cbe6a1aea79daca54",
       "ethBalanceOfErc20GovPowerStrategy": "0x196cf5ceba8e98abe1e633d6184cd28c1e1ebd09ea71f89867dd4c5fda97bbe",
       "ethBalanceOfErc1155GovPowerStrategy": "0x6d22f17522d6992eb479deb850e96f9454fc2f6c127993ab2ef9d411f467e8",
+      "ethCheckpointableErc721GovPowerStrategy": "0x10f7529ec5df9069a06191deb7cd2c4158c2b59879e2544cb45dc221daff429",
       "herodotus": {
         "factRegistry": "0x002081b2d3de51f295e7516257f68bd9f06acbc7f19ba49410c100afbe57540f",
         "l1HeadersStore": "0x008caacc818a97ef9122aa67b3b0e14d10e2959b262e7e785f47e20a36ef0ce0"
