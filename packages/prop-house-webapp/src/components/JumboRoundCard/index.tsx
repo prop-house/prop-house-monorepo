@@ -30,6 +30,7 @@ import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { useContentModeration } from '../../hooks/useContentModeration';
 import { useIsHiddenRound } from '../../hooks/useIsHiddenRound';
+import JumboCardLoading from '../JumboCardLoading';
 
 const JumboRoundCard: React.FC<{
   round: Round;
@@ -131,7 +132,9 @@ const JumboRoundCard: React.FC<{
     fetchProposals();
   });
 
-  return isHidden === undefined || isHidden ? (
+  return isHidden === undefined ? (
+    <JumboCardLoading />
+  ) : isHidden ? (
     <></>
   ) : (
     <div
