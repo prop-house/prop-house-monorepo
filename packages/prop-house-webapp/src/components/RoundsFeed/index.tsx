@@ -17,18 +17,15 @@ import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
 import { useFeaturedRounds } from '../../hooks/useFeaturedRounds';
 
 const RoundsFeed: React.FC<{}> = () => {
-  const propHouse = usePropHouse();
-
   useAccount({
     onConnect({ isReconnected }) {
       if (!isReconnected) setFetchNewRounds(true);
     },
   });
+  const propHouse = usePropHouse();
   const navigate = useNavigate();
-
   const favorites = getFavoriteCommunities();
   const { roundsFilter, updateRoundsFilter } = useRoundsFilter();
-
   const [rounds, setRounds] = useState<RoundWithHouse[] | undefined>();
   const [fetchingRounds, setFetchingRounds] = useState(true);
   const [fetchNewRounds, setFetchNewRounds] = useState(true);
@@ -36,6 +33,7 @@ const RoundsFeed: React.FC<{}> = () => {
   const [pageIndex, setPageIndex] = useState(1);
   const [newFilter, setNewFilter] = useState<boolean>();
   const { featuredRounds } = useFeaturedRounds();
+  const [sortedForFeatured, setSortedForFeatured] = useState(false);
 
   const handleFilterChange = (filter: RoundsFilter) => {
     const isNewFilter = roundsFilter !== filter;
@@ -49,7 +47,7 @@ const RoundsFeed: React.FC<{}> = () => {
   };
 
   useEffect(() => {
-    if (!fetchNewRounds || featuredRounds === undefined) return;
+    if (!fetchNewRounds) return;
 
     const _fetchRounds = async () => {
       try {
@@ -64,14 +62,6 @@ const RoundsFeed: React.FC<{}> = () => {
           }
           return round;
         });
-
-        const updatedRounds = fetchedRounds.filter(
-          round => !featuredRounds.includes(round.address),
-        );
-        const featuredRoundsInFetched = fetchedRounds.filter(round =>
-          featuredRounds.includes(round.address),
-        );
-        setRounds([...featuredRoundsInFetched, ...updatedRounds]);
 
         setFetchingRounds(false);
 
@@ -96,7 +86,15 @@ const RoundsFeed: React.FC<{}> = () => {
       }
     };
     _fetchRounds();
-  }, [fetchNewRounds, featuredRounds, pageIndex, propHouse, favorites, roundsFilter, newFilter]);
+  }, [fetchNewRounds, pageIndex, propHouse, favorites, roundsFilter, newFilter]);
+
+  useEffect(() => {
+    if (!rounds || sortedForFeatured) return;
+    const updatedRounds = rounds.filter(round => !featuredRounds!.includes(round.address));
+    const featuredRoundsInFetched = rounds.filter(round => featuredRounds!.includes(round.address));
+    setRounds([...featuredRoundsInFetched, ...updatedRounds]);
+    setSortedForFeatured(true);
+  }, [featuredRounds, rounds, sortedForFeatured]);
 
   return (
     <>
