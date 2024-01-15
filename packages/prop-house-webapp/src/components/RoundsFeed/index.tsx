@@ -1,5 +1,5 @@
 import classes from './RoundsFeed.module.css';
-import { RoundWithHouse, Timed, usePropHouse } from '@prophouse/sdk-react';
+import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import React, { useEffect, useState } from 'react';
 import { Col, Dropdown, Row } from 'react-bootstrap';
 import JumboRoundCard from '../JumboRoundCard';
