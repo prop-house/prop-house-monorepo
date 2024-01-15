@@ -93,7 +93,7 @@ const MainApp = () => {
               </div>
               {loading
                 ? Array.from(Array(3).keys()).map(i => (
-                    <Skeleton height={40} style={{ marginBottom: '12px' }} />
+                    <Skeleton height={52} style={{ margin: '12px 0' }} />
                   ))
                 : houses &&
                   houses.map((house, index) => <CommunityCard key={index} house={house} />)}
