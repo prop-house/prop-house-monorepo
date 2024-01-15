@@ -11,61 +11,45 @@ import { useNavigate } from 'react-router-dom';
 import { getFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
 import MakeAppHomePageButton from '../../components/MakeAppHomePageButton';
-
-interface QueryOptions {
-  page: number;
-  perPage: number;
-  where?: {
-    id_not_in: string[];
-  };
-}
+import { useFeaturedHouses } from '../../hooks/useFeaturedRounds copy';
+import Skeleton from 'react-loading-skeleton';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
 
   const [houses, setHouses] = useState<House[]>();
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const favorites = getFavoriteCommunities();
-
   const showMakeAppHomePage = localStorage.getItem('makeAppHomePage');
+  const { featuredHouses } = useFeaturedHouses();
 
   useEffect(() => {
-    if (houses) return;
+    if (houses || featuredHouses === undefined) return;
     const getHouses = async () => {
       try {
+        setLoading(true);
+
         // if mobile, fetch all
         if (isMobile()) {
           const houses = await prophouse.query.getHouses();
           setHouses(sortHousesForFavs(houses, favorites));
+          setLoading(false);
           return;
         }
 
         // other fetch a mix of favs + non favs
-        const favHouses = await prophouse.query.getHouses({
+        const houses = await prophouse.query.getHouses({
           page: 1,
           perPage: 3,
           where: {
-            id_in: favorites.map(f => f.toLowerCase()),
+            id_in: [...featuredHouses],
           },
         });
-        if (favHouses.length >= 3) {
-          setHouses(favHouses);
-          return;
-        }
-
-        const queryOptions: QueryOptions = {
-          page: 1,
-          perPage: 3 - favHouses.length,
-        };
-
-        if (favorites.length > 0)
-          queryOptions.where = {
-            id_not_in: favorites.map(f => f.toLowerCase()),
-          };
-
-        const notFavHouses = await prophouse.query.getHouses(queryOptions);
-        setHouses([...favHouses, ...notFavHouses]);
+        setHouses(houses.reverse());
+        setLoading(false);
       } catch (e) {
+        setLoading(false);
         console.log(e);
       }
     };
@@ -100,20 +84,21 @@ const MainApp = () => {
               {showMakeAppHomePage === null && <MakeAppHomePageButton />}
 
               <div className={classes.sectionTitle}>
-                Communities
+                Featured
                 <Button
                   bgColor={ButtonColor.White}
                   text="View all"
                   onClick={() => navigate('/communities')}
                 />
               </div>
-              {houses &&
-                houses
-                  .slice(0, 3)
-                  .map((house, index) => <CommunityCard key={index} house={house} />)}
+              {loading
+                ? Array.from(Array(3).keys()).map(i => (
+                    <Skeleton height={40} style={{ marginBottom: '12px' }} />
+                  ))
+                : houses &&
+                  houses.map((house, index) => <CommunityCard key={index} house={house} />)}
 
               <div className={classes.sectionTitle}>Activity</div>
-
               <ActivityFeed />
             </Col>
           </>
