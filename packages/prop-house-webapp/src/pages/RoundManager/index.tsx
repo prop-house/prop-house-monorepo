@@ -54,11 +54,11 @@ const RoundManager = () => {
               type="round"
             />
             <Row>
-              <Tabs defaultActiveKey="rounds" className={classes.tabs}>
-                <Tab eventKey="rounds" title="Deposit awards">
+              <Tabs defaultActiveKey="deposit-assets" className={classes.tabs}>
+                <Tab eventKey="deposit-assets" title="Deposit awards">
                   <DepositAssetWidgets round={round} />
                 </Tab>
-                <Tab eventKey="activity" title="Cancel round">
+                <Tab eventKey="cancel-round" title="Cancel round">
                   <CancelRoundWidget round={round} />
                 </Tab>
               </Tabs>

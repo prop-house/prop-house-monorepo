@@ -6,6 +6,7 @@ import { resolveUri } from '../utils/resolveUri';
 import { erc1155ABI } from '../abi/ERC1155ABI';
 import { filterAssetsForType } from '../utils/filterAssetsForType';
 import { erc20img } from '../components/HouseManager/AssetSelector';
+import { erc1155TokenUriMods } from '../utils/modifyErc1155TokenUris';
 
 /**
  * Fetches symbols, decimals and token imgs for each award and returns a FullRoundAward
@@ -49,12 +50,16 @@ const useAssetImages = (assets: Asset[]): string[] | undefined => {
   useEffect(() => {
     if (!erc1155TokenUriFetch) return;
 
+    const finalErc1155TokenUrisToFetch = erc1155TokenUriFetch.map((uri, index) => {
+      return erc1155TokenUriMods(uri.result as string, erc1155Assets[index]);
+    });
+
     const resolveImageUris = async () => {
       let updatedImgUris: { [key: string]: string } = {};
 
-      const imageUrisPromises = erc1155TokenUriFetch.map(uri => {
-        if (!uri.result) return '/manager/nft.svg';
-        return resolveUri(uri.result as string);
+      const imageUrisPromises = finalErc1155TokenUrisToFetch.map(uri => {
+        if (!uri) return '/manager/nft.svg';
+        return resolveUri(uri);
       });
       const imageUris = await Promise.all(imageUrisPromises);
 
