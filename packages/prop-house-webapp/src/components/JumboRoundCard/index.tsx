@@ -239,8 +239,11 @@ const JumboRoundCard: React.FC<{
                 <>
                   {fetchingTop3Props ? (
                     <>
-                      <Skeleton height={30} />
-                      <Skeleton height={60} />
+                      {Array(4)
+                        .fill(0)
+                        .map(() => (
+                          <Skeleton height={30} />
+                        ))}
                     </>
                   ) : (
                     topThreeProps && (
@@ -256,8 +259,11 @@ const JumboRoundCard: React.FC<{
             </div>
 
             <div>
-              {proposals && (proposing || voting) && (
-                <ProposedSummary proposers={proposals.map(p => p.proposer)} />
+              {proposals === undefined ? (
+                <Skeleton />
+              ) : (
+                proposing ||
+                (voting && <ProposedSummary proposers={proposals.map(p => p.proposer)} />)
               )}
             </div>
           </Col>
