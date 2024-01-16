@@ -8,10 +8,12 @@ import PageHeader from '../../components/PageHeader';
 import ConnectToContinue from '../../components/ConnectToContinue';
 import { NounImage } from '../../utils/getNounImage';
 import Button, { ButtonColor } from '../../components/Button';
-import LoadingIndicator from '../../components/LoadingIndicator';
 import HouseCard from '../../components/HouseCard';
 import JumboRoundCard from '../../components/JumboRoundCard';
 import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
+import Skeleton from 'react-loading-skeleton';
+import { JumboCardLoading } from '../../components/LoadingCards';
+import { isMobile } from 'web3modal';
 
 const Dashboard = () => {
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
@@ -104,7 +106,13 @@ const Dashboard = () => {
               <div className={classes.subheading}>Houses</div>
             </Col>
             {loadingHouses ? (
-              <LoadingIndicator />
+              <>
+                {Array.from(Array(isMobile() ? 2 : 3).keys()).map(i => (
+                  <Col xs={6} lg={3}>
+                    <Skeleton height={280} inline />
+                  </Col>
+                ))}
+              </>
             ) : houses && houses.length === 0 ? (
               emptyIndicatorContent('houses')
             ) : (
@@ -121,7 +129,13 @@ const Dashboard = () => {
               <div className={classes.subheading}>Rounds</div>
             </Col>
             {loadingRounds ? (
-              <LoadingIndicator />
+              <>
+                {Array.from(Array(2).keys()).map(i => (
+                  <Col key={i} lg={6}>
+                    <JumboCardLoading />
+                  </Col>
+                ))}
+              </>
             ) : (
               rounds &&
               (rounds.length === 0 ? (
