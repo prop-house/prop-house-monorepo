@@ -262,8 +262,9 @@ const JumboRoundCard: React.FC<{
               {proposals === undefined ? (
                 <Skeleton />
               ) : (
-                proposing ||
-                (voting && <ProposedSummary proposers={proposals.map(p => p.proposer)} />)
+                (proposing || voting) && (
+                  <ProposedSummary proposers={proposals.map(p => p.proposer)} />
+                )
               )}
             </div>
           </Col>
