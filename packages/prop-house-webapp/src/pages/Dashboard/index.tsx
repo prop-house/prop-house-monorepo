@@ -107,8 +107,8 @@ const Dashboard = () => {
             </Col>
             {loadingHouses ? (
               <>
-                {Array.from(Array(isMobile() ? 2 : 3).keys()).map(i => (
-                  <Col xs={6} lg={3}>
+                {Array.from(Array(isMobile() ? 2 : 3).keys()).map((_, i) => (
+                  <Col xs={6} lg={3} key={i}>
                     <Skeleton height={280} inline />
                   </Col>
                 ))}
@@ -117,8 +117,8 @@ const Dashboard = () => {
               emptyIndicatorContent('houses')
             ) : (
               houses &&
-              houses.map(house => (
-                <Col xs={6} lg={3}>
+              houses.map((house, i) => (
+                <Col xs={6} lg={3} key={i}>
                   <HouseCard house={house} pathTo="manager" />
                 </Col>
               ))
@@ -130,7 +130,7 @@ const Dashboard = () => {
             </Col>
             {loadingRounds ? (
               <>
-                {Array.from(Array(2).keys()).map(i => (
+                {Array.from(Array(2).keys()).map((_, i) => (
                   <Col key={i} lg={6}>
                     <JumboCardLoading />
                   </Col>

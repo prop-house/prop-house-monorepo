@@ -26,8 +26,8 @@ export const JumboCardLoading = () => {
             style={{ marginBottom: '12px', marginTop: isMobile() ? '30px' : '0px' }}
           />
           <Row>
-            {Array.from(Array(3).keys()).map(i => (
-              <Col>
+            {Array.from(Array(3).keys()).map((_, i) => (
+              <Col key={i}>
                 <Skeleton height={60} inline />
               </Col>
             ))}

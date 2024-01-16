@@ -110,7 +110,7 @@ const ActivityFeed: React.FC<{}> = () => {
           {!activity
             ? Array(10)
                 .fill(0)
-                .map(i => <Skeleton height={50} />)
+                .map((_, i) => <Skeleton height={50} key={i} />)
             : activity.map((item, i) => {
                 return (
                   <div className={classes.activityItem} key={i}>

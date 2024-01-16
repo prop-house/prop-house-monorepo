@@ -241,8 +241,8 @@ const JumboRoundCard: React.FC<{
                     <>
                       {Array(4)
                         .fill(0)
-                        .map(() => (
-                          <Skeleton height={30} />
+                        .map((_, i) => (
+                          <Skeleton height={30} key={i} />
                         ))}
                     </>
                   ) : (
