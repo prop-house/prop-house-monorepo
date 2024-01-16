@@ -2,7 +2,6 @@ import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
-import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { usePropHouse } from '@prophouse/sdk-react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -13,6 +12,7 @@ import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
 import { setVoteAllotments } from '../../state/slices/voting';
 import { removeHtmlFromString } from '../../utils/removeHtmlFromString';
+import { RoundOrHouseContentLoadingCard } from '../../components/LoadingCards';
 
 const Round: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -22,7 +22,7 @@ const Round: React.FC<{}> = () => {
   const isModalActive = useAppSelector(state => state.propHouse.modalActive);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
-  const [loadingProposals, setLoadingProposals] = useState(false);
+  const [loadingProposals, setLoadingProposals] = useState<boolean>();
   const [loadedProposals, setLoadedProposals] = useState(false);
   const [loadingProposalsFailed, setLoadingProposalsFailed] = useState(false);
 
@@ -66,25 +66,21 @@ const Round: React.FC<{}> = () => {
           <Container>
             <RoundHeader round={round} house={house} />
           </Container>
+          <div className={classes.roundContainer}>
+            <Container className={classes.cardsContainer}>
+              {loadingProposals ? (
+                <RoundOrHouseContentLoadingCard />
+              ) : loadingProposalsFailed ? (
+                <NotFound />
+              ) : (
+                <div className={classes.propCards}>
+                  {proposals && <RoundContent round={round} house={house} proposals={proposals} />}
+                </div>
+              )}
+            </Container>
+          </div>
         </>
       )}
-      <div className={classes.roundContainer}>
-        <Container className={classes.cardsContainer}>
-          <div className={classes.propCards}>
-            {loadingProposals ? (
-              <div className={classes.loader}>
-                <LoadingIndicator />
-              </div>
-            ) : loadingProposalsFailed ? (
-              <NotFound />
-            ) : (
-              round &&
-              house &&
-              proposals && <RoundContent round={round} house={house} proposals={proposals} />
-            )}
-          </div>
-        </Container>
-      </div>
     </>
   );
 };

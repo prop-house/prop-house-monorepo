@@ -3,13 +3,13 @@ import { AssetType, Round } from '@prophouse/sdk-react';
 import { trophyColors } from '../../utils/trophyColors';
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 import { useCallback, useRef } from 'react';
-import LoadingIndicator from '../LoadingIndicator';
 import clsx from 'clsx';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 import useAssetsWithMetadata, { AssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
 import buildEtherscanPath from '../../utils/buildEtherscanPath';
 import buildOpenSeaPath from '../../utils/buildOpenSeaPath';
 import { truncateThousands } from '../../utils/truncateThousands';
+import Skeleton from 'react-loading-skeleton';
 
 const RoundAwardsDisplay: React.FC<{
   round: Round;
@@ -138,7 +138,7 @@ const RoundAwardsDisplay: React.FC<{
   );
 
   return loadingAssetsWithMetadata ? (
-    <LoadingIndicator />
+    <Skeleton />
   ) : assetsWithMetadata ? (
     <div className={clsx(classes.awardsAndNavigationContainer, breakout && classes.breakOut)}>
       <Swiper

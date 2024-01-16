@@ -10,7 +10,6 @@ import {
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import LoadingIndicator from '../LoadingIndicator';
 import { Col, Row } from 'react-bootstrap';
 import { IoTime } from 'react-icons/io5';
 import { FaClipboardCheck } from 'react-icons/fa';
@@ -30,7 +29,8 @@ import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { useContentModeration } from '../../hooks/useContentModeration';
 import { useIsHiddenRound } from '../../hooks/useIsHiddenRound';
-import JumboCardLoading from '../JumboCardLoading';
+import { JumboCardLoading } from '../LoadingCards';
+import Skeleton from 'react-loading-skeleton';
 
 const JumboRoundCard: React.FC<{
   round: Round;
@@ -238,7 +238,13 @@ const JumboRoundCard: React.FC<{
               {showRankings && (
                 <>
                   {fetchingTop3Props ? (
-                    <LoadingIndicator />
+                    <>
+                      {Array(4)
+                        .fill(0)
+                        .map(() => (
+                          <Skeleton height={30} />
+                        ))}
+                    </>
                   ) : (
                     topThreeProps && (
                       <ProposalRankings
@@ -253,8 +259,11 @@ const JumboRoundCard: React.FC<{
             </div>
 
             <div>
-              {proposals && (proposing || voting) && (
-                <ProposedSummary proposers={proposals.map(p => p.proposer)} />
+              {proposals === undefined ? (
+                <Skeleton />
+              ) : (
+                proposing ||
+                (voting && <ProposedSummary proposers={proposals.map(p => p.proposer)} />)
               )}
             </div>
           </Col>
