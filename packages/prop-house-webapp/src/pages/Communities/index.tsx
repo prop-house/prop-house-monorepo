@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import { useFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
 import HouseCard from '../../components/HouseCard';
+import Skeleton from 'react-loading-skeleton';
 
 const Communities: React.FC = () => {
   const [houses, setHouses] = useState<House[]>();
@@ -56,12 +57,22 @@ const Communities: React.FC = () => {
         subtitle="Discover all the communities running on Prop House"
       />
       <Row>
-        {houses &&
+        {loading ? (
+          <>
+            {Array.from(Array(8).keys()).map(i => (
+              <Col key={i} xs={6} lg={3}>
+                <Skeleton height={280} inline style={{ marginBottom: '20px' }} />
+              </Col>
+            ))}
+          </>
+        ) : (
+          houses &&
           houses.map((house, i) => (
             <Col key={i} xs={6} lg={3}>
               <HouseCard house={house} favHandling={true} pathTo="page" />
             </Col>
-          ))}
+          ))
+        )}
       </Row>
       <Row className={classes.loadMoreRow}>
         <Button
