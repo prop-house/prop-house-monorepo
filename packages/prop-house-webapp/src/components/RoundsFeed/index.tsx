@@ -131,7 +131,7 @@ const RoundsFeed: React.FC<{}> = () => {
           <Button
             text="Add one now"
             bgColor={ButtonColor.Pink}
-            onClick={() => navigate('/communities')}
+            onClick={() => navigate('/houses')}
           />
         </div>
       ) : roundsFilter === RoundsFilter.Favorites &&

@@ -88,7 +88,7 @@ const MainApp = () => {
                 <Button
                   bgColor={ButtonColor.White}
                   text="View all"
-                  onClick={() => navigate('/communities')}
+                  onClick={() => navigate('/houses')}
                 />
               </div>
               {loading

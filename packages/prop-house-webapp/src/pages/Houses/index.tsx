@@ -1,4 +1,4 @@
-import classes from './Communities.module.css';
+import classes from './Houses.module.css';
 import { House, usePropHouse } from '@prophouse/sdk-react';
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
@@ -9,7 +9,7 @@ import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
 import HouseCard from '../../components/HouseCard';
 import Skeleton from 'react-loading-skeleton';
 
-const Communities: React.FC = () => {
+const Houses: React.FC = () => {
   const [houses, setHouses] = useState<House[]>();
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -27,7 +27,7 @@ const Communities: React.FC = () => {
         setLoading(true);
         setFetchMore(false);
 
-        const fetchedHouses = await propHouse.query.getHouses({ page: page, perPage: 8 });
+        const fetchedHouses = await propHouse.query.getHouses({ page: page, perPage: 12 });
 
         setLoading(false);
 
@@ -52,10 +52,7 @@ const Communities: React.FC = () => {
 
   return (
     <Container>
-      <PageHeader
-        title="Communities"
-        subtitle="Discover all the communities running on Prop House"
-      />
+      <PageHeader title="Houses" subtitle="Discover all the houses running on Prop House" />
       <Row>
         {loading ? (
           <>
@@ -93,4 +90,4 @@ const Communities: React.FC = () => {
   );
 };
 
-export default Communities;
+export default Houses;

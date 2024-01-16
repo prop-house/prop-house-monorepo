@@ -30,7 +30,7 @@ import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 import bgColorFor, { BgColorElement } from './utils/bgColorFor';
 import Dashboard from './pages/Dashboard';
 import RoundManager from './pages/RoundManager';
-import Communities from './pages/Communities';
+import Communities from './pages/Houses';
 import Home from './pages/Home';
 import HouseManager from './pages/HouseManager';
 import { useAppSelector } from './hooks';
@@ -116,7 +116,7 @@ function App() {
                     />
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/communities" element={<Communities />} />
+                    <Route path="/houses" element={<Communities />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
