@@ -14,7 +14,7 @@ import { isMobile } from 'web3modal';
 import { fetchRoundsForFilter } from '../../utils/fetchRoundsForFilter';
 import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
 import { useFeaturedRounds } from '../../hooks/useFeaturedRounds';
-import JumboCardLoading from '../JumboCardLoading';
+import JumboCardLoading from '../LoadingCards';
 
 const RoundsFeed: React.FC<{}> = () => {
   useAccount({

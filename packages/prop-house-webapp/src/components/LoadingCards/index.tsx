@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import classes from '../JumboRoundCard/JumboRoundCard.module.css';
-import customClasses from './JumboCardLoading.module.css';
+import customClasses from './LoadingCards.module.css';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { Col, Row } from 'react-bootstrap';
 import Skeleton from 'react-loading-skeleton';
