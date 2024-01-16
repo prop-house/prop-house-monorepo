@@ -43,11 +43,17 @@ export const RoundOrHouseHeaderLoadingCard = () => {
     <Container>
       <Row style={{ minHeight: '20rem' }}>
         <Col>
-          <Col style={{ width: '50%' }}>
+          <Col style={{ width: isMobile() ? '100%' : '50%' }}>
             <Skeleton height={30} style={{ marginBottom: '12px' }} />
-            <Skeleton height={30} />
+            {isMobile() ? <Skeleton height={100} /> : <Skeleton height={30} />}
           </Col>
-          <Skeleton height={120} />
+          <Col>
+            {isMobile() ? (
+              <Skeleton height={120} style={{ marginTop: '1rem' }} />
+            ) : (
+              <Skeleton height={120} />
+            )}
+          </Col>
         </Col>
       </Row>
     </Container>
