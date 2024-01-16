@@ -4,7 +4,6 @@ import HouseHeader from '../../components/HouseHeader';
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import HouseUtilityBar from '../../components/HouseUtilityBar';
-import LoadingIndicator from '../../components/LoadingIndicator';
 import ErrorMessageCard from '../../components/ErrorMessageCard';
 import NoSearchResults from '../../components/NoSearchResults';
 import { sortRoundByStatus } from '../../utils/sortRoundByStatus';
@@ -135,7 +134,7 @@ const House: React.FC<{}> = () => {
             <Container>
               <Row>
                 {loadingRounds ? (
-                  <LoadingIndicator />
+                  <></>
                 ) : !loadingRounds && failedLoadingRounds ? (
                   <ErrorMessageCard message={t('noRoundsAvailable')} />
                 ) : roundsOnDisplay.length > 0 ? (

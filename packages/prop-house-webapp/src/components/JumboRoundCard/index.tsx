@@ -29,7 +29,7 @@ import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { useContentModeration } from '../../hooks/useContentModeration';
 import { useIsHiddenRound } from '../../hooks/useIsHiddenRound';
-import JumboCardLoading from '../LoadingCards';
+import { JumboCardLoading } from '../LoadingCards';
 import Skeleton from 'react-loading-skeleton';
 
 const JumboRoundCard: React.FC<{

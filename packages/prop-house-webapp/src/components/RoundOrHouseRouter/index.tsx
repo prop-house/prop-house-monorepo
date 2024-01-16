@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { setOnchainActiveHouse, setOnchainActiveRound } from '../../state/slices/propHouse';
-import LoadingIndicator from '../LoadingIndicator';
 import House from '../../pages/House';
 import Round from '../../pages/Round';
 import NotFound from '../NotFound';
+import { RoundOrHouseContentLoadingCard, RoundOrHouseHeaderLoadingCard } from '../LoadingCards';
 
 const RoundOrHouseRouter: React.FC<{}> = () => {
   const { roundOrHouse: roundOrHouseAddress } = useParams();
@@ -50,7 +50,13 @@ const RoundOrHouseRouter: React.FC<{}> = () => {
   }, [round, house, roundOrHouseAddress, dispatch, lastAddressFetched, loading, propHouse.query]);
 
   if (errorFetchingRoundAndHouse) return <NotFound />;
-  if (loading) return <LoadingIndicator />;
+  if (loading)
+    return (
+      <>
+        <RoundOrHouseHeaderLoadingCard />
+        <RoundOrHouseContentLoadingCard />
+      </>
+    );
 
   if (isRoundOrHouse === 'house' && house) return <House />;
   if (isRoundOrHouse === 'round' && round && house) return <Round />;

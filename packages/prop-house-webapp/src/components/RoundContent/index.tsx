@@ -46,7 +46,10 @@ const RoundContent: React.FC<{
             <ErrorMessageCard message={'Submitted proposals will show up here'} />
           ) : (
             <>
-              {hiddenPropIds !== undefined &&
+              {hiddenPropIds === undefined ? (
+                <></>
+              ) : (
+                proposals &&
                 proposals
                   .filter(p => !hiddenPropIds.includes(p.id))
                   .map((prop, index) => (
@@ -61,7 +64,8 @@ const RoundContent: React.FC<{
                         }}
                       />
                     </Col>
-                  ))}
+                  ))
+              )}
             </>
           )}
         </Col>

@@ -3,11 +3,11 @@ import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import classes from '../JumboRoundCard/JumboRoundCard.module.css';
 import customClasses from './LoadingCards.module.css';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import Skeleton from 'react-loading-skeleton';
 import { isMobile } from 'web3modal';
 
-const JumboCardLoading = () => {
+export const JumboCardLoading = () => {
   return (
     <Card
       bgColor={CardBgColor.LightPurple}
@@ -38,4 +38,39 @@ const JumboCardLoading = () => {
   );
 };
 
-export default JumboCardLoading;
+export const RoundOrHouseHeaderLoadingCard = () => {
+  return (
+    <Container>
+      <Row style={{ minHeight: '20rem' }}>
+        <Col>
+          <Col style={{ width: '50%' }}>
+            <Skeleton height={30} style={{ marginBottom: '12px' }} />
+            <Skeleton height={30} />
+          </Col>
+          <Skeleton height={120} />
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
+export const RoundOrHouseContentLoadingCard = () => {
+  return (
+    <div style={{ background: '#f5f5f5' }}>
+      <Container>
+        <Row style={{ paddingTop: '2rem' }}>
+          <Col xl={8}>
+            {Array(5)
+              .fill(0)
+              .map(() => (
+                <Skeleton height={200} style={{ marginBottom: '12px' }} />
+              ))}
+          </Col>
+          <Col>
+            <Skeleton height={200} style={{ marginBottom: '12px' }} />
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  );
+};
