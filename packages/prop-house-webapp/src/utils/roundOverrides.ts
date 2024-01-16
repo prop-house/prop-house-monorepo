@@ -1,6 +1,6 @@
 import { Timed } from '@prophouse/sdk-react';
 
-export const ROUND_OVERRIDES: Record<string, { state: Timed.RoundState; winners: number[] }> = {
+export const COMPLETED_ROUND_OVERRIDES: Record<string, { state: Timed.RoundState; winners: number[] }> = {
   // BasePaint
   '0x2fd198c8b641180a593dceda1eaaac6bd0fc8c89': {
     state: Timed.RoundState.COMPLETE,
@@ -27,6 +27,11 @@ export const ROUND_OVERRIDES: Record<string, { state: Timed.RoundState; winners:
     winners: [14, 23, 6, 21, 18],
   },
 };
+
+export const HIDDEN_ROUND_OVERRIDES = [
+  // Nouns Esports
+  '0x0219c27b23972086a615df35adb653838e851b9b',
+];
 
 export const GOV_POWER_OVERRIDES: Record<string, { decimals: number }> = {
   // $FARTS

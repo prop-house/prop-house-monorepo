@@ -13,7 +13,7 @@ import { Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import RoundCard from '../../components/RoundCard';
 import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
-import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
+import { COMPLETED_ROUND_OVERRIDES, HIDDEN_ROUND_OVERRIDES } from '../../utils/roundOverrides';
 import { removeHtmlFromString } from '../../utils/removeHtmlFromString';
 
 const House: React.FC<{}> = () => {
@@ -39,11 +39,12 @@ const House: React.FC<{}> = () => {
       setLoadingRounds(true);
       try {
         const rounds = (await propHouse.query.getRoundsForHouse(house.address)).map(round => {
-          if (ROUND_OVERRIDES[round.address]) {
-            round.state = ROUND_OVERRIDES[round.address].state;
+          if (COMPLETED_ROUND_OVERRIDES[round.address]) {
+            round.state = COMPLETED_ROUND_OVERRIDES[round.address].state;
           }
           return round;
-        });
+        })
+        .filter(round => !HIDDEN_ROUND_OVERRIDES.includes(round.address));
         setRounds(rounds);
 
         // Number of rounds under a certain status type in a House

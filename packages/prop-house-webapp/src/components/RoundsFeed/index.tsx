@@ -12,7 +12,7 @@ import { FaRegSurprise } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { isMobile } from 'web3modal';
 import { fetchRoundsForFilter } from '../../utils/fetchRoundsForFilter';
-import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
+import { COMPLETED_ROUND_OVERRIDES } from '../../utils/roundOverrides';
 import { useFeaturedRounds } from '../../hooks/useFeaturedRounds';
 import { JumboCardLoading } from '../LoadingCards';
 
@@ -57,8 +57,8 @@ const RoundsFeed: React.FC<{}> = () => {
         const fetchedRounds = (
           await fetchRoundsForFilter(propHouse, favorites, roundsFilter, pageIndex, 10)
         ).map(round => {
-          if (ROUND_OVERRIDES[round.address]) {
-            round.state = ROUND_OVERRIDES[round.address].state;
+          if (COMPLETED_ROUND_OVERRIDES[round.address]) {
+            round.state = COMPLETED_ROUND_OVERRIDES[round.address].state;
           }
           return round;
         });

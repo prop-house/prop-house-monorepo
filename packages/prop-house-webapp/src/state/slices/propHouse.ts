@@ -2,7 +2,7 @@ import { StoredProposalWithVotes, InfiniteAuction } from '@nouns/prop-house-wrap
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sortTimedRoundProps } from '../../utils/sortTimedRoundProps';
 import { House, Proposal, Round } from '@prophouse/sdk-react';
-import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
+import { COMPLETED_ROUND_OVERRIDES } from '../../utils/roundOverrides';
 
 export interface PropHouseSlice {
   activeProposal?: Proposal;
@@ -43,8 +43,8 @@ export const propHouseSlice = createSlice({
   initialState,
   reducers: {
     setOnchainActiveRound: (state, action: PayloadAction<Round | undefined>) => {
-      if (ROUND_OVERRIDES[action.payload!.address]) {
-        action.payload!.state = ROUND_OVERRIDES[action.payload!.address].state;
+      if (COMPLETED_ROUND_OVERRIDES[action.payload!.address]) {
+        action.payload!.state = COMPLETED_ROUND_OVERRIDES[action.payload!.address].state;
       }
       state.activeRound = action.payload;
     },
@@ -57,8 +57,8 @@ export const propHouseSlice = createSlice({
         action.payload === undefined
           ? undefined
           : action.payload.map(proposal => {
-              if (ROUND_OVERRIDES[proposal.round]) {
-                proposal.isWinner = ROUND_OVERRIDES[proposal.round].winners.includes(proposal.id);
+              if (COMPLETED_ROUND_OVERRIDES[proposal.round]) {
+                proposal.isWinner = COMPLETED_ROUND_OVERRIDES[proposal.round].winners.includes(proposal.id);
               }
               return proposal;
           }).sort((a, b) => Number(b.votingPower) - Number(a.votingPower));

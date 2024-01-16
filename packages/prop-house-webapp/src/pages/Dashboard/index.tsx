@@ -10,7 +10,7 @@ import { NounImage } from '../../utils/getNounImage';
 import Button, { ButtonColor } from '../../components/Button';
 import HouseCard from '../../components/HouseCard';
 import JumboRoundCard from '../../components/JumboRoundCard';
-import { ROUND_OVERRIDES } from '../../utils/roundOverrides';
+import { COMPLETED_ROUND_OVERRIDES } from '../../utils/roundOverrides';
 import Skeleton from 'react-loading-skeleton';
 import { JumboCardLoading } from '../../components/LoadingCards';
 import { isMobile } from 'web3modal';
@@ -50,8 +50,8 @@ const Dashboard = () => {
         setLoadingRounds(true);
         const rounds = (await propHouse.query.getRoundsWithHouseInfoManagedByAccount(account)).map(
           round => {
-            if (ROUND_OVERRIDES[round.address]) {
-              round.state = ROUND_OVERRIDES[round.address].state;
+            if (COMPLETED_ROUND_OVERRIDES[round.address]) {
+              round.state = COMPLETED_ROUND_OVERRIDES[round.address].state;
             }
             return round;
           },
