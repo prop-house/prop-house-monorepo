@@ -94,7 +94,7 @@ const ProposalCardClaimAwardBar: React.FC<{ round: Round; proposal: Proposal }> 
       >
         {claimed ? (
           <>
-            {`Award has been claimed`}
+            <p>Award has been claimed</p>
             <FaCheckCircle />
           </>
         ) : inReportingPeriod && countdown <= 0 ? (
@@ -104,7 +104,7 @@ const ProposalCardClaimAwardBar: React.FC<{ round: Round; proposal: Proposal }> 
           </>
         ) : inReportingPeriod ? (
           <>
-            {`${hours > 0 && `${hours}h`} and ${minutes}m until award claim period begins`}
+            <p>{`${hours > 0 && `${hours}h`} and ${minutes}m until award claim period begins`}</p>
             <FaClock />
           </>
         ) : (
