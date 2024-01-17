@@ -9,20 +9,15 @@ import {
 } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
-import EthAddress from '../EthAddress';
-import { timeFromNow } from '../../utils/timeFromNow';
-import { useNavigate } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
 import { lumpVotes } from '../../utils/lumpVotes';
-import { parsedVotingPower } from '../../utils/parsedVotingPower';
-import { truncateThousands } from '../../utils/truncateThousands';
 import Skeleton from 'react-loading-skeleton';
+import ActivityFeedItem from '../ActivityFeedItem';
 
 type ActivityItem = Proposal | Vote;
 
 const ActivityFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
-  const navigate = useNavigate();
 
   const [activity, setActivity] = useState<ActivityItem[]>();
   const [fetchMoreActivity, setFetchMoreActivity] = useState(true);
@@ -87,22 +82,6 @@ const ActivityFeed: React.FC<{}> = () => {
     fetchProps();
   });
 
-  const activityContent = (item: Proposal | Vote) => {
-    let votes = parsedVotingPower(item.votingPower, item.round);
-    return 'proposer' in item ? (
-      <>
-        proposed&nbsp;
-        <span onClick={() => navigate(`/${item.round}/${item.id}`)}>{item.title}</span>
-      </>
-    ) : (
-      <>
-        cast&nbsp;
-        {votes.gte(1000) ? truncateThousands(votes.toNumber()) : votes.toString()}
-        &nbsp;vote{votes.eq(1) ? '' : 's'}
-      </>
-    );
-  };
-
   return (
     <Row>
       <Col>
@@ -112,20 +91,7 @@ const ActivityFeed: React.FC<{}> = () => {
                 .fill(0)
                 .map((_, i) => <Skeleton height={50} key={i} />)
             : activity.map((item, i) => {
-                return (
-                  <div className={classes.activityItem} key={i}>
-                    <div>
-                      <EthAddress
-                        address={'proposer' in item ? item.proposer : item.voter}
-                        addAvatar={true}
-                        avatarSize={12}
-                        className={classes.address}
-                      />
-                      <div className={classes.activityContent}>{activityContent(item)}</div>
-                    </div>
-                    <div className={classes.timestamp}>{timeFromNow(item.receivedAt * 1000)}</div>
-                  </div>
-                );
+                return <ActivityFeedItem item={item} key={i} />;
               })}
           <Button
             text={endOfProps && endOfVotes ? 'End of activity' : 'Load more'}
