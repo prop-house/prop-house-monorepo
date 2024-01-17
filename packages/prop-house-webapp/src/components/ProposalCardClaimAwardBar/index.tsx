@@ -19,6 +19,11 @@ const ProposalCardClaimAwardBar: React.FC<{ round: Round; proposal: Proposal }> 
   const [txState, setTxState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [claimed, setClaimed] = useState<boolean>();
 
+  const inReportingPeriod = round.state === Timed.RoundState.IN_REPORTING_PERIOD;
+  const inClaimPeriod = round.state === Timed.RoundState.IN_CLAIMING_PERIOD;
+  const hours = Math.floor(countdown / 3600);
+  const minutes = Math.floor((countdown % 3600) / 60);
+
   useEffect(() => {
     if (!account) return;
     const fetchClaims = async () => {
@@ -36,13 +41,6 @@ const ProposalCardClaimAwardBar: React.FC<{ round: Round; proposal: Proposal }> 
     };
     fetchClaims();
   });
-
-  const inClaimPeriod = round.state === Timed.RoundState.IN_CLAIMING_PERIOD;
-  const passedSixHoursAfterRoundEnd =
-    Date.now() / 1000 > round.config.votePeriodEndTimestamp + 21600;
-
-  const hours = Math.floor(countdown / 3600);
-  const minutes = Math.floor((countdown % 3600) / 60);
 
   useEffect(() => {
     if (claimed) return;
@@ -99,18 +97,18 @@ const ProposalCardClaimAwardBar: React.FC<{ round: Round; proposal: Proposal }> 
             {`Award has been claimed`}
             <FaCheckCircle />
           </>
-        ) : inClaimPeriod ? (
-          inClaimPeriodContent
-        ) : passedSixHoursAfterRoundEnd ? (
+        ) : inReportingPeriod && countdown <= 0 ? (
           <>
-            {`Award claim period will begin soon`}
+            <p>Award claim period will begin soon.</p>
             <FaClock />
           </>
-        ) : (
+        ) : inReportingPeriod ? (
           <>
             {`${hours > 0 && `${hours}h`} and ${minutes}m until award claim period begins`}
             <FaClock />
           </>
+        ) : (
+          inClaimPeriod && inClaimPeriodContent
         )}
       </div>
     </div>
