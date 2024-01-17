@@ -143,7 +143,10 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       return Timed.RoundState.IN_VOTING_PERIOD;
     }
     if (timestamp.lt(proposalPeriodEndTimestamp.add(config.votePeriodDuration).add(Time.toSeconds(56, TimeUnit.Days)))) {
-      return Timed.RoundState.IN_CLAIMING_PERIOD;
+      if (eventState === RoundEventState.FINALIZED) {
+        return Timed.RoundState.IN_CLAIMING_PERIOD;
+      }
+      return Timed.RoundState.IN_REPORTING_PERIOD;
     }
     return Timed.RoundState.COMPLETE;
   }

@@ -134,6 +134,7 @@ export namespace Timed {
     NOT_STARTED,
     IN_PROPOSING_PERIOD,
     IN_VOTING_PERIOD,
+    IN_REPORTING_PERIOD,
     IN_CLAIMING_PERIOD,
     COMPLETE,
   }
