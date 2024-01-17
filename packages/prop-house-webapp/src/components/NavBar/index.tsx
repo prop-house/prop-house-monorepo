@@ -42,7 +42,7 @@ const NavBar = () => {
                     mixpanel.track('Clicked Create Round');
                     navigate('/create-round');
                   }}
-                  classNames={classes.createRoundBtn}
+                  classNames={classes.navBarBtn}
                 />
               </Nav.Link>
 
@@ -54,11 +54,11 @@ const NavBar = () => {
                   chainStatus={'icon'}
                 />
               </Nav.Link>
-              <Nav.Link>
+              <Nav.Link className={classes.dashboardBtn}>
                 <Button
                   text={isMobile() ? 'Dashboard' : <IoSettingsSharp />}
                   bgColor={ButtonColor.White}
-                  classNames={classes.createRoundBtn}
+                  classNames={classes.navBarBtn}
                   onClick={() => navigate('/dashboard')}
                 />
               </Nav.Link>

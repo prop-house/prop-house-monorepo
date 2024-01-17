@@ -1,6 +1,6 @@
 .navbar {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.75rem;
 }
 .mobileNavbar {
   padding-top: 1rem;
@@ -62,8 +62,11 @@
 .connectBtnContainer {
   align-self: center;
 }
-.createRoundBtn {
+.navBarBtn {
   height: 40px;
+}
+.dashboardBtn {
+  padding-right: 0 !important;
 }
 @media (max-width: 991px) {
   .menuLink {
