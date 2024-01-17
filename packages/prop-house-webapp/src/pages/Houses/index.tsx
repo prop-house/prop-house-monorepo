@@ -8,6 +8,7 @@ import { useFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
 import HouseCard from '../../components/HouseCard';
 import Skeleton from 'react-loading-skeleton';
+import { House_OrderBy } from '@prophouse/sdk-react';
 
 const Houses: React.FC = () => {
   const [houses, setHouses] = useState<House[]>();
@@ -27,7 +28,11 @@ const Houses: React.FC = () => {
         setLoading(true);
         setFetchMore(false);
 
-        const fetchedHouses = await propHouse.query.getHouses({ page: page, perPage: 12 });
+        const fetchedHouses = await propHouse.query.getHouses({
+          page: page,
+          perPage: 12,
+          orderBy: House_OrderBy.RoundCount,
+        });
 
         setLoading(false);
 
