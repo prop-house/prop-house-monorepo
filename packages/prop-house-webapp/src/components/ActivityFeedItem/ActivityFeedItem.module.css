@@ -1,0 +1,29 @@
+.activityItem {
+  margin: 0.2rem 0;
+}
+.activityItem .header {
+  display: flex;
+  justify-content: space-between;
+}
+.activityItem .timestamp {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--brand-gray);
+  display: flex;
+  justify-content: flex-end;
+  min-width: 2.5rem;
+}
+.activityItem .address {
+  font-size: 16px;
+  font-weight: medium;
+  color: var(--brand-black);
+}
+.activityItem .activityContent {
+  font-weight: medium;
+  font-size: 14px;
+  color: var(--brand-gray);
+}
+
+.activityItem .activityContent span {
+  font-weight: 500;
+}
