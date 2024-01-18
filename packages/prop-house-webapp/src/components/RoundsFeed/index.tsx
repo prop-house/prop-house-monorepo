@@ -89,7 +89,7 @@ const RoundsFeed: React.FC<{}> = () => {
   }, [fetchNewRounds, pageIndex, propHouse, favorites, roundsFilter, newFilter]);
 
   useEffect(() => {
-    if (!rounds || sortedForFeatured) return;
+    if (!rounds || !featuredRounds || sortedForFeatured) return;
     const updatedRounds = rounds.filter(round => !featuredRounds!.includes(round.address));
     const featuredRoundsInFetched = rounds.filter(round => featuredRounds!.includes(round.address));
     setRounds([...featuredRoundsInFetched, ...updatedRounds]);
