@@ -18,3 +18,8 @@
 - [Overview](https://prop-house.gitbook.io/prop-house/prop-house/typescript-sdk#overview)
 - [Installation](https://prop-house.gitbook.io/prop-house/prop-house/typescript-sdk#installation)
 - [Usage](https://prop-house.gitbook.io/prop-house/prop-house/typescript-sdk#usage)
+  - [Initialization](https://prop-house.gitbook.io/prop-house/prop-house/typescript-sdk#initialization)
+  - [House & Round Creation](https://prop-house.gitbook.io/prop-house/prop-house/typescript-sdk#house-and-round-creation)
+  - [Round Asset Management](https://prop-house.gitbook.io/prop-house/prop-house/typescript-sdk#round-asset-management)
+  - [Proposal & Vote Submission](https://prop-house.gitbook.io/prop-house/prop-house/typescript-sdk#proposal-and-vote-submission)
+  - [Typed Subgraph Client](https://prop-house.gitbook.io/prop-house/prop-house/typescript-sdk#typed-subgraph-client)
