@@ -5985,17 +5985,17 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@1.0.17":
-  version "1.0.17"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.17.tgz#5d4b31962156d243197c7144dcf5db5ffee81381"
-  integrity sha512-96udnh5fIefG7+eYG/n+2WevYYogcQyE4fxYCNxBGy9zyhjUVSuieMWegwzYzRTI8GWPxHCUxFyXpaWXghCaxQ==
+"@prophouse/sdk-react@1.0.20":
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-1.0.20.tgz#c0461f9fe58ef2f9209c75526362065dc1acaa7d"
+  integrity sha512-iieyUj35LcGJ2zYqnGh91lY8M2EQbYDLBG7PTD+3G6phps2nCfQWfdgzT26X1iJFeGZgX9AfG0DYVg845jgnew==
   dependencies:
-    "@prophouse/sdk" "1.0.23"
+    "@prophouse/sdk" "1.0.26"
 
-"@prophouse/sdk@1.0.23":
-  version "1.0.23"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.23.tgz#c24716ec419d5ff3acce985c148bfbe6e381c924"
-  integrity sha512-N/tlB+BHeUmycroErHpu8ZoP+GXFvXgc2Uowbd0HkX+JIqU5GfOP2up4dCJ+3fz6I5rPdqUA5i+G66e2+q73kA==
+"@prophouse/sdk@1.0.24":
+  version "1.0.24"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.24.tgz#245b4f454de8a126d8d76d269bffa9aaddbd8cf4"
+  integrity sha512-RdcthC65b/2+yYWzzt+gXMkx9lXAQRkg7pXDnj9fR83mzp0jerhkhzCIv3K93yTMOgltfFr2yC7nYrvYvWxxLQ==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -6023,10 +6023,10 @@
     starknet "5.19.5"
     time-ts "^0.1.0"
 
-"@prophouse/sdk@1.0.24":
-  version "1.0.24"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.24.tgz#245b4f454de8a126d8d76d269bffa9aaddbd8cf4"
-  integrity sha512-RdcthC65b/2+yYWzzt+gXMkx9lXAQRkg7pXDnj9fR83mzp0jerhkhzCIv3K93yTMOgltfFr2yC7nYrvYvWxxLQ==
+"@prophouse/sdk@1.0.26":
+  version "1.0.26"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-1.0.26.tgz#4b4c305e0c35e1374f1307c67cef28309913370d"
+  integrity sha512-L6kkFD2i5f3aWqqleItDEdto5WyikI92IRBjZgfGXQbqjRvaeFlKMrgrBV5p0pT+I+lPCQ4QhkdGIaYlev69fQ==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
