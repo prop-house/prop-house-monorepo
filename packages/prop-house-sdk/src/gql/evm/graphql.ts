@@ -852,6 +852,7 @@ export type GovPowerStrategyVotingStrategyRoundsArgs = {
 export enum GovPowerStrategyType {
   Allowlist = 'ALLOWLIST',
   BalanceOf = 'BALANCE_OF',
+  BalanceOfErc20 = 'BALANCE_OF_ERC20',
   BalanceOfErc1155 = 'BALANCE_OF_ERC1155',
   CheckpointableErc721 = 'CHECKPOINTABLE_ERC721',
   Unknown = 'UNKNOWN',
@@ -3739,6 +3740,28 @@ export type ManyClaimsQuery = {
   }>;
 };
 
+export type ManyReclaimsQueryVariables = Exact<{
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<Reclaim_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Reclaim_Filter>;
+}>;
+
+export type ManyReclaimsQuery = {
+  __typename?: 'Query';
+  reclaims: Array<{
+    __typename?: 'Reclaim';
+    id: string;
+    txHash: any;
+    reclaimedAt: any;
+    amount: any;
+    reclaimer: { __typename?: 'Account'; id: string };
+    asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
+    round: { __typename?: 'Round'; id: string };
+  }>;
+};
+
 export const HouseFieldsFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -5572,3 +5595,119 @@ export const ManyClaimsDocument = {
     },
   ],
 } as unknown as DocumentNode<ManyClaimsQuery, ManyClaimsQueryVariables>;
+export const ManyReclaimsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyReclaims' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Reclaim_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Reclaim_filter' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'reclaims' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'skip' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'reclaimer' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'reclaimedAt' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'asset' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'assetType' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'token' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'identifier' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'round' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ManyReclaimsQuery, ManyReclaimsQueryVariables>;

@@ -287,3 +287,37 @@ export const ManyClaimsQuery = graphql(`
     }
   }
 `);
+
+export const ManyReclaimsQuery = graphql(`
+  query manyReclaims(
+    $first: Int!
+    $skip: Int!
+    $orderBy: Reclaim_orderBy
+    $orderDirection: OrderDirection
+    $where: Reclaim_filter
+  ) {
+    reclaims(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: $where
+    ) {
+      id
+      txHash
+      reclaimer {
+        id
+      }
+      reclaimedAt
+      asset {
+        assetType
+        token
+        identifier
+      }
+      amount
+      round {
+        id
+      }
+    }
+  }
+`);

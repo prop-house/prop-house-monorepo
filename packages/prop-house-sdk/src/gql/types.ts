@@ -178,3 +178,12 @@ export interface Claim {
   round: string;
   asset: Asset;
 }
+
+export interface Reclaim {
+  id: string;
+  txHash: string;
+  reclaimedAt: string;
+  reclaimer: string;
+  round: string;
+  asset: Asset;
+}

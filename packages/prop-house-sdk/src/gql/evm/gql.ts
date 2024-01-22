@@ -41,6 +41,8 @@ const documents = {
     types.ManyDepositsDocument,
   '\n  query manyClaims(\n    $first: Int!\n    $skip: Int!\n    $orderBy: Claim_orderBy\n    $orderDirection: OrderDirection\n    $where: Claim_filter\n  ) {\n    claims(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: $where\n    ) {\n      id\n      txHash\n      claimedAt\n      recipient\n      proposalId\n      round {\n        id\n      }\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n    }\n  }\n':
     types.ManyClaimsDocument,
+  '\n  query manyReclaims(\n    $first: Int!\n    $skip: Int!\n    $orderBy: Reclaim_orderBy\n    $orderDirection: OrderDirection\n    $where: Reclaim_filter\n  ) {\n    reclaims(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: $where\n    ) {\n      id\n      txHash\n      reclaimer {\n        id\n      }\n      reclaimedAt\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n      round {\n        id\n      }\n    }\n  }\n':
+    types.ManyReclaimsDocument,
 };
 
 /**
@@ -141,6 +143,12 @@ export function graphql(
 export function graphql(
   source: '\n  query manyClaims(\n    $first: Int!\n    $skip: Int!\n    $orderBy: Claim_orderBy\n    $orderDirection: OrderDirection\n    $where: Claim_filter\n  ) {\n    claims(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: $where\n    ) {\n      id\n      txHash\n      claimedAt\n      recipient\n      proposalId\n      round {\n        id\n      }\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n    }\n  }\n',
 ): (typeof documents)['\n  query manyClaims(\n    $first: Int!\n    $skip: Int!\n    $orderBy: Claim_orderBy\n    $orderDirection: OrderDirection\n    $where: Claim_filter\n  ) {\n    claims(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: $where\n    ) {\n      id\n      txHash\n      claimedAt\n      recipient\n      proposalId\n      round {\n        id\n      }\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query manyReclaims(\n    $first: Int!\n    $skip: Int!\n    $orderBy: Reclaim_orderBy\n    $orderDirection: OrderDirection\n    $where: Reclaim_filter\n  ) {\n    reclaims(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: $where\n    ) {\n      id\n      txHash\n      reclaimer {\n        id\n      }\n      reclaimedAt\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n      round {\n        id\n      }\n    }\n  }\n',
+): (typeof documents)['\n  query manyReclaims(\n    $first: Int!\n    $skip: Int!\n    $orderBy: Reclaim_orderBy\n    $orderDirection: OrderDirection\n    $where: Reclaim_filter\n  ) {\n    reclaims(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: $where\n    ) {\n      id\n      txHash\n      reclaimer {\n        id\n      }\n      reclaimedAt\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n      round {\n        id\n      }\n    }\n  }\n'];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
