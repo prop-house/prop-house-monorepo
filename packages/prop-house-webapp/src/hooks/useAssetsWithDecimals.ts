@@ -36,7 +36,7 @@ const useAssetDecimals = (assets: Asset[]): number[] | undefined => {
   useEffect(() => {
     if (
       assets.length === 0 ||
-      (erc20Assets.length !== 0 && (!_decimals || _decimals.length == 0 || isLoadingDecimals))
+      (erc20Assets.length !== 0 && (!_decimals || _decimals.length === 0 || isLoadingDecimals))
     )
       return;
 
