@@ -20,16 +20,22 @@ const PropActivityItem: React.FC<{ proposal: Proposal }> = ({ proposal }) => {
   }, [proposal]);
   return (
     <div onClick={() => navigate(`/${proposal.round}/${proposal.id}`)}>
-      proposed&nbsp;
-      <span>{proposal.title}</span>
-      {imgUrlFromProp && (
-        <div className={classes.propImgContainer}>
-          <img
-            src={replaceIpfsGateway(imgUrlFromProp)}
-            crossOrigin="anonymous"
-            alt="propCardImage"
-          />
-        </div>
+      {imgUrlFromProp ? (
+        <>
+          <span>{proposal.title}</span>
+          <div className={classes.propImgContainer}>
+            <img
+              src={replaceIpfsGateway(imgUrlFromProp)}
+              crossOrigin="anonymous"
+              alt="propCardImage"
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          proposed&nbsp;
+          <span>{proposal.title}</span>
+        </>
       )}
     </div>
   );

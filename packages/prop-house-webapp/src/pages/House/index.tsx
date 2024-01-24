@@ -3,105 +3,54 @@ import { useAppSelector } from '../../hooks';
 import HouseHeader from '../../components/HouseHeader';
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
-import HouseUtilityBar from '../../components/HouseUtilityBar';
-import ErrorMessageCard from '../../components/ErrorMessageCard';
-import NoSearchResults from '../../components/NoSearchResults';
-import { sortRoundByStatus } from '../../utils/sortRoundByStatus';
-import { RoundStatus } from '../../components/StatusFilters';
-import { useTranslation } from 'react-i18next';
-import { Round, Timed, usePropHouse } from '@prophouse/sdk-react';
-import RoundCard from '../../components/RoundCard';
+import { Proposal, Round, usePropHouse } from '@prophouse/sdk-react';
 import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import { COMPLETED_ROUND_OVERRIDES, HIDDEN_ROUND_OVERRIDES } from '../../utils/roundOverrides';
 import { removeHtmlFromString } from '../../utils/removeHtmlFromString';
+import JumboRoundCard from '../../components/JumboRoundCard';
+import HouseTabBar, { SelectedTab } from '../../components/HouseTabBar';
+import HousePropCard from '../../components/HousePropCard';
 
 const House: React.FC<{}> = () => {
   const propHouse = usePropHouse();
 
   const house = useAppSelector(state => state.propHouse.activeHouse);
   const [rounds, setRounds] = useState<Round[]>();
-  const [loadingRounds, setLoadingRounds] = useState(false);
-  const [failedLoadingRounds, setFailedLoadingRounds] = useState(false);
-  const [roundsOnDisplay, setRoundsOnDisplay] = useState<Round[]>([]);
-  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
-  const [input, setInput] = useState<string>('');
-
-  const { t } = useTranslation();
-
-  const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
+  const [props, setProps] = useState<Proposal[]>();
+  const [selectedTab, setSelectedTab] = useState<SelectedTab>(SelectedTab.Rounds);
 
   // fetch rounds
   useEffect(() => {
     if (!house || rounds) return;
 
     const fetchRounds = async () => {
-      setLoadingRounds(true);
-      try {
-        const rounds = (await propHouse.query.getRoundsForHouse(house.address)).map(round => {
+      const rounds = (await propHouse.query.getRoundsForHouse(house.address))
+        .map(round => {
           if (COMPLETED_ROUND_OVERRIDES[round.address]) {
             round.state = COMPLETED_ROUND_OVERRIDES[round.address].state;
           }
           return round;
         })
         .filter(round => !HIDDEN_ROUND_OVERRIDES.includes(round.address));
-        setRounds(rounds);
-
-        // Number of rounds under a certain status type in a House
-        setNumberOfRoundsPerStatus([
-          // number of active rounds (proposing & voting)
-          rounds.filter(
-            r =>
-              r.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
-              r.state === Timed.RoundState.IN_VOTING_PERIOD,
-          ).length,
-          rounds.length,
-        ]);
-
-        // if there are no active rounds, default filter by all rounds
-        rounds.filter(
-          r =>
-            r.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
-            r.state === Timed.RoundState.IN_VOTING_PERIOD,
-        ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
-
-        setLoadingRounds(false);
-      } catch (e) {
-        setLoadingRounds(false);
-        setFailedLoadingRounds(true);
-      }
+      setRounds(rounds);
     };
     fetchRounds();
   }, [house, propHouse.query, rounds]);
 
-  // search functionality
+  // fetch winning props
   useEffect(() => {
-    rounds &&
-      // check if searching via input
-      (input.length === 0
-        ? // if a filter has been clicked that isn't "All rounds" (default)
-          currentRoundStatus !== RoundStatus.Active
-          ? // filter by all rounds
-            setRoundsOnDisplay(rounds)
-          : // filter by active rounds (proposing & voting)
-            setRoundsOnDisplay(
-              rounds.filter(
-                r =>
-                  r.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
-                  r.state === Timed.RoundState.IN_VOTING_PERIOD,
-              ),
-            )
-        : // filter by search input that matches round title or description
-          setRoundsOnDisplay(
-            rounds.filter(round => {
-              const query = input.toLowerCase();
-              return (
-                round.title.toLowerCase().indexOf(query) >= 0 ||
-                round.description?.toLowerCase().indexOf(query) >= 0
-              );
-            }),
-          ));
-  }, [input, currentRoundStatus, rounds, house, propHouse.query]);
+    if (!rounds || props) return;
+
+    const fetchWinningProps = async () => {
+      const props = await propHouse.query.getProposals({
+        where: { round_: { sourceChainRound_in: rounds.map(r => r.address) }, isWinner: true },
+      });
+      setProps(props);
+    };
+
+    fetchWinningProps();
+  });
 
   return (
     <>
@@ -118,15 +67,13 @@ const House: React.FC<{}> = () => {
           <Container>
             <HouseHeader house={house} />
           </Container>
-
           <div className={classes.stickyContainer}>
             <Container>
-              <HouseUtilityBar
-                numberOfRoundsPerStatus={numberOfRoundsPerStatus}
-                currentRoundStatus={currentRoundStatus}
-                setCurrentRoundStatus={setCurrentRoundStatus}
-                input={input}
-                setInput={setInput}
+              <HouseTabBar
+                rounds={rounds ?? []}
+                proposals={props ?? []}
+                selectedTab={selectedTab}
+                setSelectedTab={setSelectedTab}
               />
             </Container>
           </div>
@@ -134,23 +81,19 @@ const House: React.FC<{}> = () => {
           <div className={classes.houseContainer}>
             <Container>
               <Row>
-                {loadingRounds ? (
-                  <></>
-                ) : !loadingRounds && failedLoadingRounds ? (
-                  <ErrorMessageCard message={t('noRoundsAvailable')} />
-                ) : roundsOnDisplay.length > 0 ? (
-                  sortRoundByStatus(roundsOnDisplay).map((round, index) => (
-                    <Col key={index} xl={6}>
-                      <RoundCard round={round} house={house} displayBottomBar={true} />
-                    </Col>
-                  ))
-                ) : input === '' ? (
-                  <Col>
-                    <ErrorMessageCard message={t('noRoundsAvailable')} />
-                  </Col>
-                ) : (
-                  <NoSearchResults />
-                )}
+                {selectedTab === SelectedTab.Rounds
+                  ? rounds &&
+                    rounds.map((round, index) => (
+                      <Col key={index} xl={6}>
+                        <JumboRoundCard round={round} house={house} />
+                      </Col>
+                    ))
+                  : props &&
+                    props.map((prop, i) => (
+                      <Col xl={4}>
+                        <HousePropCard proposal={prop} />
+                      </Col>
+                    ))}
               </Row>
             </Container>
           </div>
