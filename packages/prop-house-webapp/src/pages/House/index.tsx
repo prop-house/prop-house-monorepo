@@ -46,7 +46,6 @@ const House: React.FC<{}> = () => {
       const props = await propHouse.query.getProposals({
         where: { round_: { sourceChainRound_in: rounds.map(r => r.address) }, isWinner: true },
       });
-      console.log(props);
       setProps(props);
     };
 
