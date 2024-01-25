@@ -1,7 +1,7 @@
 import { log, BigInt } from '@graphprotocol/graph-ts';
 import { AssetClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedRound/TimedRound';
 import { Account, Asset, Award, Balance, Claim, Reclaim, Round, RoundVotingStrategy, TimedRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
-import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType } from './lib/utils';
+import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType, padHexTo32Bytes } from './lib/utils';
 import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_4_WEEKS_IN_SECONDS, BIGINT_ZERO } from './lib/constants';
 
 export function storeGovPowerStrategy(addresses: BigInt[], params2D: BigInt[][], index: i32): string {
@@ -176,6 +176,8 @@ export function handleAssetClaimed(event: AssetClaimed): void {
     claimer.save();
   }
 
+  const assetId = padHexTo32Bytes(event.params.asset.assetId.toHex());
+
   const claim = new Claim(
     `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
   );
@@ -184,7 +186,7 @@ export function handleAssetClaimed(event: AssetClaimed): void {
   claim.claimedAt = event.block.timestamp;
   claim.recipient = event.params.recipient;
   claim.proposalId = event.params.proposalId;
-  claim.asset = event.params.asset.assetId.toHex();
+  claim.asset = assetId;
   claim.amount = event.params.asset.amount;
   claim.round = round.id;
   claim.save();
@@ -200,14 +202,16 @@ export function handleSingleTransfer(event: TransferSingle): void {
       ]);
       return;
     }
-  
+
+    const assetId = padHexTo32Bytes(event.params.id.toHex());
+
     const reclaim = new Reclaim(
       `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
     );
     reclaim.txHash = event.transaction.hash;
     reclaim.reclaimer = reclaimer.id;
     reclaim.reclaimedAt = event.block.timestamp;
-    reclaim.asset = event.params.id.toHex();
+    reclaim.asset = assetId;
     reclaim.amount = event.params.value;
     reclaim.round = event.address.toHex();
     reclaim.save();
@@ -216,7 +220,7 @@ export function handleSingleTransfer(event: TransferSingle): void {
     let balance = Balance.load(balanceId);
     if (!balance) {
       balance = new Balance(balanceId);
-      balance.asset = event.params.id.toHex();
+      balance.asset = assetId;
       balance.round = event.address.toHex();
       balance.balance = BIGINT_ZERO;
     }
