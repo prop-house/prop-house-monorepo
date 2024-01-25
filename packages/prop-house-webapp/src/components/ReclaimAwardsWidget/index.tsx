@@ -1,15 +1,16 @@
-import { Claim, Deposit, Round, usePropHouse } from '@prophouse/sdk-react';
+import { Deposit, Reclaim, Round, usePropHouse } from '@prophouse/sdk-react';
 import React, { useEffect, useState } from 'react';
 import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import { Col, Row } from 'react-bootstrap';
 import RelclaimAwardCard from '../RelclaimAwardCard';
+import { reclaimForDeposit } from '../../utils/reclaimForDeposit';
 
 const ReclaimAwardsWidget: React.FC<{ round: Round }> = ({ round }) => {
   const propHouse = usePropHouse();
 
   const [deposits, setDeposits] = useState<Deposit[]>();
-  const [claims, setClaims] = useState<Claim[]>();
-
+  const [reclaims, setReclaims] = useState<Reclaim[]>();
+  // eslint-disable-next-line
   const [loading, assetsWithMetadata] = useAssetsWithMetadata(deposits?.map(d => d.asset) ?? []);
 
   useEffect(() => {
@@ -22,13 +23,14 @@ const ReclaimAwardsWidget: React.FC<{ round: Round }> = ({ round }) => {
   });
 
   useEffect(() => {
-    if (claims !== undefined) return;
-    const fetchClaims = async () => {
-      const claims = await propHouse.query.getClaims({ where: { round: round.address } });
-      console.log('claims: ', claims);
-      setClaims(claims);
+    if (reclaims !== undefined) return;
+
+    const fetchReclaims = async () => {
+      const reclaims = await propHouse.query.getRoundReclaims(round.address);
+      console.log(reclaims);
+      setReclaims(reclaims);
     };
-    fetchClaims();
+    fetchReclaims();
   });
 
   return (
@@ -37,10 +39,15 @@ const ReclaimAwardsWidget: React.FC<{ round: Round }> = ({ round }) => {
       <Row>
         {assetsWithMetadata &&
           deposits &&
+          reclaims &&
           assetsWithMetadata.map((asset, i) => {
             return (
               <Col xl={4} key={i}>
-                <RelclaimAwardCard asset={asset} deposit={deposits[i]} />
+                <RelclaimAwardCard
+                  asset={asset}
+                  deposit={deposits[i]}
+                  reclaim={reclaimForDeposit(deposits[i], reclaims)}
+                />
               </Col>
             );
           })}

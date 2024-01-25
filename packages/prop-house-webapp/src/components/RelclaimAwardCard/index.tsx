@@ -1,11 +1,14 @@
 import classes from './RelclaimAwardCard.module.css';
-import { Deposit } from '@prophouse/sdk-react';
+import { Deposit, Reclaim } from '@prophouse/sdk-react';
 import React from 'react';
 import { AssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import EthAddress from '../EthAddress';
 import Button, { ButtonColor } from '../Button';
-import { useAccount } from 'wagmi';
+import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { ReclaimABI } from '../../abi/ReclaimABI';
+import { assetTuple } from '../../utils/assetTuple';
+import LoadingIndicator from '../LoadingIndicator';
 
 enum ClaimStatus {
   NeedToConnect,
@@ -14,13 +17,14 @@ enum ClaimStatus {
   Claim,
 }
 
-const RelclaimAwardCard: React.FC<{ asset: AssetWithMetadata; deposit: Deposit }> = ({
-  asset,
-  deposit,
-}) => {
+const RelclaimAwardCard: React.FC<{
+  asset: AssetWithMetadata;
+  deposit: Deposit;
+  reclaim?: Reclaim;
+}> = ({ asset, deposit, reclaim }) => {
   const { address: account } = useAccount();
-  const claimed = false;
 
+  const claimed = reclaim !== undefined;
   const isDepositor = account?.toLowerCase() === deposit.depositor.toLowerCase();
 
   const claimStatus = !account
@@ -31,14 +35,25 @@ const RelclaimAwardCard: React.FC<{ asset: AssetWithMetadata; deposit: Deposit }
       : ClaimStatus.Claim
     : ClaimStatus.NotEligible;
 
-  const buttonCopy = () => {
+  const { config } = usePrepareContractWrite({
+    address: deposit.round as `0x${string}`,
+    abi: ReclaimABI,
+    functionName: 'reclaim',
+    args: [[assetTuple(asset)]],
+  });
+
+  const { isLoading, isSuccess, write } = useContractWrite(config);
+
+  const buttonContent = () => {
+    if (isLoading) return <LoadingIndicator color="white" height={20} width={30} />;
+    if (isSuccess) return 'Awards have been reclaimed!';
     switch (claimStatus) {
       case ClaimStatus.NeedToConnect:
         return 'Connect account';
       case ClaimStatus.AlreadyClaimed:
-        return 'Already claimed';
+        return 'Already reclaimed';
       case ClaimStatus.NotEligible:
-        return 'Not eligible to claim';
+        return 'Not eligible to reclaim';
       case ClaimStatus.Claim:
         return 'Reclaim award';
     }
@@ -60,11 +75,12 @@ const RelclaimAwardCard: React.FC<{ asset: AssetWithMetadata; deposit: Deposit }
 
       <Button
         bgColor={ButtonColor.Pink}
-        text={buttonCopy()}
+        text={buttonContent()}
         classNames={classes.cardBtn}
         disabled={
           claimStatus === ClaimStatus.AlreadyClaimed || claimStatus === ClaimStatus.NotEligible
         }
+        onClick={claimStatus === ClaimStatus.Claim ? () => write?.() : undefined}
       />
     </Card>
   );

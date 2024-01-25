@@ -55,7 +55,7 @@ const RoundManager = () => {
               type="round"
             />
             <Row>
-              <Tabs defaultActiveKey="reclaim-awards" className={classes.tabs}>
+              <Tabs defaultActiveKey="deposit-assets" className={classes.tabs}>
                 <Tab eventKey="deposit-assets" title="Deposit awards">
                   <DepositAssetWidgets round={round} />
                 </Tab>
