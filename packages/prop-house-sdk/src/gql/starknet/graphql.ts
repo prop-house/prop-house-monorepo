@@ -106,6 +106,7 @@ export enum OrderByRoundFields {
   Type = 'type',
   UniqueProposers = 'uniqueProposers',
   UniqueVoters = 'uniqueVoters',
+  VotingPower = 'votingPower',
 }
 
 export enum OrderBySummaryFields {
@@ -434,6 +435,8 @@ export type Round = {
   uniqueVoters: Scalars['Int'];
   /** All votes that have been cast in the round */
   votes: Array<Maybe<Vote>>;
+  /** The total number of voting power used in the round */
+  votingPower: Scalars['BigInt'];
 };
 
 export type Round_Filter = {
@@ -525,6 +528,14 @@ export type Round_Filter = {
   uniqueVoters_lte?: InputMaybe<Scalars['Int']>;
   uniqueVoters_not?: InputMaybe<Scalars['Int']>;
   uniqueVoters_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  votingPower?: InputMaybe<Scalars['BigInt']>;
+  votingPower_gt?: InputMaybe<Scalars['BigInt']>;
+  votingPower_gte?: InputMaybe<Scalars['BigInt']>;
+  votingPower_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
+  votingPower_lt?: InputMaybe<Scalars['BigInt']>;
+  votingPower_lte?: InputMaybe<Scalars['BigInt']>;
+  votingPower_not?: InputMaybe<Scalars['BigInt']>;
+  votingPower_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
 };
 
 export type Summary = {
@@ -824,7 +835,7 @@ export type ManyVotesQuery = {
     txHash: string;
     voter: { __typename?: 'Account'; id: string };
     round: { __typename?: 'Round'; sourceChainRound: string };
-    proposal: { __typename?: 'Proposal'; proposalId: number };
+    proposal: { __typename?: 'Proposal'; proposalId: number; title: any };
   } | null> | null;
 };
 
@@ -1271,7 +1282,10 @@ export const ManyVotesDocument = {
                   name: { kind: 'Name', value: 'proposal' },
                   selectionSet: {
                     kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'proposalId' } }],
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'proposalId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                    ],
                   },
                 },
                 { kind: 'Field', name: { kind: 'Name', value: 'votingPower' } },

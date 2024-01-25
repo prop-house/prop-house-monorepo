@@ -114,6 +114,7 @@ export const ManyVotesQuery = graphql(`
       }
       proposal {
         proposalId
+        title
       }
       votingPower
       receivedAt
