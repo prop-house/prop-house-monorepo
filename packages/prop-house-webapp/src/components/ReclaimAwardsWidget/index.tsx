@@ -1,4 +1,4 @@
-import { Deposit, Reclaim, Round, usePropHouse } from '@prophouse/sdk-react';
+import { Deposit, Reclaim, Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import React, { useEffect, useState } from 'react';
 import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import { Col, Row } from 'react-bootstrap';
@@ -35,7 +35,10 @@ const ReclaimAwardsWidget: React.FC<{ round: Round }> = ({ round }) => {
 
   return (
     <>
-      <p>Awards can be reclaimed by the corresponding depositors if the round is cancelled.</p>
+      <p>
+        {round.state !== Timed.RoundState.CANCELLED &&
+          `  Awards can be reclaimed by the corresponding depositors after the round is cancelled. ${round.title} has not yet been cancelled. `}
+      </p>
       <Row>
         {assetsWithMetadata &&
           deposits &&
@@ -44,6 +47,7 @@ const ReclaimAwardsWidget: React.FC<{ round: Round }> = ({ round }) => {
             return (
               <Col xl={4} key={i}>
                 <RelclaimAwardCard
+                  roundIsCancelled={round.state === Timed.RoundState.CANCELLED}
                   asset={asset}
                   deposit={deposits[i]}
                   reclaim={reclaimForDeposit(deposits[i], reclaims)}

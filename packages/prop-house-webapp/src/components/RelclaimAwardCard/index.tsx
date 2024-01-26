@@ -18,10 +18,11 @@ enum ClaimStatus {
 }
 
 const RelclaimAwardCard: React.FC<{
+  roundIsCancelled: boolean;
   asset: AssetWithMetadata;
   deposit: Deposit;
   reclaim?: Reclaim;
-}> = ({ asset, deposit, reclaim }) => {
+}> = ({ roundIsCancelled, asset, deposit, reclaim }) => {
   const { address: account } = useAccount();
 
   const claimed = reclaim !== undefined;
@@ -47,6 +48,7 @@ const RelclaimAwardCard: React.FC<{
   const buttonContent = () => {
     if (isLoading) return <LoadingIndicator color="white" height={20} width={30} />;
     if (isSuccess) return 'Awards have been reclaimed!';
+    if (!roundIsCancelled) return 'Round not cancelled';
     switch (claimStatus) {
       case ClaimStatus.NeedToConnect:
         return 'Connect account';
@@ -78,7 +80,9 @@ const RelclaimAwardCard: React.FC<{
         text={buttonContent()}
         classNames={classes.cardBtn}
         disabled={
-          claimStatus === ClaimStatus.AlreadyClaimed || claimStatus === ClaimStatus.NotEligible
+          !roundIsCancelled ||
+          claimStatus === ClaimStatus.AlreadyClaimed ||
+          claimStatus === ClaimStatus.NotEligible
         }
         onClick={claimStatus === ClaimStatus.Claim ? () => write?.() : undefined}
       />
