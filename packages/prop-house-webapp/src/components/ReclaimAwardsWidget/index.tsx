@@ -27,7 +27,6 @@ const ReclaimAwardsWidget: React.FC<{ round: Round }> = ({ round }) => {
 
     const fetchReclaims = async () => {
       const reclaims = await propHouse.query.getRoundReclaims(round.address);
-      console.log(reclaims);
       setReclaims(reclaims);
     };
     fetchReclaims();
