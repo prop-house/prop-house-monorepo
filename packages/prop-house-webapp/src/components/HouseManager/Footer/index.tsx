@@ -201,8 +201,14 @@ const Footer: React.FC = () => {
 
       {activeStep === 6 && (
         <Text type="body" classNames={classes.noEditingCopy}>
-          Rounds are final and cannot be edited once created. They may only be cancelled before
-          voting ends.
+          <p>
+            ¹ Rounds are final and cannot be edited once created. They may only be cancelled before
+            voting ends.
+          </p>
+          <p>
+            ² The Prop House team will cover the gas costs associated with creating your round. Once
+            created, share the tx with the team to get reimbursed.
+          </p>
         </Text>
       )}
 

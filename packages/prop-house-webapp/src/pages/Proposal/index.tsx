@@ -21,6 +21,7 @@ import { useAccountModal } from '@rainbow-me/rainbowkit';
 import useVotingPower from '../../hooks/useVotingPower';
 import VoteConfirmationModal from '../../components/VoteConfirmationModal';
 import { Timed, usePropHouse } from '@prophouse/sdk-react';
+import Skeleton from 'react-loading-skeleton';
 
 const Proposal = () => {
   const params = useParams();
@@ -46,6 +47,7 @@ const Proposal = () => {
   useEffect(() => {
     const isSameProp =
       proposal && proposal.id === Number(id) && round && round.address === roundAddress;
+    if (!isSameProp) dispatch(setOnchainActiveProposal());
     if (!roundAddress || !id || isSameProp) return;
     const fetchProposal = async () => {
       try {
@@ -137,7 +139,12 @@ const Proposal = () => {
       ) : failedFetch ? (
         <NotFound />
       ) : (
-        <LoadingIndicator />
+        <>
+          <Skeleton height={30} />
+          <Skeleton height={30} width={150} style={{ marginTop: 20 }} />
+          <Skeleton height={30} />
+          <Skeleton height={400} style={{ marginTop: 40 }} />
+        </>
       )}
       {votingBar}
       <div className={classes.gradient} />

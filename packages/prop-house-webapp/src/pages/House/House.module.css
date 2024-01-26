@@ -1,6 +1,5 @@
 .houseContainer {
   background: var(--bg-dark);
-
   min-height: 350px;
   padding: 1rem;
 }
@@ -10,8 +9,7 @@
   top: 0;
   position: sticky !important;
   z-index: 1;
-  padding-top: 12px;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px var(--border-light) solid;
 }
 
 @media (max-width: 575px) {
@@ -20,6 +18,6 @@
     padding-left: 0 !important;
   }
   .stickyContainer {
-    padding: 12px 0px 8px 0px;
+    padding: 12px 0px 0px 0px;
   }
 }
