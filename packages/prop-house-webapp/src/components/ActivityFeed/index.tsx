@@ -10,7 +10,6 @@ import {
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
-import { lumpVotes } from '../../utils/lumpVotes';
 import Skeleton from 'react-loading-skeleton';
 import ActivityFeedItem from '../ActivityFeedItem';
 
@@ -33,13 +32,11 @@ const ActivityFeed: React.FC<{}> = () => {
       try {
         setFetchMoreActivity(false);
 
-        const votes = lumpVotes(
-          await propHouse.query.getVotes({
-            page: votesPageIndex,
-            orderBy: Vote_Order_By.ReceivedAt,
-            orderDirection: OrderDirection.Desc,
-          }),
-        );
+        const votes = await propHouse.query.getVotes({
+          page: votesPageIndex,
+          orderBy: Vote_Order_By.ReceivedAt,
+          orderDirection: OrderDirection.Desc,
+        });
 
         votes.length === 0 ? setEndOfVotes(true) : setVotesPageIndex(prev => prev + 1);
 
