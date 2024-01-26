@@ -8,6 +8,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import { isAddress } from 'viem';
 import CancelRoundWidget from '../../components/CancelRoundWidget';
 import ManagerHeader from '../../components/ManagerHeader';
+import ReclaimAwardsWidget from '../../components/ReclaimAwardsWidget';
 
 const RoundManager = () => {
   const propHouse = usePropHouse();
@@ -60,6 +61,9 @@ const RoundManager = () => {
                 </Tab>
                 <Tab eventKey="cancel-round" title="Cancel round">
                   <CancelRoundWidget round={round} />
+                </Tab>
+                <Tab eventKey="reclaim-awards" title="Reclaim awards">
+                  <ReclaimAwardsWidget round={round} />
                 </Tab>
               </Tabs>
             </Row>

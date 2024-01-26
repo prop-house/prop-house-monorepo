@@ -36,7 +36,7 @@ const useAssetSymbols = (assets: Asset[]): string[] | undefined => {
   });
 
   useEffect(() => {
-    if (!fetchedSymbols || isLoadingSymbols) return;
+    if (assets.length === 0 || !fetchedSymbols || isLoadingSymbols) return;
 
     const _symbols = fetchedSymbols.map(decimal => decimal.result as string);
 
