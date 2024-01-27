@@ -1,3 +1,5 @@
+import { buildImageURL } from './buildImageURL';
+
 export const generateIpfsUri = (ipfsHash: string) => `https://ipfs.io/ipfs/${ipfsHash}`;
 
 export const resolveUri = async (uriData: string) => {
@@ -21,7 +23,7 @@ export const resolveUri = async (uriData: string) => {
   }
   if (uriData.startsWith('data:')) {
     const decodedUri = Buffer.from(uriData.split('base64,')[1], 'base64').toString('utf-8');
-    return JSON.parse(decodedUri).image;
+    return buildImageURL(JSON.parse(decodedUri).image)!;
   }
 
   return uriData;
