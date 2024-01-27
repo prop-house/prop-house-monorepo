@@ -34,9 +34,13 @@ const useAssetDecimals = (assets: Asset[]): number[] | undefined => {
 
   // parse decimals
   useEffect(() => {
-    if (!_decimals || isLoadingDecimals) return;
+    if (
+      assets.length === 0 ||
+      (erc20Assets.length !== 0 && (!_decimals || _decimals.length === 0 || isLoadingDecimals))
+    )
+      return;
 
-    const fetchedDecimals = _decimals.map(decimal => decimal.result as number);
+    const fetchedDecimals = _decimals?.map(decimal => decimal.result as number) ?? [];
 
     const mappedDecimals = assets.map(asset => {
       const indexToUse = erc20Assets.findIndex(

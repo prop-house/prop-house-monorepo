@@ -1,0 +1,46 @@
+.propCard {
+  height: 300px;
+  cursor: pointer;
+  border: 1px solid var(--border-med);
+}
+.propCardHeader {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: var(--brand-gray);
+  justify-content: space-between;
+}
+.voteDisplay {
+  display: flex;
+  align-items: center;
+}
+.voteDisplay svg {
+  margin-right: 6px;
+}
+.proposer {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+.propTitle {
+  margin: 12px 0 6px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.propImgContainer {
+}
+.propImgContainer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 120px;
+  min-width: 120px;
+  max-height: 140px;
+  border-radius: 6px;
+  outline: 1px solid var(--border-light);
+}

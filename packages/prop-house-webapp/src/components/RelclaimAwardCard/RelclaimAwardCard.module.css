@@ -1,0 +1,43 @@
+.cardTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--brand-black);
+  font-weight: bold;
+}
+.cardTopRow div:nth-child(2) {
+  color: var(--brand-gray);
+}
+.assetImgAndName {
+  display: flex;
+  align-items: center;
+}
+.assetImgAndName img {
+  width: 18px;
+  height: 18x;
+  border-radius: 9px;
+  margin-right: 6px;
+}
+
+.cardBottomRow {
+  margin-top: 12px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--brand-black);
+  font-weight: bold;
+}
+.cardEthAddress {
+  color: initial !important;
+  font-size: 14px !important;
+  color: var(--brand-gray) !important;
+}
+.cardBtn {
+  margin-top: 20px;
+  width: 100%;
+}
+.cardBtn div {
+  display: flex;
+}
