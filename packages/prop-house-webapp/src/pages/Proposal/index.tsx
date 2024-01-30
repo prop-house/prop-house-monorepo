@@ -9,7 +9,7 @@ import { setOnchainActiveProposal, setOnchainActiveRound } from '../../state/sli
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import { Container } from 'react-bootstrap';
-import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
+import { cardServiceUrl } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
 import { useAccount } from 'wagmi';
@@ -122,7 +122,7 @@ const Proposal = () => {
         <OpenGraphElements
           title={proposal.title}
           description={proposal.tldr}
-          imageUrl={cardServiceUrl(CardType.proposal, round.address, String(proposal.id)).href}
+          imageUrl={cardServiceUrl(round.address, String(proposal.id)).href}
         />
       )}
 
