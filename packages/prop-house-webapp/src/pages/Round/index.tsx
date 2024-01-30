@@ -7,7 +7,7 @@ import { usePropHouse } from '@prophouse/sdk-react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import ProposalModal from '../../components/ProposalModal';
 import OpenGraphElements from '../../components/OpenGraphElements';
-import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
+import { cardServiceUrl } from '../../utils/cardServiceUrl';
 import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
 import { setVoteAllotments } from '../../state/slices/voting';
@@ -58,7 +58,7 @@ const Round: React.FC<{}> = () => {
         <OpenGraphElements
           title={round.title}
           description={removeHtmlFromString(round.description)}
-          imageUrl={cardServiceUrl(CardType.round, round.address).href}
+          imageUrl={cardServiceUrl(round.address).href}
         />
       )}
       {round && house && (
