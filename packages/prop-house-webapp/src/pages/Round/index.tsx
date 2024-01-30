@@ -7,7 +7,7 @@ import { usePropHouse } from '@prophouse/sdk-react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import ProposalModal from '../../components/ProposalModal';
 import OpenGraphElements from '../../components/OpenGraphElements';
-import { cardServiceUrl } from '../../utils/cardServiceUrl';
+import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
 import { setVoteAllotments } from '../../state/slices/voting';
@@ -51,6 +51,9 @@ const Round: React.FC<{}> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  console.log('uo');
+  console.log(round && cardServiceUrl(CardType.round, round.address).toString());
+
   return (
     <>
       {isModalActive && proposals && <ProposalModal proposals={proposals} />}
@@ -58,7 +61,7 @@ const Round: React.FC<{}> = () => {
         <OpenGraphElements
           title={round.title}
           description={removeHtmlFromString(round.description)}
-          imageUrl={cardServiceUrl(round.address).href}
+          imageUrl={cardServiceUrl(CardType.round, round.address).href}
         />
       )}
       {round && house && (
