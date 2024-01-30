@@ -4,7 +4,7 @@ import HouseHeader from '../../components/HouseHeader';
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Proposal, Round, usePropHouse } from '@prophouse/sdk-react';
-import { cardServiceUrl } from '../../utils/cardServiceUrl';
+import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import { COMPLETED_ROUND_OVERRIDES, HIDDEN_ROUND_OVERRIDES } from '../../utils/roundOverrides';
 import { removeHtmlFromString } from '../../utils/removeHtmlFromString';
@@ -58,7 +58,7 @@ const House: React.FC<{}> = () => {
         <OpenGraphElements
           title={house && house.name ? house.name : ''}
           description={removeHtmlFromString(house.description ?? '')}
-          imageUrl={cardServiceUrl(house.address).href}
+          imageUrl={cardServiceUrl(CardType.house, house.address).href}
         />
       )}
 
