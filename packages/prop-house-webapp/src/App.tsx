@@ -56,12 +56,6 @@ function App() {
   const location = useLocation();
   const [noActiveCommunity, setNoActiveCommunity] = useState(false);
 
-  mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN!, {
-    debug: process.env.REACT_APP_NODE_ENV === 'production' ? false : true,
-    track_pageview: true,
-    persistence: 'localStorage',
-  });
-
   useEffect(() => {
     setNoActiveCommunity(false);
 
@@ -76,6 +70,14 @@ function App() {
   const round = useAppSelector(state => state.propHouse.activeRound);
   const house = useAppSelector(state => state.propHouse.activeHouse);
   const showCreatePropPage = round && house;
+
+  if (!openGraphCardPath) {
+    mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN!, {
+      debug: process.env.REACT_APP_NODE_ENV === 'production' ? false : true,
+      track_pageview: true,
+      persistence: 'localStorage',
+    });
+  }
 
   return (
     <>
