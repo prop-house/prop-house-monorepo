@@ -51,9 +51,6 @@ const Round: React.FC<{}> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log('uo');
-  console.log(round && cardServiceUrl(CardType.round, round.address).toString());
-
   return (
     <>
       {isModalActive && proposals && <ProposalModal proposals={proposals} />}
