@@ -34,10 +34,19 @@ const RoundAwardsDisplay: React.FC<{
     spaceBetween,
   } = props;
 
+  // todo: remove once sdk award ordering is fixed
+  const longAwardsFix = () => {
+    if (round.config.awards.length < 10) return round.config.awards;
+    const awardsToMoveCount = round.config.awards.length - 10;
+    return [
+      ...round.config.awards.slice(0, 2), // index 0 and 1
+      ...round.config.awards.slice(2 + awardsToMoveCount, round.config.awards.length), // indexes of awards after at indexes after errneous awards
+      ...round.config.awards.slice(awardsToMoveCount - 1, 2 + awardsToMoveCount), // indexes of awards that shouldn't be there (eg 10, 11, 12)
+    ];
+  };
+
   const sliderRef = useRef<SwiperRef>(null);
-  const [loadingAssetsWithMetadata, assetsWithMetadata] = useAssetsWithMetadata(
-    round.config.awards,
-  );
+  const [loadingAssetsWithMetadata, assetsWithMetadata] = useAssetsWithMetadata(longAwardsFix());
 
   const renderAwardImage = (award: AssetWithMetadata, showFullImg: boolean | '' | undefined) => {
     const imgClass = clsx({ [classes.fullImg]: showFullImg });
