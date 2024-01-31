@@ -20,7 +20,7 @@ const config: Config = {
   cachePath: process.env.CACHE_PATH ?? '/tmp/phcache',
   cardHeight: process.env.CARD_HEIGHT ? Number(process.env.CARD_HEIGHT) : 512,
   cardWidth: process.env.CARD_WIDTH ? Number(process.env.CARD_WIDTH) : 1024,
-  remoteWaitUntil: (process.env.REMOTE_WAIT_UNTIL as PuppeteerLifeCycleEvent) ?? 'networkidle0',
+  remoteWaitUntil: (process.env.REMOTE_WAIT_UNTIL as PuppeteerLifeCycleEvent) ?? 'networkidle2',
 };
 
 const wrapper = new PropHouseWrapper(config.apiBase);
