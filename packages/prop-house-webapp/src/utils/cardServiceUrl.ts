@@ -15,5 +15,5 @@ export const cardServiceUrl = (cardtype: CardType, address: string, id?: string)
       ? process.env.REACT_APP_DEV_CARD_SERVICE_URI
       : 'http://localhost:3002';
 
-  return new URL(`/remote/${cardtype}/${address}${id ? `/${id}` : ''}/card`, base);
+  return new URL(`/remote/${cardtype}/${address}${id ? `/${id}` : ''}`, base);
 };
