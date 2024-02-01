@@ -85,7 +85,7 @@ const generateRemote =
     console.log(remoteCardUrl(path));
     await page.goto(remoteCardUrl(path), {
       waitUntil: config.remoteWaitUntil,
-      timeout: 60000,
+      timeout: 30000,
     });
     await page.screenshot({ path: cacheFilePath });
 
@@ -96,7 +96,7 @@ const generateRemote =
   };
 
 (async () => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ headless: 'new' });
   const app = express();
 
   app.get('/', (req, res) => {
