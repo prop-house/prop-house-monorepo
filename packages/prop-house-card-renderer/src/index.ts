@@ -61,7 +61,6 @@ const generateLocal = async (req: express.Request<{ propId: string }>, res: expr
   });
   await page.setContent(html);
   await page.screenshot({ path });
-
   await browser.close();
   res
     .header('X-PropHouse-Type', 'local')
@@ -88,6 +87,7 @@ const generateRemote =
       timeout: 30000,
     });
     await page.screenshot({ path: cacheFilePath });
+    await browser.close();
 
     res
       .header('X-PropHouse-Type', 'local')
@@ -96,7 +96,7 @@ const generateRemote =
   };
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch();
   const app = express();
 
   app.get('/', (req, res) => {
