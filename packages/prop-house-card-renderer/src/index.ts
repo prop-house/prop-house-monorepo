@@ -85,6 +85,7 @@ const generateRemote =
     console.log(remoteCardUrl(path));
     await page.goto(remoteCardUrl(path), {
       waitUntil: config.remoteWaitUntil,
+      timeout: 60000,
     });
     await page.screenshot({ path: cacheFilePath });
 
