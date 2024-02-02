@@ -103,8 +103,6 @@ const generateRemote =
   });
 
   app.get('/remote/*', generateRemote(browser));
-  app.get('/:propId', generateLocal);
-  app.get('/:propId/local', generateLocal);
 
   app.listen(config.port, () => {
     console.log(`Listening on ${config.port}`);
