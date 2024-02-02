@@ -98,6 +98,9 @@ const generateRemote =
   const browser = await puppeteer.launch();
   const app = express();
 
+  // Create the cache directory if it doesn't exist
+  fs.mkdirSync(config.cachePath, { recursive: true });
+
   app.get('/', (req, res) => {
     res.send('Welcome to Prop House card renderer');
   });
