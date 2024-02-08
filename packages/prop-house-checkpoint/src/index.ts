@@ -27,8 +27,8 @@ const checkpointOptions = {
     TimedRound: TimedRoundABI,
   },
   decimalTypes: {
-    BigDecimal: {
-      p: 64,
+    BiggerInt: {
+      p: 65,
       d: 0,
     },
   },
