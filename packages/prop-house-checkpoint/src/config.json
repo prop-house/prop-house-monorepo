@@ -14,6 +14,12 @@
       ]
     }
   ],
+  "decimal_types": {
+    "BigDecimal": {
+      "p": 65,
+      "d": 0
+    }
+  },
   "templates": {
     "TimedRound": {
       "abi": "TimedRound",
