@@ -28,7 +28,7 @@ const checkpointOptions = {
   },
   decimalTypes: {
     BigDecimal: {
-      p: 65,
+      p: 64,
       d: 0,
     },
   },
