@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/protocol",
-  "version": "1.0.9",
+  "version": "0.0.0-development",
   "license": "GPL-3.0",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",

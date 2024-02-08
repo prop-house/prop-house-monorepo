@@ -14,7 +14,7 @@ import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
 import { createConfig, configureChains, WagmiConfig } from 'wagmi';
-import { mainnet } from 'wagmi/chains';
+import { goerli } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import {
   connectorsForWallets,
@@ -36,7 +36,7 @@ import HouseManager from './pages/HouseManager';
 import { useAppSelector } from './hooks';
 import mixpanel from 'mixpanel-browser';
 
-const { chains, publicClient } = configureChains([mainnet], [publicProvider()]);
+const { chains, publicClient } = configureChains([goerli], [publicProvider()]);
 
 const { wallets } = getDefaultWallets({
   appName: 'Prop House',
@@ -93,7 +93,7 @@ function App() {
               theme={lightTheme({
                 accentColor: 'var(--brand-purple)',
               })}
-              initialChain={mainnet}
+              initialChain={goerli}
             >
               <Suspense fallback={<LoadingIndicator />}>
                 <div
