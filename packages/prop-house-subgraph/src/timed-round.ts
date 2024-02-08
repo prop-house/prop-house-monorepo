@@ -1,8 +1,8 @@
 import { log, BigInt } from '@graphprotocol/graph-ts';
 import { AssetClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedRound/TimedRound';
 import { Account, Asset, Award, Balance, Claim, Reclaim, Round, RoundVotingStrategy, TimedRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
-import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType } from './lib/utils';
-import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_8_WEEKS_IN_SECONDS } from './lib/constants';
+import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType, padHexTo32Bytes } from './lib/utils';
+import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_4_WEEKS_IN_SECONDS, BIGINT_ZERO } from './lib/constants';
 
 export function storeGovPowerStrategy(addresses: BigInt[], params2D: BigInt[][], index: i32): string {
   const address = addresses[index];
@@ -50,7 +50,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     config.votePeriodDuration,
   );
   config.claimPeriodEndTimestamp = config.votePeriodEndTimestamp.plus(
-    BIGINT_8_WEEKS_IN_SECONDS, // This is an approximation and will be updated upon finalization
+    BIGINT_4_WEEKS_IN_SECONDS, // This is an approximation and will be updated upon finalization
   );
   config.registeredAt = event.block.timestamp;
   config.registrationTx = event.transaction.hash;
@@ -87,6 +87,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
   }
 
   // Store awards
+  round.isFullyFunded = true;
   for (let i = 0; i < event.params.awards.length; i++) {
     const awardStruct = event.params.awards[i];
     const assetId = computeAssetID(changetype<AssetStruct>(awardStruct));
@@ -105,6 +106,12 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     award.amount = awardStruct.amount;
     award.round = config.id;
     award.save();
+
+    // Determine if the round was fully funded during creation.
+    const balance = Balance.load(`${round.id}-${assetId}`);
+    if (balance == null || balance.balance.lt(award.amount)) {
+      round.isFullyFunded = false;
+    }
   }
 
   round.timedConfig = config.id;
@@ -144,7 +151,7 @@ export function handleRoundFinalized(event: RoundFinalized): void {
       return;
     }
     timedConfig.claimPeriodEndTimestamp = event.block.timestamp.plus(
-      BIGINT_8_WEEKS_IN_SECONDS,
+      BIGINT_4_WEEKS_IN_SECONDS,
     );
     timedConfig.save();
   }
@@ -169,14 +176,17 @@ export function handleAssetClaimed(event: AssetClaimed): void {
     claimer.save();
   }
 
+  const assetId = padHexTo32Bytes(event.params.asset.assetId.toHex());
+
   const claim = new Claim(
     `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
   );
+  claim.txHash = event.transaction.hash;
   claim.claimer = claimer.id;
   claim.claimedAt = event.block.timestamp;
   claim.recipient = event.params.recipient;
   claim.proposalId = event.params.proposalId;
-  claim.asset = event.params.asset.assetId.toHex();
+  claim.asset = assetId;
   claim.amount = event.params.asset.amount;
   claim.round = round.id;
   claim.save();
@@ -192,13 +202,16 @@ export function handleSingleTransfer(event: TransferSingle): void {
       ]);
       return;
     }
-  
+
+    const assetId = padHexTo32Bytes(event.params.id.toHex());
+
     const reclaim = new Reclaim(
       `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
     );
+    reclaim.txHash = event.transaction.hash;
     reclaim.reclaimer = reclaimer.id;
     reclaim.reclaimedAt = event.block.timestamp;
-    reclaim.asset = event.params.id.toHex();
+    reclaim.asset = assetId;
     reclaim.amount = event.params.value;
     reclaim.round = event.address.toHex();
     reclaim.save();
@@ -207,8 +220,9 @@ export function handleSingleTransfer(event: TransferSingle): void {
     let balance = Balance.load(balanceId);
     if (!balance) {
       balance = new Balance(balanceId);
-      balance.asset = event.params.id.toHex();
+      balance.asset = assetId;
       balance.round = event.address.toHex();
+      balance.balance = BIGINT_ZERO;
     }
     balance.balance = balance.balance.minus(event.params.value);
     balance.updatedAt = event.block.timestamp;
@@ -242,6 +256,7 @@ export function handleSingleTransfer(event: TransferSingle): void {
       return;
     }
 
+    transfer.txHash = event.transaction.hash;
     transfer.from = from.id;
     transfer.to = to.id;
     transfer.transferredAt = event.block.timestamp;
@@ -269,6 +284,7 @@ export function handleBatchTransfer(event: TransferBatch): void {
       const reclaim = new Reclaim(
         `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
       );
+      reclaim.txHash = event.transaction.hash;
       reclaim.reclaimer = reclaimer.id;
       reclaim.reclaimedAt = event.block.timestamp;
       reclaim.asset = assetId;
@@ -282,6 +298,7 @@ export function handleBatchTransfer(event: TransferBatch): void {
         balance = new Balance(balanceId);
         balance.asset = assetId;
         balance.round = event.address.toHex();
+        balance.balance = BIGINT_ZERO;
       }
       balance.balance = balance.balance.minus(value);
       balance.updatedAt = event.block.timestamp;
@@ -318,6 +335,7 @@ export function handleBatchTransfer(event: TransferBatch): void {
         return;
       }
   
+      transfer.txHash = event.transaction.hash;
       transfer.from = from.id;
       transfer.to = to.id;
       transfer.transferredAt = event.block.timestamp;

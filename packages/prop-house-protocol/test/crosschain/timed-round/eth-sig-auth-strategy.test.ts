@@ -31,7 +31,7 @@ import { poseidonHashMany } from 'micro-starknet';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
 import { BigNumber, constants } from 'ethers';
-import { Account, uint256 } from 'starknet';
+import { Account } from 'starknet';
 import chai, { expect } from 'chai';
 
 chai.use(solidity);
@@ -85,7 +85,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
     for (const func of funcs) {
       gql.QueryWrapper.prototype[func] = () =>
         Promise.resolve({
-          govPowerStrategies: [
+          govPowerStrategiesRaw: [
             {
               id: `0x${poseidonHashMany([BigInt(vanillaGovPowerStrategy.address)]).toString(16)}`,
               type: GQLGovPowerStrategyType.Vanilla,
@@ -93,6 +93,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
               params: [],
             },
           ],
+          govPowerStrategies: [],
         });
     }
 
@@ -116,8 +117,10 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
           govPower: {
             allowlist: constants.HashZero,
             balanceOf: constants.HashZero,
+            balanceOfErc1155: constants.HashZero,
             vanilla: vanillaGovPowerStrategy.address,
           },
+          blockRegistry: constants.HashZero,
           auth: {
             infinite: {
               sig: constants.HashZero,
@@ -295,7 +298,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
 
     const assetId = utils.encoding.getETHAssetID();
     const amount = ONE_ETHER.toHexString();
-    const { transaction_hash } = await propHouse.round.timed.finalizeRound(starknetAccount, {
+    const { transaction_hash } = await propHouse.round.timed.determineWinners(starknetAccount, {
       round: timedRoundContract.address,
       awards: [
         {

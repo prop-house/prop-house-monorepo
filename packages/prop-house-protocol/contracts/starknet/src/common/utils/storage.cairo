@@ -18,6 +18,24 @@ fn get_slot_key(slot_index: u256, mapping_key: u256) -> u256 {
     keccak_u256s_be(encoded_array.span())
 }
 
+/// Returns the nested key for `mapping_keys` at slot `slot_index`.
+/// * `slot_index` - The slot index.
+/// * `mapping_key` - The mapping key.
+fn get_nested_slot_key(slot_index: u256, mut mapping_keys: Span<u256>) -> u256 {
+    let outermost_mapping_key = *mapping_keys.pop_front().unwrap();
+    let mut slot_key = get_slot_key(slot_index, outermost_mapping_key);
+    loop {
+        match mapping_keys.pop_front() {
+            Option::Some(k) => {
+                slot_key = get_slot_key(slot_key, *k);
+            },
+            Option::None(_) => {
+                break slot_key;
+            },
+        };
+    }
+}
+
 /// Read a generic span from storage.
 /// * `address_domain` - The address domain.
 /// * `base` - The base address.

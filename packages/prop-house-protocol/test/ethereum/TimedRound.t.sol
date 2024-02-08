@@ -22,8 +22,8 @@ contract TimedRoundTest is TestUtil {
         );
     }
 
-    function test_remainingProposalPeriodDurationTooShortReverts() public {
-        vm.expectRevert(abi.encodeWithSelector(ITimedRound.REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT.selector));
+    function test_ProposalPeriodDurationTooShortReverts() public {
+        vm.expectRevert(abi.encodeWithSelector(ITimedRound.PROPOSAL_PERIOD_DURATION_TOO_SHORT.selector));
 
         ITimedRound.RoundConfig memory config = validTimedRoundConfig();
         config.proposalPeriodDuration = 1;

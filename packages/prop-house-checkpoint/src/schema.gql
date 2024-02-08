@@ -1,4 +1,4 @@
-scalar BigInt
+scalar BigDecimal
 scalar Text
 
 type Summary {
@@ -33,6 +33,9 @@ type Round {
 
   "The total number of proposals in the round"
   proposalCount: Int!
+
+  "The total number of voting power used in the round"
+  votingPower: BigDecimal!
 
   "The number of unique proposers in the round"
   uniqueProposers: Int!
@@ -109,7 +112,7 @@ type Proposal {
   txHash: String!
 
   "The amount of voting power that the proposal has received"
-  votingPower: BigInt!
+  votingPower: BigDecimal!
 
   "All votes that the proposal has received"
   votes: [Vote]! @derivedFrom(field: "proposal")
@@ -129,7 +132,7 @@ type Vote {
   proposal: Proposal!
 
   "The amount of voting power"
-  votingPower: BigInt!
+  votingPower: BigDecimal!
 
   "The unix timestamp when the vote was received"
   receivedAt: Int!

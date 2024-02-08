@@ -1,0 +1,6 @@
+.date {
+  margin: 0;
+  color: var(--brand-pink) !important;
+  font-weight: bold;
+  font-size: 16px;
+}

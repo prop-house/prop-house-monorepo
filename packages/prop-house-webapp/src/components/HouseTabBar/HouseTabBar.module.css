@@ -1,0 +1,47 @@
+.stickyContainer {
+  background: white;
+  top: 0;
+  position: sticky !important;
+  z-index: 1;
+  border-bottom: 1px var(--border-light) solid;
+}
+
+.tabBarContainer {
+  display: flex;
+}
+
+.tabOption {
+  display: flex;
+  gap: 10px;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 12px;
+  margin-right: 20px;
+}
+.tabOption.selected {
+  border-bottom: 2px solid var(--border-dark);
+}
+.tabOption:hover {
+  cursor: pointer;
+  border-bottom: 2px solid var(--border-dark);
+}
+
+.tabOptionName {
+  font-weight: 600;
+  color: var(--brand-gray);
+}
+.tabOptionName.selected,
+.tabOptionName:hover {
+  color: var(--brand-black) !important;
+}
+
+.tabOptionNumber {
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 6px;
+  padding: 0px 2px;
+  align-self: center;
+  background: var(--border-light);
+  color: var(--brand-gray);
+  min-width: 20px;
+  text-align: center;
+}

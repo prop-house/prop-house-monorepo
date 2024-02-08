@@ -3,11 +3,8 @@ import ProposalContent from '../ProposalContent';
 import proposalFields, { ProposalFields } from '../../utils/proposalFields';
 import { IoClose } from 'react-icons/io5';
 import { Col, Container } from 'react-bootstrap';
-import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
-import OpenGraphElements from '../OpenGraphElements';
 import ProposalModalHeader from '../ProposalModalHeader';
 import Divider from '../Divider';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ScrollButton from '../ScrollButton/ScrollButton';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -17,18 +14,20 @@ import validFileType from '../../utils/validFileType';
 import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
 import changeFileExtension from '../../utils/changeFileExtension';
 import getInvalidFileTypeMessage from '../../utils/getInvalidFileTypeMessage';
+import { Proposal } from '@prophouse/sdk-react';
+import { setModalActive } from '../../state/slices/propHouse';
 
 interface ProposalHeaderAndBodyProps {
-  currentProposal: StoredProposalWithVotes;
+  currentProposal: Proposal;
   currentPropIndex: number;
   handleDirectionalArrowClick: any;
-  handleClosePropModal: () => void;
+
   hideScrollButton: boolean;
   setHideScrollButton: Dispatch<SetStateAction<boolean>>;
   showVoteAllotmentModal: boolean;
   editProposalMode: boolean;
   setEditProposalMode: (e: any) => void;
-  proposals: StoredProposalWithVotes[];
+  proposals: Proposal[];
 }
 
 const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
@@ -38,7 +37,6 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     currentProposal,
     currentPropIndex,
     handleDirectionalArrowClick,
-    handleClosePropModal,
     hideScrollButton,
     setHideScrollButton,
     showVoteAllotmentModal,
@@ -177,13 +175,13 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
   return (
     <>
       <Container>
-        {proposal && (
+        {/*TODO:  {proposal && (
           <OpenGraphElements
             title={proposal.title}
-            description={proposal.tldr}
+            description={proposal.body.substring(0, 120)}
             imageUrl={cardServiceUrl(CardType.proposal, proposal.id).href}
           />
-        )}
+        )} */}
 
         {proposals && (
           <div id="propContainer" className={classes.propContainer}>
@@ -195,7 +193,7 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                       className={classes.backToAuction}
                       onClick={() => {
                         setEditProposalMode(false);
-                        handleClosePropModal();
+                        dispatch(setModalActive(false));
                       }}
                     >
                       <IoClose size={'1.5rem'} />
@@ -240,6 +238,7 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                     setInvalidFileMessage={setInvalidFileMessage}
                     duplicateFile={duplicateFile}
                     setDuplicateFile={setDuplicateFile}
+                    isInfRound={false}
                   />
                 </span>
               ) : (

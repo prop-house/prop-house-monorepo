@@ -8,7 +8,7 @@
       },
       {
         "internalType": "address",
-        "name": "_renderer",
+        "name": "_manager",
         "type": "address"
       },
       {
@@ -408,6 +408,19 @@
   },
   {
     "inputs": [],
+    "name": "manager",
+    "outputs": [
+      {
+        "internalType": "contract IManager",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "name",
     "outputs": [
       {
@@ -444,19 +457,6 @@
     "outputs": [
       {
         "internalType": "contract IPropHouse",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renderer",
-    "outputs": [
-      {
-        "internalType": "contract ITokenMetadataRenderer",
         "name": "",
         "type": "address"
       }

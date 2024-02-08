@@ -471,10 +471,11 @@ export enum Balance_OrderBy {
   Id = 'id',
   Round = 'round',
   RoundCreatedAt = 'round__createdAt',
-  RoundCreationTx = 'round__creationTx',
+  RoundCreationTxHash = 'round__creationTxHash',
   RoundDescription = 'round__description',
   RoundEventState = 'round__eventState',
   RoundId = 'round__id',
+  RoundIsFullyFunded = 'round__isFullyFunded',
   RoundTitle = 'round__title',
   RoundType = 'round__type',
   UpdatedAt = 'updatedAt',
@@ -508,6 +509,8 @@ export type Claim = {
   recipient: Scalars['Bytes'];
   /** The round on which the asset was claimed */
   round: Round;
+  /** The claim transaction hash */
+  txHash: Scalars['Bytes'];
 };
 
 export type Claim_Filter = {
@@ -620,6 +623,16 @@ export type Claim_Filter = {
   round_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   round_starts_with?: InputMaybe<Scalars['String']>;
   round_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  txHash?: InputMaybe<Scalars['Bytes']>;
+  txHash_contains?: InputMaybe<Scalars['Bytes']>;
+  txHash_gt?: InputMaybe<Scalars['Bytes']>;
+  txHash_gte?: InputMaybe<Scalars['Bytes']>;
+  txHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  txHash_lt?: InputMaybe<Scalars['Bytes']>;
+  txHash_lte?: InputMaybe<Scalars['Bytes']>;
+  txHash_not?: InputMaybe<Scalars['Bytes']>;
+  txHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  txHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
 export enum Claim_OrderBy {
@@ -637,12 +650,14 @@ export enum Claim_OrderBy {
   Recipient = 'recipient',
   Round = 'round',
   RoundCreatedAt = 'round__createdAt',
-  RoundCreationTx = 'round__creationTx',
+  RoundCreationTxHash = 'round__creationTxHash',
   RoundDescription = 'round__description',
   RoundEventState = 'round__eventState',
   RoundId = 'round__id',
+  RoundIsFullyFunded = 'round__isFullyFunded',
   RoundTitle = 'round__title',
   RoundType = 'round__type',
+  TxHash = 'txHash',
 }
 
 export type Deposit = {
@@ -659,6 +674,8 @@ export type Deposit = {
   id: Scalars['String'];
   /** The round that received the deposit */
   round: Round;
+  /** The deposit transaction hash */
+  txHash: Scalars['Bytes'];
 };
 
 export type Deposit_Filter = {
@@ -765,6 +782,16 @@ export type Deposit_Filter = {
   round_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   round_starts_with?: InputMaybe<Scalars['String']>;
   round_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  txHash?: InputMaybe<Scalars['Bytes']>;
+  txHash_contains?: InputMaybe<Scalars['Bytes']>;
+  txHash_gt?: InputMaybe<Scalars['Bytes']>;
+  txHash_gte?: InputMaybe<Scalars['Bytes']>;
+  txHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  txHash_lt?: InputMaybe<Scalars['Bytes']>;
+  txHash_lte?: InputMaybe<Scalars['Bytes']>;
+  txHash_not?: InputMaybe<Scalars['Bytes']>;
+  txHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  txHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
 export enum Deposit_OrderBy {
@@ -780,12 +807,14 @@ export enum Deposit_OrderBy {
   Id = 'id',
   Round = 'round',
   RoundCreatedAt = 'round__createdAt',
-  RoundCreationTx = 'round__creationTx',
+  RoundCreationTxHash = 'round__creationTxHash',
   RoundDescription = 'round__description',
   RoundEventState = 'round__eventState',
   RoundId = 'round__id',
+  RoundIsFullyFunded = 'round__isFullyFunded',
   RoundTitle = 'round__title',
   RoundType = 'round__type',
+  TxHash = 'txHash',
 }
 
 export type GovPowerStrategy = {
@@ -823,7 +852,9 @@ export type GovPowerStrategyVotingStrategyRoundsArgs = {
 export enum GovPowerStrategyType {
   Allowlist = 'ALLOWLIST',
   BalanceOf = 'BALANCE_OF',
-  Erc1155BalanceOf = 'ERC1155_BALANCE_OF',
+  BalanceOfErc20 = 'BALANCE_OF_ERC20',
+  BalanceOfErc1155 = 'BALANCE_OF_ERC1155',
+  CheckpointableErc721 = 'CHECKPOINTABLE_ERC721',
   Unknown = 'UNKNOWN',
   Vanilla = 'VANILLA',
 }
@@ -879,7 +910,7 @@ export type House = {
   /** The unix timestamp when the house was created */
   createdAt: Scalars['BigInt'];
   /** The creation transaction hash */
-  creationTx: Scalars['Bytes'];
+  creationTxHash: Scalars['Bytes'];
   /** The account who created the house */
   creator?: Maybe<Account>;
   /** The address of the house contract */
@@ -1133,16 +1164,16 @@ export type House_Filter = {
   createdAt_lte?: InputMaybe<Scalars['BigInt']>;
   createdAt_not?: InputMaybe<Scalars['BigInt']>;
   createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  creationTx?: InputMaybe<Scalars['Bytes']>;
-  creationTx_contains?: InputMaybe<Scalars['Bytes']>;
-  creationTx_gt?: InputMaybe<Scalars['Bytes']>;
-  creationTx_gte?: InputMaybe<Scalars['Bytes']>;
-  creationTx_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  creationTx_lt?: InputMaybe<Scalars['Bytes']>;
-  creationTx_lte?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not_contains?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creationTxHash?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_contains?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_gt?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_gte?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creationTxHash_lt?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_lte?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_not?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   creator?: InputMaybe<Scalars['String']>;
   creator_?: InputMaybe<Account_Filter>;
   creator_contains?: InputMaybe<Scalars['String']>;
@@ -1250,7 +1281,7 @@ export type House_Filter = {
 export enum House_OrderBy {
   ContractUri = 'contractURI',
   CreatedAt = 'createdAt',
-  CreationTx = 'creationTx',
+  CreationTxHash = 'creationTxHash',
   Creator = 'creator',
   CreatorId = 'creator__id',
   Id = 'id',
@@ -1632,6 +1663,8 @@ export type Reclaim = {
   reclaimer: Account;
   /** The round that the asset was reclaimed from */
   round: Round;
+  /** The reclamation transaction hash */
+  txHash: Scalars['Bytes'];
 };
 
 export type Reclaim_Filter = {
@@ -1738,6 +1771,16 @@ export type Reclaim_Filter = {
   round_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   round_starts_with?: InputMaybe<Scalars['String']>;
   round_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  txHash?: InputMaybe<Scalars['Bytes']>;
+  txHash_contains?: InputMaybe<Scalars['Bytes']>;
+  txHash_gt?: InputMaybe<Scalars['Bytes']>;
+  txHash_gte?: InputMaybe<Scalars['Bytes']>;
+  txHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  txHash_lt?: InputMaybe<Scalars['Bytes']>;
+  txHash_lte?: InputMaybe<Scalars['Bytes']>;
+  txHash_not?: InputMaybe<Scalars['Bytes']>;
+  txHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  txHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
 export enum Reclaim_OrderBy {
@@ -1753,12 +1796,14 @@ export enum Reclaim_OrderBy {
   ReclaimerId = 'reclaimer__id',
   Round = 'round',
   RoundCreatedAt = 'round__createdAt',
-  RoundCreationTx = 'round__creationTx',
+  RoundCreationTxHash = 'round__creationTxHash',
   RoundDescription = 'round__description',
   RoundEventState = 'round__eventState',
   RoundId = 'round__id',
+  RoundIsFullyFunded = 'round__isFullyFunded',
   RoundTitle = 'round__title',
   RoundType = 'round__type',
+  TxHash = 'txHash',
 }
 
 export type Round = {
@@ -1770,7 +1815,7 @@ export type Round = {
   /** The unix timestamp when the round was created */
   createdAt: Scalars['BigInt'];
   /** The creation transaction hash */
-  creationTx: Scalars['Bytes'];
+  creationTxHash: Scalars['Bytes'];
   /** The account who created the round */
   creator?: Maybe<Account>;
   /** All round asset deposits */
@@ -1783,6 +1828,8 @@ export type Round = {
   house: House;
   /** The address of the round contract */
   id: Scalars['ID'];
+  /** Whether the round has been fully funded */
+  isFullyFunded: Scalars['Boolean'];
   /** The round manager */
   manager?: Maybe<Account>;
   /** The selected proposing strategies */
@@ -1940,7 +1987,7 @@ export enum RoundCreator_OrderBy {
   House = 'house',
   HouseContractUri = 'house__contractURI',
   HouseCreatedAt = 'house__createdAt',
-  HouseCreationTx = 'house__creationTx',
+  HouseCreationTxHash = 'house__creationTxHash',
   HouseId = 'house__id',
   HouseRoundCount = 'house__roundCount',
   HouseType = 'house__type',
@@ -2107,10 +2154,11 @@ export enum RoundProposingStrategy_OrderBy {
   Id = 'id',
   Round = 'round',
   RoundCreatedAt = 'round__createdAt',
-  RoundCreationTx = 'round__creationTx',
+  RoundCreationTxHash = 'round__creationTxHash',
   RoundDescription = 'round__description',
   RoundEventState = 'round__eventState',
   RoundId = 'round__id',
+  RoundIsFullyFunded = 'round__isFullyFunded',
   RoundTitle = 'round__title',
   RoundType = 'round__type',
   Strategy = 'strategy',
@@ -2190,10 +2238,11 @@ export enum RoundVotingStrategy_OrderBy {
   Id = 'id',
   Round = 'round',
   RoundCreatedAt = 'round__createdAt',
-  RoundCreationTx = 'round__creationTx',
+  RoundCreationTxHash = 'round__creationTxHash',
   RoundDescription = 'round__description',
   RoundEventState = 'round__eventState',
   RoundId = 'round__id',
+  RoundIsFullyFunded = 'round__isFullyFunded',
   RoundTitle = 'round__title',
   RoundType = 'round__type',
   Strategy = 'strategy',
@@ -2216,16 +2265,16 @@ export type Round_Filter = {
   createdAt_lte?: InputMaybe<Scalars['BigInt']>;
   createdAt_not?: InputMaybe<Scalars['BigInt']>;
   createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  creationTx?: InputMaybe<Scalars['Bytes']>;
-  creationTx_contains?: InputMaybe<Scalars['Bytes']>;
-  creationTx_gt?: InputMaybe<Scalars['Bytes']>;
-  creationTx_gte?: InputMaybe<Scalars['Bytes']>;
-  creationTx_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  creationTx_lt?: InputMaybe<Scalars['Bytes']>;
-  creationTx_lte?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not_contains?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creationTxHash?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_contains?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_gt?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_gte?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creationTxHash_lt?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_lte?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_not?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  creationTxHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   creator?: InputMaybe<Scalars['String']>;
   creator_?: InputMaybe<Account_Filter>;
   creator_contains?: InputMaybe<Scalars['String']>;
@@ -2301,6 +2350,10 @@ export type Round_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  isFullyFunded?: InputMaybe<Scalars['Boolean']>;
+  isFullyFunded_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  isFullyFunded_not?: InputMaybe<Scalars['Boolean']>;
+  isFullyFunded_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   manager?: InputMaybe<Scalars['String']>;
   manager_?: InputMaybe<Account_Filter>;
   manager_contains?: InputMaybe<Scalars['String']>;
@@ -2394,7 +2447,7 @@ export enum Round_OrderBy {
   Balances = 'balances',
   Claims = 'claims',
   CreatedAt = 'createdAt',
-  CreationTx = 'creationTx',
+  CreationTxHash = 'creationTxHash',
   Creator = 'creator',
   CreatorId = 'creator__id',
   Deposits = 'deposits',
@@ -2403,11 +2456,12 @@ export enum Round_OrderBy {
   House = 'house',
   HouseContractUri = 'house__contractURI',
   HouseCreatedAt = 'house__createdAt',
-  HouseCreationTx = 'house__creationTx',
+  HouseCreationTxHash = 'house__creationTxHash',
   HouseId = 'house__id',
   HouseRoundCount = 'house__roundCount',
   HouseType = 'house__type',
   Id = 'id',
+  IsFullyFunded = 'isFullyFunded',
   Manager = 'manager',
   ManagerId = 'manager__id',
   ProposingStrategies = 'proposingStrategies',
@@ -2955,10 +3009,11 @@ export enum TimedRoundConfig_OrderBy {
   RegistrationTx = 'registrationTx',
   Round = 'round',
   RoundCreatedAt = 'round__createdAt',
-  RoundCreationTx = 'round__creationTx',
+  RoundCreationTxHash = 'round__creationTxHash',
   RoundDescription = 'round__description',
   RoundEventState = 'round__eventState',
   RoundId = 'round__id',
+  RoundIsFullyFunded = 'round__isFullyFunded',
   RoundTitle = 'round__title',
   RoundType = 'round__type',
   VotePeriodDuration = 'votePeriodDuration',
@@ -2983,6 +3038,8 @@ export type Transfer = {
   to: Account;
   /** The unix timestamp when this transfer was performed */
   transferredAt: Scalars['BigInt'];
+  /** The transfer transaction hash */
+  txHash: Scalars['Bytes'];
 };
 
 export type Transfer_Filter = {
@@ -3110,6 +3167,16 @@ export type Transfer_Filter = {
   transferredAt_lte?: InputMaybe<Scalars['BigInt']>;
   transferredAt_not?: InputMaybe<Scalars['BigInt']>;
   transferredAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  txHash?: InputMaybe<Scalars['Bytes']>;
+  txHash_contains?: InputMaybe<Scalars['Bytes']>;
+  txHash_gt?: InputMaybe<Scalars['Bytes']>;
+  txHash_gte?: InputMaybe<Scalars['Bytes']>;
+  txHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  txHash_lt?: InputMaybe<Scalars['Bytes']>;
+  txHash_lte?: InputMaybe<Scalars['Bytes']>;
+  txHash_not?: InputMaybe<Scalars['Bytes']>;
+  txHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  txHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
 export enum Transfer_OrderBy {
@@ -3124,15 +3191,17 @@ export enum Transfer_OrderBy {
   Id = 'id',
   Round = 'round',
   RoundCreatedAt = 'round__createdAt',
-  RoundCreationTx = 'round__creationTx',
+  RoundCreationTxHash = 'round__creationTxHash',
   RoundDescription = 'round__description',
   RoundEventState = 'round__eventState',
   RoundId = 'round__id',
+  RoundIsFullyFunded = 'round__isFullyFunded',
   RoundTitle = 'round__title',
   RoundType = 'round__type',
   To = 'to',
   ToId = 'to__id',
   TransferredAt = 'transferredAt',
+  TxHash = 'txHash',
 }
 
 export type _Block_ = {
@@ -3222,6 +3291,7 @@ export type RoundFieldsFragment = {
   description: string;
   createdAt: any;
   eventState: RoundEventState;
+  isFullyFunded: boolean;
   manager?: { __typename?: 'Account'; id: string } | null;
   proposingStrategies: Array<{
     __typename?: 'RoundProposingStrategy';
@@ -3336,6 +3406,7 @@ export type ManyRoundsQuery = {
     description: string;
     createdAt: any;
     eventState: RoundEventState;
+    isFullyFunded: boolean;
     manager?: { __typename?: 'Account'; id: string } | null;
     proposingStrategies: Array<{
       __typename?: 'RoundProposingStrategy';
@@ -3395,6 +3466,7 @@ export type ManyRoundsWithHouseInfoQuery = {
     description: string;
     createdAt: any;
     eventState: RoundEventState;
+    isFullyFunded: boolean;
     house: {
       __typename?: 'House';
       id: string;
@@ -3468,6 +3540,7 @@ export type RoundQuery = {
     description: string;
     createdAt: any;
     eventState: RoundEventState;
+    isFullyFunded: boolean;
     manager?: { __typename?: 'Account'; id: string } | null;
     proposingStrategies: Array<{
       __typename?: 'RoundProposingStrategy';
@@ -3523,6 +3596,7 @@ export type RoundWithHouseInfoQuery = {
     description: string;
     createdAt: any;
     eventState: RoundEventState;
+    isFullyFunded: boolean;
     house: {
       __typename?: 'House';
       id: string;
@@ -3597,6 +3671,7 @@ export type ManyBalancesQuery = {
     id: string;
     balance: any;
     updatedAt: any;
+    round: { __typename?: 'Round'; id: string };
     asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
   }>;
 };
@@ -3633,8 +3708,10 @@ export type ManyDepositsQuery = {
   deposits: Array<{
     __typename?: 'Deposit';
     id: string;
+    txHash: any;
     depositedAt: any;
     amount: any;
+    depositor: { __typename?: 'Account'; id: string };
     asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
     round: { __typename?: 'Round'; id: string };
   }>;
@@ -3653,12 +3730,35 @@ export type ManyClaimsQuery = {
   claims: Array<{
     __typename?: 'Claim';
     id: string;
+    txHash: any;
     claimedAt: any;
     recipient: any;
     proposalId: any;
     amount: any;
     round: { __typename?: 'Round'; id: string };
     asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
+  }>;
+};
+
+export type ManyReclaimsQueryVariables = Exact<{
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<Reclaim_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Reclaim_Filter>;
+}>;
+
+export type ManyReclaimsQuery = {
+  __typename?: 'Query';
+  reclaims: Array<{
+    __typename?: 'Reclaim';
+    id: string;
+    txHash: any;
+    reclaimedAt: any;
+    amount: any;
+    reclaimer: { __typename?: 'Account'; id: string };
+    asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
+    round: { __typename?: 'Round'; id: string };
   }>;
 };
 
@@ -3799,6 +3899,7 @@ export const RoundFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'eventState' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isFullyFunded' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'manager' },
@@ -4301,6 +4402,7 @@ export const ManyRoundsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'eventState' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isFullyFunded' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'manager' },
@@ -4529,6 +4631,7 @@ export const ManyRoundsWithHouseInfoDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'eventState' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isFullyFunded' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'manager' },
@@ -4755,6 +4858,7 @@ export const RoundDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'eventState' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isFullyFunded' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'manager' },
@@ -4940,6 +5044,7 @@ export const RoundWithHouseInfoDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'eventState' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isFullyFunded' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'manager' },
@@ -5135,6 +5240,14 @@ export const ManyBalancesDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'round' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'asset' },
@@ -5333,7 +5446,16 @@ export const ManyDepositsDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'depositedAt' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'depositor' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'asset' },
@@ -5440,6 +5562,7 @@ export const ManyClaimsDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'claimedAt' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'recipient' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'proposalId' } },
@@ -5472,3 +5595,119 @@ export const ManyClaimsDocument = {
     },
   ],
 } as unknown as DocumentNode<ManyClaimsQuery, ManyClaimsQueryVariables>;
+export const ManyReclaimsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyReclaims' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Reclaim_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Reclaim_filter' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'reclaims' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'skip' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'reclaimer' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'reclaimedAt' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'asset' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'assetType' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'token' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'identifier' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'round' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ManyReclaimsQuery, ManyReclaimsQueryVariables>;

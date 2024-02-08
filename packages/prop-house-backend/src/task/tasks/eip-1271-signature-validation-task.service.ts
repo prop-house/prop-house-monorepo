@@ -12,7 +12,7 @@ import { CreateVoteDto } from 'src/vote/vote.types';
 import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
 import { InfiniteAuction } from 'src/infinite-auction/infinite-auction.entity';
 import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
-import { AuctionBase } from 'src/auction/auction-base.type';
+import { _execStrategy } from 'src/utils/execStrategy';
 
 @Injectable()
 export class EIP1271SignatureValidationTaskService {
@@ -155,12 +155,10 @@ export class EIP1271SignatureValidationTaskService {
       (dto) => dto.proposalId === proposal.id,
     );
 
-    const votingPower = await this._votesService.getVotingPower(
-      {
-        address: vote.address,
-        communityAddress: voteFromPayload.communityAddress,
-      },
-      proposal.auction.balanceBlockTag,
+    const votingPower = await _execStrategy(
+      voteFromPayload.address,
+      proposal.auction,
+      'voteStrategy',
     );
     if (!votingPower) {
       return false;
@@ -200,6 +198,8 @@ export class EIP1271SignatureValidationTaskService {
       createdDate.getTime() + infRound.votingPeriod * 1000,
     );
 
-    return votingPeriodEnd > new Date() && proposal.voteCount < infRound.quorum;
+    return (
+      votingPeriodEnd > new Date() && proposal.voteCountFor < infRound.quorumFor
+    );
   }
 }

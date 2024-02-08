@@ -31,7 +31,7 @@ library PHMetadata {
     string constant SYMBOL = 'PROP';
 
     // The Prop House entrypoint NFT contract URI
-    string constant URI = 'ipfs://bafkreifzufef7c2von6dxlcx2en4fwtfpha5qreurdhqyar7vurjmrqi3a';
+    string constant URI = 'ipfs://bafkreiagexn2wbv5t63y2xbf6mmcx3rktrqxrsyzf5gl5l7c2lm3bkqjc4';
 }
 
 /// @notice Community house metadata constants

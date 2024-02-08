@@ -1,0 +1,8 @@
+.activityContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 70vh;
+  overflow-y: scroll;
+  padding-top: 12px;
+}

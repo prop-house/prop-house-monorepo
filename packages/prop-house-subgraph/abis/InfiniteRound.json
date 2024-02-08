@@ -33,7 +33,7 @@
       },
       {
         "internalType": "address",
-        "name": "_renderer",
+        "name": "_manager",
         "type": "address"
       }
     ],
@@ -58,6 +58,11 @@
   {
     "inputs": [],
     "name": "FINALIZATION_NOT_AVAILABLE",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "INSUFFICIENT_ETHER_SUPPLIED",
     "type": "error"
   },
   {
@@ -118,6 +123,11 @@
   },
   {
     "inputs": [],
+    "name": "NO_META_TX_RELAYER_PROVIDED",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NO_PROPOSING_STRATEGIES_PROVIDED",
     "type": "error"
   },
@@ -134,6 +144,11 @@
   {
     "inputs": [],
     "name": "ONLY_ROUND_MANAGER",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ONLY_SECURITY_COUNCIL",
     "type": "error"
   },
   {
@@ -281,6 +296,12 @@
   {
     "anonymous": false,
     "inputs": [],
+    "name": "RoundEmergencyCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
     "name": "RoundFinalizationStarted",
     "type": "event"
   },
@@ -293,6 +314,24 @@
   {
     "anonymous": false,
     "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "relayer",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deposit",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct MetaTransaction",
+        "name": "metaTx",
+        "type": "tuple"
+      },
       {
         "indexed": false,
         "internalType": "uint248",
@@ -548,7 +587,7 @@
     "inputs": [],
     "name": "cancel",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -724,6 +763,13 @@
   },
   {
     "inputs": [],
+    "name": "emergencyCancel",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "executionRelayer",
     "outputs": [
       {
@@ -765,6 +811,23 @@
     "inputs": [
       {
         "components": [
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "relayer",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "deposit",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct MetaTransaction",
+            "name": "metaTx",
+            "type": "tuple"
+          },
           {
             "internalType": "uint248",
             "name": "proposalThreshold",
@@ -985,6 +1048,19 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "manager",
+    "outputs": [
+      {
+        "internalType": "contract IManager",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1247,19 +1323,6 @@
     "name": "reclaimTo",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renderer",
-    "outputs": [
-      {
-        "internalType": "contract ITokenMetadataRenderer",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

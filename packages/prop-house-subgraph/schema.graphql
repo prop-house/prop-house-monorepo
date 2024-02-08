@@ -9,6 +9,9 @@ enum GovPowerStrategyType {
   VANILLA
   ALLOWLIST
   BALANCE_OF
+  BALANCE_OF_ERC20
+  BALANCE_OF_ERC1155
+  CHECKPOINTABLE_ERC721
   UNKNOWN
 }
 
@@ -83,7 +86,7 @@ type House @entity {
   createdAt: BigInt!
 
   "The creation transaction hash"
-  creationTx: Bytes!
+  creationTxHash: Bytes!
 
   "The number of rounds that have been created on the house"
   roundCount: Int!
@@ -135,10 +138,13 @@ type Round @entity {
   createdAt: BigInt!
 
   "The creation transaction hash"
-  creationTx: Bytes!
+  creationTxHash: Bytes!
 
   "The round manager"
   manager: Account
+
+  "Whether the round has been fully funded"
+  isFullyFunded: Boolean!
 
   "The configuration for a timed round (Null if type != TIMED)"
   timedConfig: TimedRoundConfig
@@ -295,6 +301,9 @@ type Deposit @entity(immutable: true) {
   "A concatenation of the deposit tx hash and the the event log index"
   id: String!
 
+  "The deposit transaction hash"
+  txHash: Bytes!
+
   "The account who made the deposit"
   depositor: Account!
 
@@ -315,6 +324,9 @@ type Reclaim @entity(immutable: true) {
   "A concatenation of the reclamation tx hash and the the event log index"
   id: String!
 
+  "The reclamation transaction hash"
+  txHash: Bytes!
+
   "The account who reclaimed the asset"
   reclaimer: Account!
 
@@ -334,6 +346,9 @@ type Reclaim @entity(immutable: true) {
 type Transfer @entity(immutable: true) {
   "A concatenation of the transfer tx hash and the the event log index"
   id: String!
+
+  "The transfer transaction hash"
+  txHash: Bytes!
 
   "The account who sent the asset receipt token"
   from: Account!
@@ -405,6 +420,9 @@ type Award @entity {
 type Claim @entity {
   "A concatenation of the claim tx hash and the the event log index"
   id: ID!
+
+  "The claim transaction hash"
+  txHash: Bytes!
 
   "The account who claimed the asset"
   claimer: Account!

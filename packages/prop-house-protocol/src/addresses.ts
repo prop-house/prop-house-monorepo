@@ -1,4 +1,6 @@
+import { constants } from 'ethers';
 import goerli from '../deployments/goerli.json';
+import mainnet from '../deployments/mainnet.json';
 
 export enum ChainId {
   EthereumMainnet = 1,
@@ -18,6 +20,9 @@ export interface RoundImpls {
 export interface GovPowerStrategies {
   allowlist: string;
   balanceOf: string;
+  balanceOfErc20: string;
+  balanceOfErc1155: string;
+  checkpointableErc721: string;
   vanilla: string;
 }
 
@@ -51,6 +56,7 @@ export interface EVMContracts {
 export interface StarknetContracts {
   roundFactory: string;
   strategyRegistry: string;
+  blockRegistry: string;
   govPower: GovPowerStrategies;
   auth: AuthStrategies;
   herodotus: HetodotusContracts;
@@ -78,9 +84,13 @@ export const contracts: Record<number, ContractAddresses> = {
     starknet: {
       roundFactory: goerli.starknet.address.roundFactory,
       strategyRegistry: goerli.starknet.address.strategyRegistry,
+      blockRegistry: goerli.starknet.address.ethBlockRegistry,
       govPower: {
         allowlist: goerli.starknet.address.allowlistGovPowerStrategy,
         balanceOf: goerli.starknet.address.ethBalanceOfGovPowerStrategy,
+        balanceOfErc20: goerli.starknet.address.ethBalanceOfErc20GovPowerStrategy,
+        balanceOfErc1155: goerli.starknet.address.ethBalanceOfErc1155GovPowerStrategy,
+        checkpointableErc721: goerli.starknet.address.ethCheckpointableErc721GovPowerStrategy,
         vanilla: goerli.starknet.address.vanillaGovPowerStrategy,
       },
       auth: {
@@ -100,6 +110,50 @@ export const contracts: Record<number, ContractAddresses> = {
       classHashes: {
         infinite: goerli.starknet.classHash.infiniteRound,
         timed: goerli.starknet.classHash.timedRound,
+      },
+    },
+  },
+  [ChainId.EthereumMainnet]: {
+    evm: {
+      prophouse: mainnet.ethereum.address.propHouse,
+      messenger: mainnet.ethereum.address.messenger,
+      house: {
+        community: mainnet.ethereum.address.communityHouseImpl,
+      },
+      round: {
+        infinite: constants.HashZero,
+        timed: mainnet.ethereum.address.timedRoundImpl,
+      },
+    },
+    starknet: {
+      roundFactory: mainnet.starknet.address.roundFactory,
+      strategyRegistry: mainnet.starknet.address.strategyRegistry,
+      blockRegistry: mainnet.starknet.address.ethBlockRegistry,
+      govPower: {
+        allowlist: mainnet.starknet.address.allowlistGovPowerStrategy,
+        balanceOf: mainnet.starknet.address.ethBalanceOfGovPowerStrategy,
+        balanceOfErc20: mainnet.starknet.address.ethBalanceOfErc20GovPowerStrategy,
+        balanceOfErc1155: mainnet.starknet.address.ethBalanceOfErc1155GovPowerStrategy,
+        checkpointableErc721: mainnet.starknet.address.ethCheckpointableErc721GovPowerStrategy,
+        vanilla: constants.HashZero,
+      },
+      auth: {
+        infinite: {
+          sig: constants.HashZero,
+          tx: constants.HashZero,
+        },
+        timed: {
+          sig: mainnet.starknet.address.timedRoundEthSigAuthStrategy,
+          tx: mainnet.starknet.address.timedRoundEthTxAuthStrategy,
+        },
+      },
+      herodotus: {
+        factRegistry: mainnet.starknet.address.herodotus.factRegistry,
+        l1HeadersStore: mainnet.starknet.address.herodotus.l1HeadersStore,
+      },
+      classHashes: {
+        infinite: constants.HashZero,
+        timed: mainnet.starknet.classHash.timedRound,
       },
     },
   },

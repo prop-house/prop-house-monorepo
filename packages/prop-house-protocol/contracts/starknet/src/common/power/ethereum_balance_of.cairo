@@ -1,6 +1,7 @@
 #[starknet::contract]
 mod EthereumBalanceOfGovernancePowerStrategy {
     use starknet::ContractAddress;
+    use prop_house::common::utils::storage::get_slot_key;
     use prop_house::common::utils::traits::IGovernancePowerStrategy;
     use prop_house::common::libraries::single_slot_proof::SingleSlotProof;
     use array::{ArrayTrait, SpanTrait};
@@ -22,17 +23,22 @@ mod EthereumBalanceOfGovernancePowerStrategy {
         /// * `timestamp` - The timestamp at which to get the governance power.
         /// * `user` - The address of the user.
         /// * `params` - The params, containing the contract address and slot index.
-        /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
+        /// * `user_params` - The user params, containing the slot and MPT proof.
         fn get_power(
             self: @ContractState, timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
         ) -> u256 {
             let params_len = params.len();
 
-            // Expects contract_address slot_index, with an optional governance_power_multiplier
+            // Expects contract_address and slot_index, with an optional governance_power_multiplier
             assert(params_len == 2 || params_len == 3, 'EthBO: Bad param length');
 
+            let contract_address = *params.at(0);
+            let slot_index = *params.at(1);
+
+            let valid_slot = get_slot_key(slot_index.into(), user.into());
+
             let governance_power = SingleSlotProof::get_slot_value(
-                @SingleSlotProof::unsafe_new_contract_state(), timestamp, user, params, user_params
+                @SingleSlotProof::unsafe_new_contract_state(), timestamp, contract_address, valid_slot, params, user_params
             );
             assert(governance_power.is_non_zero(), 'EthBO: No governance power');
 

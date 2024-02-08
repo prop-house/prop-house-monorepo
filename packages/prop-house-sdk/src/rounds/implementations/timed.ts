@@ -12,10 +12,14 @@ import { TimedRound__factory } from '@prophouse/protocol';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
 import { defaultAbiCoder } from '@ethersproject/abi';
 import { ADDRESS_ONE } from '../../constants';
-import { Account, hash } from 'starknet';
+import { Account, BlockTag, Call, hash } from 'starknet';
 import { Time, TimeUnit } from 'time-ts';
 import { RoundBase } from './base';
 import { isAddress } from '@ethersproject/address';
+import { OrderDirection, Proposal_Order_By } from '../../gql';
+import { keccak256, solidityKeccak256 } from 'ethers/lib/utils';
+import { AddressZero } from '@ethersproject/constants';
+import { MerkleTree } from 'merkletreejs';
 
 export class TimedRound<CS extends void | Custom = void> extends RoundBase<RoundType.TIMED, CS> {
   // Storage variable name helpers
@@ -34,6 +38,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
         uint256 identifier,
         uint256 amount
       )[] awards,
+      tuple(address relayer, uint256 deposit) metaTx,
       uint248 proposalThreshold,
       uint256[] proposingStrategies,
       uint256[] proposingStrategyParamsFlat,
@@ -48,12 +53,12 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   /**
    * The minimum proposal submission period duration
    */
-  public static MIN_PROPOSAL_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Hours);
+  public static MIN_PROPOSAL_PERIOD_DURATION = Time.toSeconds(60, TimeUnit.Minutes);
 
   /**
    * The minimum vote period duration
    */
-  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Hours);
+  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(60, TimeUnit.Minutes);
 
   /**
    * Maximum winner count for this strategy
@@ -73,7 +78,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       { name: 'authStrategy', type: 'bytes32' },
       { name: 'round', type: 'bytes32' },
       { name: 'proposer', type: 'address' },
-      { name: 'metadataUri', type: 'string' },
+      { name: 'metadataUri', type: 'uint256[]' },
       { name: 'usedProposingStrategies', type: 'UserStrategy[]' },
       { name: 'salt', type: 'uint256' },
     ],
@@ -82,7 +87,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       { name: 'round', type: 'bytes32' },
       { name: 'proposer', type: 'address' },
       { name: 'proposalId', type: 'uint32' },
-      { name: 'metadataUri', type: 'string' },
+      { name: 'metadataUri', type: 'uint256[]' },
       { name: 'salt', type: 'uint256' },
     ],
     CancelProposal: [
@@ -138,7 +143,10 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       return Timed.RoundState.IN_VOTING_PERIOD;
     }
     if (timestamp.lt(proposalPeriodEndTimestamp.add(config.votePeriodDuration).add(Time.toSeconds(56, TimeUnit.Days)))) {
-      return Timed.RoundState.IN_CLAIMING_PERIOD;
+      if (eventState === RoundEventState.FINALIZED) {
+        return Timed.RoundState.IN_CLAIMING_PERIOD;
+      }
+      return Timed.RoundState.IN_REPORTING_PERIOD;
     }
     return Timed.RoundState.COMPLETE;
   }
@@ -183,6 +191,9 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     if (config.votePeriodDurationSecs < TimedRound.MIN_VOTE_PERIOD_DURATION) {
       throw new Error('Vote period duration is too short');
     }
+    if (config.metaTx && BigNumber.from(config.metaTx.deposit ?? 0).gt(0) && !config.metaTx.relayer) {
+      throw new Error('Must provide meta-transaction relayer when deposit is non-zero');
+    }
     if (config.winnerCount == 0) {
       throw new Error('Round must have at least one winner');
     }
@@ -222,6 +233,10 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
 
     return {
       awards: config.awards.map(award => encoding.getAssetStruct(award)),
+      metaTx: {
+        relayer: config.metaTx?.relayer ?? AddressZero,
+        deposit: config.metaTx?.deposit ?? 0,
+      },
       proposalThreshold,
       proposingStrategies: proposingStrategies.map(s => s.address),
       proposingStrategyParamsFlat: encoding.flatten2DArray(proposingStrategies.map(s => s.params)),
@@ -274,13 +289,16 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
 
     payload[9] = configStruct.proposalThreshold.toString();
 
-    const response = (await this._starknet.estimateMessageFee({
-      from_address: this._addresses.evm.messenger,
-      to_address: this._addresses.starknet.roundFactory,
-      entry_point_selector: hash.getSelectorFromName('register_round'),
-      payload: payload.map(p => p.toString()),
-    })) as unknown as { overall_fee: number; unit: string };
-    if (!response.overall_fee || response.unit !== 'wei') {
+    const response = await this._starknet['fetchEndpoint']('starknet_estimateMessageFee', {
+      message: {
+        from_address: this._addresses.evm.messenger,
+        to_address: this._addresses.starknet.roundFactory,
+        entry_point_selector: hash.getSelectorFromName('register_round'),
+        payload: payload.map(p => `0x${BigInt(p).toString(16)}`),
+      },
+      block_id: BlockTag.pending as any,
+    });
+    if (!response.overall_fee) {
       throw new Error(`Unexpected message fee response: ${response}`);
     }
     return response.overall_fee.toString();
@@ -316,23 +334,50 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    */
   public async signProposeMessage(config: Timed.ProposeConfig) {
     const address = await this.signer.getAddress();
+    const { proposingStrategiesRaw, config: timedConfig } = await this._query.getRound(config.round);
+
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
 
+    // TODO: Select only enough proposing strategies to meet the threshold
+    // TODO: Fetch the proposal threshold.
+    let nonZeroStrategyProposingPowers: any[] = [];
+    let userParams: string[][] = [];
+    if (timedConfig.proposalThreshold > 0 && proposingStrategiesRaw.length > 0) {
+      const timestamp = await this.getProposingPeriodSnapshotTimestamp(config.round);
+      nonZeroStrategyProposingPowers = await this._govPower.getPowerForStrategies(
+        address,
+        timestamp,
+        proposingStrategiesRaw,
+      );
+      userParams = await this._govPower.getUserParamsForStrategies(
+        address,
+        timestamp,
+        nonZeroStrategyProposingPowers.map(s => s.strategy),
+      );
+    }
+
+    const metadataUriIntsSequence = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
       proposer: address,
       authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timed.sig),
-      usedProposingStrategies: [], // TODO: Add SDK support for proposing strategies
+      usedProposingStrategies: nonZeroStrategyProposingPowers.map(({ strategy }, i) => ({
+        id: strategy.id,
+        userParams: userParams[i],
+      })),
       salt: this.generateSalt(),
     };
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
       this.pick(TimedRound.EIP_712_TYPES, ['Propose', 'UserStrategy']),
-      message,
+      {
+        ...message,
+        metadataUri: metadataUriIntsSequence.values,
+      },
     );
     return {
       address,
@@ -366,6 +411,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
 
+    const metadataUriIntsSequence = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
@@ -377,7 +423,10 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
       this.pick(TimedRound.EIP_712_TYPES, ['EditProposal']),
-      message,
+      {
+        ...message,
+        metadataUri: metadataUriIntsSequence.values,
+      },
     );
     return {
       address,
@@ -401,6 +450,50 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
+   * Sign a cancel proposal message and return the proposer, signature, and signed message
+   * @param config The round address and proposal ID
+   */
+  public async signCancelProposalMessage(config: Timed.CancelProposalConfig) {
+    const address = await this.signer.getAddress();
+    if (isAddress(config.round)) {
+      // If the origin chain round is provided, fetch the Starknet round address
+      config.round = await this._query.getStarknetRoundAddress(config.round);
+    }
+
+    const message = {
+      round: encoding.hexPadLeft(config.round),
+      proposalId: config.proposalId,
+      proposer: address,
+      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timed.sig),
+      salt: this.generateSalt(),
+    };
+    const signature = await this.signer._signTypedData(
+      this.DOMAIN,
+      this.pick(TimedRound.EIP_712_TYPES, ['CancelProposal']),
+      message,
+    );
+    return {
+      address,
+      signature,
+      message,
+    };
+  }
+
+  /**
+   * Cancel a proposal and submit it to the Starknet relayer
+   * @param config The round address and proposal metadata URI
+   */
+  public async cancelProposalViaSignature(config: Timed.CancelProposalConfig) {
+    const { address, signature, message } = await this.signCancelProposalMessage(config);
+    return this.sendToRelayer<Timed.RequestParams>({
+      address,
+      signature,
+      action: Timed.Action.CANCEL_PROPOSAL,
+      data: message,
+    });
+  }
+
+  /**
    * Sign proposal votes and return the voter, signature, and signed message
    * @param config The round address and proposal vote(s)
    */
@@ -419,7 +512,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       // If the origin chain round is provided, fetch the Starknet round address
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
-    const timestamp = await this.getSnapshotTimestamp(config.round);
+    const timestamp = await this.getVotingPeriodSnapshotTimestamp(config.round);
     const nonZeroStrategyVotingPowers = await this._govPower.getPowerForStrategies(
       address,
       timestamp,
@@ -490,9 +583,25 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       ...params,
       action: Timed.Action.PROPOSE,
     };
+
+    let preCalls: Call[] = [];
+    if (payload.data.usedProposingStrategies.length > 0) {
+      const timestamp = await this.getProposingPeriodSnapshotTimestamp(params.data.round);
+      const { govPowerStrategiesRaw } = await this._query.getGovPowerStrategies({
+        where: {
+          id_in: params.data.usedProposingStrategies.map(({ id }) => id),
+        },
+      });
+      preCalls = await this._govPower.getPreCallsForStrategies(
+        params.data.proposer,
+        timestamp,
+        govPowerStrategiesRaw,
+      );
+    }
+
     const call = this.createEVMSigAuthCall(payload, 'authenticate_propose', this.getProposeCalldata(params.data));
-    const fee = await account.estimateFee(call);
-    return account.execute(call, undefined, {
+    const fee = await account.estimateFee([...preCalls, call]);
+    return account.execute([...preCalls, call], undefined, {
       maxFee: fee.suggestedMaxFee,
     });
   }
@@ -518,6 +627,26 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
+   * Relay a signed cancel proposal payload to Starknet
+   * @param account The Starknet account used to submit the transaction
+   * @param params The cancel proposal request params
+   */
+  public async relaySignedCancelProposalPayload(
+    account: Account,
+    params: Omit<Timed.RequestParams<Timed.Action.CANCEL_PROPOSAL>, 'action'>,
+  ) {
+    const payload = {
+      ...params,
+      action: Timed.Action.CANCEL_PROPOSAL,
+    };
+    const call = this.createEVMSigAuthCall(payload, 'authenticate_cancel_proposal', this.getCancelProposalCalldata(params.data));
+    const fee = await account.estimateFee(call);
+    return account.execute(call, undefined, {
+      maxFee: fee.suggestedMaxFee,
+    });
+  }
+
+  /**
    * Relay a signed vote payload to Starknet
    * @param account The Starknet account used to submit the transaction
    * @param params The vote request params
@@ -531,16 +660,12 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       action: Timed.Action.VOTE,
     };
 
-    // TODO: Avoid calling these twice...
-    const timestamp = await this.getSnapshotTimestamp(params.data.round);
+    const timestamp = await this.getVotingPeriodSnapshotTimestamp(params.data.round);
     const { govPowerStrategiesRaw } = await this._query.getGovPowerStrategies({
       where: {
         id_in: params.data.usedVotingStrategies.map(({ id }) => id),
       },
     });
-
-    // TODO: We only need to do this if they haven't voted before.
-    // Remove asap.
     const preCalls = await this._govPower.getPreCallsForStrategies(
       params.data.voter,
       timestamp,
@@ -548,7 +673,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     );
 
     const call = this.createEVMSigAuthCall(payload, 'authenticate_vote', this.getVoteCalldata(params.data));
-    const fee = await account.estimateFee([...preCalls, call]);
+    const fee = await account.estimateFee([...preCalls, call], { blockIdentifier: 'pending' });
     return account.execute([...preCalls, call], undefined, {
       maxFee: fee.suggestedMaxFee,
     });
@@ -559,7 +684,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * @param account The Starknet account used to submit the transaction
    * @param config The round finalization config
    */
-  public async finalizeRound(account: Account, config: Timed.FinalizationConfig) {
+  public async determineWinners(account: Account, config: Timed.FinalizationConfig) {
     const calldata = [config.awards.length.toString()].concat(
       config.awards.map(a => {
         const id = splitUint256.SplitUint256.fromUint(
@@ -583,6 +708,125 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
+   * Cancel an active round. This function can only be called by the round manager.
+   * @param roundAddress The address of the round to cancel
+   */
+  public async cancel(roundAddress: string) {
+    return this.getContract(roundAddress).connect(this.signer).cancel({ value: 2e14 });
+  }
+
+  /**
+   * Finalize a round by posting the merkle root containing the winning proposals
+   * onchain and entering the claiming period.
+   * @param roundAddress The address of the round to finalize
+   */
+  public async finalize(roundAddress: string) {
+    const root = await this._query.getRoundMerkleRoot(roundAddress);
+    if (!root) throw new Error(`No merkle root for round ${roundAddress}`);
+
+    const { low, high } = splitUint256.SplitUint256.fromHex(root);
+
+    const contract = this.getContract(roundAddress).connect(this.signer);
+    return contract.finalize(low, high);
+  }
+
+  /**
+   * Claim the award for submitting the provided winning proposal
+   * @param config The information needed to claim an award
+   */
+  public async claimAward(config: Timed.ClaimAwardConfig) {
+    const [round, winningProposals] = await Promise.all([
+      this._query.getRound(config.round),
+      this._query.getProposalsForRound(
+        config.round,
+        {
+          where: {
+            isWinner: true,
+          },
+          orderBy: Proposal_Order_By.WinningPosition,
+          orderDirection: OrderDirection.Asc,
+        },
+      )
+    ]);
+    if (!winningProposals.length) throw new Error(`No winning proposals for round ${config.round}`);
+
+    const proposalLeaves = winningProposals.map((proposal, i) => {
+      const award = round.config.awards[i];
+      const assetStruct = encoding.getAssetStruct(award);
+      const [assetId, amount] = encoding.compressAsset(award);
+
+      const leaf = this.generateClaimLeaf({
+        proposalId: proposal.id,
+        position: proposal.winningPosition!,
+        proposer: proposal.proposer,
+        assetId: assetId.toString(),
+        assetAmount: amount,
+      });
+      return {
+        leaf,
+        proposal,
+        assetStruct,
+      };
+    });
+    const { proposal, leaf, assetStruct } = proposalLeaves.find(({ proposal }) => proposal.id === config.proposalId) || {};
+    if (!proposal || !leaf || !assetStruct) throw new Error(`Proposal, leaf, or asset not found for proposal ID ${config.proposalId}`);
+
+    const tree = this.generateClaimMerkleTree(proposalLeaves.map(({ leaf }) => leaf));
+    const proof = tree.getHexProof(leaf);
+
+    const contract = this.getContract(config.round).connect(this.signer);
+    return contract.claim(proposal.id, proposal.winningPosition!, assetStruct, proof);
+  }
+
+  /**
+   * Claim the award for submitting the provided winning proposal to a recipient
+   * @param config The information needed to claim an award to a recipient
+   */
+  public async claimAwardToRecipient(config: Timed.ClaimAwardToConfig) {
+    const [round, winningProposals] = await Promise.all([
+      this._query.getRound(config.round),
+      this._query.getProposalsForRound(
+        config.round,
+        {
+          where: {
+            isWinner: true,
+          },
+          orderBy: Proposal_Order_By.WinningPosition,
+          orderDirection: OrderDirection.Asc,
+        },
+      )
+    ]);
+    if (!winningProposals.length) throw new Error(`No winning proposals for round ${config.round}`);
+
+    const proposalLeaves = winningProposals.map((proposal, i) => {
+      const award = round.config.awards[i];
+      const assetStruct = encoding.getAssetStruct(award);
+      const [assetId, amount] = encoding.compressAsset(award);
+
+      const leaf = this.generateClaimLeaf({
+        proposalId: proposal.id,
+        position: proposal.winningPosition!,
+        proposer: proposal.proposer,
+        assetId: assetId.toString(),
+        assetAmount: amount,
+      });
+      return {
+        leaf,
+        proposal,
+        assetStruct,
+      };
+    });
+    const { proposal, leaf, assetStruct } = proposalLeaves.find(({ proposal }) => proposal.id === config.proposalId) || {};
+    if (!proposal || !leaf || !assetStruct) throw new Error(`Proposal, leaf, or asset not found for proposal ID ${config.proposalId}`);
+
+    const tree = this.generateClaimMerkleTree(proposalLeaves.map(({ leaf }) => leaf));
+    const proof = tree.getHexProof(leaf);
+
+    const contract = this.getContract(config.round).connect(this.signer);
+    return contract.claimTo(config.recipient, proposal.id, proposal.winningPosition!, assetStruct, proof);
+  }
+
+  /**
    * Generates a calldata array used to submit a proposal through an authenticator
    * @param config The information required to generate the propose calldata
    */
@@ -600,8 +844,8 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
-   * Generates a calldata array used to submit a proposal through an authenticator
-   * @param config The information required to generate the propose calldata
+   * Generates a calldata array used to submit a proposal edit through an authenticator
+   * @param config The information required to generate the edit proposal calldata
    */
   public getEditProposalCalldata(config: Timed.EditProposalCalldataConfig): string[] {
     const metadataUri = intsSequence.IntsSequence.LEFromString(config.metadataUri);
@@ -611,6 +855,14 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       `0x${metadataUri.values.length.toString(16)}`,
       ...metadataUri.values,
     ];
+  }
+
+  /**
+   * Generates a calldata array used to cancel a proposal through an authenticator
+   * @param config The information required to generate the cancel proposal calldata
+   */
+  public getCancelProposalCalldata(config: Timed.CancelProposalCalldataConfig): string[] {
+    return [config.proposer, `0x${config.proposalId.toString(16)}`];
   }
 
   /**
@@ -660,10 +912,22 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
-   * Get the snapshot block timestamp for the provided round
+   * Get the proposing period snapshot block timestamp for the provided round
    * @param round The Starknet round address
    */
-  public async getSnapshotTimestamp(round: string): Promise<string> {
+  public async getProposingPeriodSnapshotTimestamp(round: string): Promise<string> {
+    const config = await this._starknet.getStorageAt(
+      round,
+      encoding.getStorageVarAddress(this._CONFIG_STORE),
+    );
+    return BigNumber.from(config).shr(24).mask(64).toString();
+  }
+
+  /**
+   * Get the voting period snapshot block timestamp for the provided round
+   * @param round The Starknet round address
+   */
+  public async getVotingPeriodSnapshotTimestamp(round: string): Promise<string> {
     const config = await this._starknet.getStorageAt(
       round,
       encoding.getStorageVarAddress(this._CONFIG_STORE),
@@ -679,5 +943,34 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   public async getSpentVotingPower(round: string, voter: string) {
     const key = encoding.getStorageVarAddress(this._SPENT_VOTING_POWER_STORE, voter);
     return BigNumber.from(await this._starknet.getStorageAt(round, key));
+  }
+
+  /**
+   * Generate a single leaf for a claim merkle tree
+   * @param winner Information relating to a round winner
+   */
+  protected generateClaimLeaf(winner: Timed.RoundWinner) {
+    const { proposalId, position, proposer, assetId, assetAmount } = winner;
+    return Buffer.from(
+      solidityKeccak256(
+        ['uint256', 'uint256', 'uint256', 'bytes32', 'uint256'],
+        [proposalId, position, proposer, assetId, assetAmount],
+      ).slice(2),
+      'hex',
+    ).toString('hex');
+  }
+
+  /**
+   * Generate a claim merkle tree
+   * @param winnersOrLeaves Round winner information or leaves
+   */
+  protected generateClaimMerkleTree(winnersOrLeaves: Timed.RoundWinner[] | string[]) {
+    const leaves = winnersOrLeaves.map(winner => {
+      if (typeof winner !== 'string') {
+        return this.generateClaimLeaf(winner);
+      }
+      return winner;
+    });
+    return new MerkleTree(leaves, keccak256, { sortPairs: true });
   }
 }

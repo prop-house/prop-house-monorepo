@@ -70,35 +70,39 @@ Every Prop House [round](#Rounds) interacts with two chains:
 1. **Starknet**, which handles core round logic like proposing, voting, and winner determination.
 2. An **origin chain**, where houses are deployed, assets are held, and execution (payouts) occur.
 
+This approach utilizes the cheaper execution cost of Starknet to make proposing, voting, and winner calculations more affordable.
+
 Currently, Ethereum is the only supported origin chain.
 
 ### Ethereum Contracts
 
-#### [Prop House](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/ethereum/PropHouse.sol)
+![](https://1369598456-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FmBmOglaY02TEQ8yWLUbk%2Fuploads%2Fk7MjupfRa1sblorDLx48%2Fethereum.png?alt=media&token=63392099-b121-4c76-a20f-e57003abb4a3)
+
+#### [Prop House](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/ethereum/PropHouse.sol)
 
 The `PropHouse` contract serves as the primary entry point for house and round creation, while also handling all round deposits.
 
 Supported asset types include: ETH, ERC20s, ERC721s, ERC1155s.
 
-#### [Manager](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/ethereum/Manager.sol)
+#### [Manager](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/ethereum/Manager.sol)
 
 The `Manager` contract controls which house and round implementation contracts can be deployed using the `PropHouse` contract. This contract will be owned by the Prop House team multisig. This contract has no control over existing rounds.
 
-#### [Messenger](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/ethereum/Messenger.sol)
+#### [Messenger](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/ethereum/Messenger.sol)
 
-The `Messenger` acts as a L1<->L2 message pass-through contract between rounds and the Starknet Core contract. It uses the `PropHouse` contract to authenticate rounds and inserts the `msg.sender` in the first index of the payload that's passed to starknet to ensure that the manager can't register a malicious round implementation that acts as another round.
+The `Messenger` acts as a L1<>L2 message pass-through contract between rounds and the Starknet Core contract. It uses the `PropHouse` contract to authenticate rounds and inserts the `msg.sender` in the first index of the payload that's passed to Starknet to ensure that the manager can't register a malicious round implementation that acts as another round.
 
-#### [Community House](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/ethereum/houses/CommunityHouse.sol)
+#### [Community House](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/ethereum/houses/CommunityHouse.sol)
 
 Covered [above](#community-house)
 
-#### [Creator Pass Issuer](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/ethereum/CreatorPassIssuer.sol)
+#### [Creator Pass Issuer](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/ethereum/CreatorPassIssuer.sol)
 
 The `CreatorPassRegistry` is an `ERC1155` token, which is used by the `CommunityHouse` to determine who is authorized to create rounds on the house. The `CommunityHouse` achieves this by issuing or revoking passes (mint, burn). The ID of the token is the calling house ID.
 
-You can see the pass authorization in the `CommunityHouse` [here](https://github.com/Prop-House/prop-house-monorepo/blob/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/ethereum/houses/CommunityHouse.sol#L136-L138).
+You can see the pass authorization in the `CommunityHouse` [here](https://github.com/Prop-House/prop-house-monorepo/blob/master/packages/prop-house-protocol/contracts/ethereum/houses/CommunityHouse.sol#L136-L138).
 
-#### [Infinite Round](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/ethereum/rounds/InfiniteRound.sol)
+#### [Infinite Round](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/ethereum/rounds/InfiniteRound.sol)
 
 Mostly covered [above](#infinite-round)
 
@@ -106,33 +110,35 @@ This contract handles continual asset deposits and payouts (claims) to winners, 
 
 In this round type, no awards are specified during round creation. Instead, proposers can request any assets that the round holds.
 
-Winners are reported to this contract from Starknet in batches of one or more. The payload from Starknet includes the new winner count and the latest merkle root. If the new winner count is greater than the previous winner count, anyone can consume the new root and open up claiming for the latest batch of winners. For now, the incremental merkle tree is capped at 2^10 leaves, which feels sufficient until proven otherwise.
+Winners are reported to this contract from Starknet in batches of one or more. The payload from Starknet includes the new winner count and the latest merkle root. If the new winner count is greater than the previous winner count, anyone can consume the new root and open up claiming for the latest batch of winners. For now, the incremental merkle tree is capped at 2^10 leaves.
 
-#### [Timed Round](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/ethereum/rounds/TimedRound.sol)
+#### [Timed Round](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/ethereum/rounds/TimedRound.sol)
 
 Mostly covered [above](#timed-round)
 
-This contract handles asset deposits and payouts (claims) to winners, and enables the round manager, holder of the round NFT, to cancel or finalize the round.
+This contract handles asset deposits and payouts (claims) to winners, enables the round manager, holder of the round NFT, to cancel the round, and allows anyone to finalize the round.
 
-Unlike infinite rounds, this contract receives a list of all winners during finalization and allows 4 weeks for claiming before depositors can reclaim their assets.
+Unlike infinite rounds, this contract receives a list of all winners during finalization and allows 4 weeks for claiming before depositors can reclaim unclaimed assets.
 
 In addition, this contract supports rounds that offer no assets. When no assets are offered, the utility of this contract is the `isWinner` function, which can be used by 3rd party contracts to enable new use-cases. For example, a contract that allows the winner of the timed round to receive a streamed payment.
 
 ### Starknet Contracts
 
-#### [EthereumRoundFactory](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/starknet/src/factories/ethereum.cairo)
+![](https://1369598456-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FmBmOglaY02TEQ8yWLUbk%2Fuploads%2Fngz4Mq2RD3YpmNGrTFHK%2Fstarknet.png?alt=media&token=ce20e09c-e102-4279-a5b9-08bc99355c0b)
+
+#### [EthereumRoundFactory](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/starknet/src/factories/ethereum.cairo)
 
 The `EthereumRoundFactory` is the entrypoint for all rounds created on Ethereum. It deploys an accompanying Starknet round and creates a mapping to the Ethereum round address that was passed via `msg.sender` from `Messenger`.
 
 In addition, it can route messages from an Ethereum round contract to a Starknet round contract.
 
-#### [InfiniteRound](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/starknet/src/rounds/infinite/round.cairo)
+#### [InfiniteRound](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/starknet/src/rounds/infinite/round.cairo)
 
 `InfiniteRound` handles proposing, voting, and winner determination for the infinite rounds. If a FOR or AGAINST quorum is reached, the state change will occur inside the vote transaction. A rejection will move the proposal state to REJECTED, while an approval will change the state to APPROVED and append the winner's claim leaf to the merkle tree.
 
 `process_winners` can be called to relay new winners to the origin chain. `finalize_round`, which is called from the origin chain contract, will process any remaining winners before finalizing the round.
 
-#### [TimedRound](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/starknet/src/rounds/timed/round.cairo)
+#### [TimedRound](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/starknet/src/rounds/timed/round.cairo)
 
 `TimedRound` handles proposing, voting, and winner determination for the timed rounds. It accepts proposals during the proposal submission period, accepts votes during the voting period, and allows finalization, which determines winners, following the voting period.
 
@@ -147,23 +153,24 @@ Users can not choose their own auth strategies. They are forever bound to a roun
 
 #### Governance Power Strategies
 
-These strategies can be consumed to determine proposing or voting power. There are currently three governance power strategies in the repo:
+These strategies can be consumed to determine proposing or voting power. There are currently four governance power strategies in use:
 
-- Vanilla: For testing only. Gives all users a power of 1.
-- Allowlist: Enables a predefined list of accounts to have a specific governance power.
-- Ethereum Balance Of: Uses Herodotus v1 to determine governance power using ERC20/ERC721 balances on Ethereum.
+- **Allowlist**: Enables a predefined list of accounts to have a specific governance power.
+- **Ethereum Balance Of**: Uses storage proofs to determine governance power using ERC20/ERC721 balances on Ethereum.
+- **Ethereum Balance Of ERC1155**: Uses storage proofs to determine governance power using ERC1155 balances on Ethereum.
+- **Vanilla**: For testing only. Gives all users a power of 1.
 
-#### [EthereumBlockRegistry](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/starknet/src/common/libraries/ethereum_block.cairo)
+#### [EthereumBlockRegistry](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/starknet/src/common/libraries/ethereum_block.cairo)
 
-This contract maps timestamps to block numbers by reading from the Herodotus headers store. It is used in the Ethereum balance of governance power strategy
+This contract maps timestamps to block numbers by reading from the storage proof headers store. It is used in the Ethereum balance of governance power strategies.
 
-#### [RoundDependencyRegistry](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/starknet/src/common/libraries/round_dependency.cairo)
+#### [RoundDependencyRegistry](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/starknet/src/common/libraries/round_dependency.cairo)
 
-This contract stores immutable dependencies, like authentication or execution strategies, for rounds. It uses a combination of the origin chain ID and round type for the depdendency key, which allows Starknet rounds to service many origin chains.
+This contract stores immutable dependencies, like authentication or execution strategies, for rounds. It uses a combination of the origin chain ID and round type for the dependency key, which allows Starknet rounds to service many origin chains.
 
 Rounds can only read dependencies from this contract if they have been permanently locked. This ensures that a malicious owner cannot add a backdoor to an existing strategy.
 
-#### [StrategyRegistry](https://github.com/Prop-House/prop-house-monorepo/tree/59ba97a50b82440c2a5605564f2b868c23ad06b3/packages/prop-house-protocol/contracts/starknet/src/common/libraries/strategy.cairo)
+#### [StrategyRegistry](https://github.com/Prop-House/prop-house-monorepo/tree/master/packages/prop-house-protocol/contracts/starknet/src/common/libraries/strategy.cairo)
 
 This contract registers governance strategies by inserting them in storage, keyed by their hash, and allowing anyone to query for them. The thought here is that governance strategies will be reused many times, so we can save users on storage costs by only inserting a strategy into storage if it has never been seen before.
 
@@ -171,8 +178,8 @@ This contract registers governance strategies by inserting them in storage, keye
 
 ### Current Versions
 
-* Scarb: [d4e43e07](https://github.com/software-mansion/scarb/commit/d4e43e07)
-* Cairo: [b4c156ff](https://github.com/starkware-libs/cairo/commit/b4c156ff)
+* Scarb: [0.6.2](https://github.com/software-mansion/scarb/releases/tag/v0.6.2)
+* Cairo: [2.1.1](https://github.com/starkware-libs/cairo/releases/tag/v2.1.1)
 
 ### Installing Dependencies
 
@@ -180,74 +187,19 @@ This contract registers governance strategies by inserting them in storage, keye
 
 Follow the installation guide in [the Foundry Book](https://book.getfoundry.sh/getting-started/installation).
 
-### Step 2: Install the Cairo package manager Scarb
+#### Step 2: Install the Scarb + Cairo
 
-Follow the installation guide in [Scarb's Repository](https://github.com/software-mansion/scarb).
+**NOTE: By installing Scarb, you already have an accompanying Cairo version which can be viewed by running `$ scarb --version`.**
 
-#### Step 3: Install Cairo 1.0
+Follow the installation guide on [Scarb's website](https://docs.swmansion.com/scarb/download.html).
 
-**NOTE: By installing Scarb, you already have an accompanying Cairo 1.0 version which can be viewed by running `$ scarb --version`. This installation step is included to allow you maintain an independent version of Cairo. This step will also prove useful when setting up the language server in [Step 5](#step-5-setup-language-server).**
+If on Mac or Linux, you can run the following script to download the required version:
 
-If you are on an x86 Linux system and able to use the release binary,
-you can download Cairo here https://github.com/starkware-libs/cairo/releases.
-
-For everyone, else, we recommend compiling Cairo from source like so:
-
-```bash
-# Install stable Rust
-rustup override set stable && rustup update
-
-# Clone the Cairo compiler in $HOME/Bin
-cd ~/Bin && git clone https://github.com/starkware-libs/cairo.git && cd cairo
-
-# OPTIONAL/RECOMMENDED: If you want to install a specific version of the compiler
-# Fetch all tags (versions)
-git fetch --all --tags
-# View tags (you can also do this in the cairo compiler repository)
-git describe --tags `git rev-list --tags`
-# Checkout the version you want
-git checkout tags/v1.0.0-alpha.6
-
-# Generate release binaries
-cargo build --all --release
+```sh
+curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 0.6.2
 ```
 
-**NOTE: Keeping Cairo up to date**
-
-Now that your Cairo compiler is in a cloned repository, all you will need to do
-is pull the latest changes and rebuild as follows:
-
-```bash
-cd ~/Bin/cairo && git fetch && git pull && cargo build --all --release
-```
-
-#### Step 4: Add Cairo 1.0 executables to your path
-
-```bash
-export PATH="$HOME/Bin/cairo/target/release:$PATH"
-```
-
-**NOTE: If installing from a Linux binary, adapt the destination path accordingly.**
-
-This will make available several binaries. The one we use is called `cairo-test`.
-
-#### Step 5: Setup Language Server
-
-##### VS Code Extension
-
-- Disable previous Cairo 0.x extension
-- Install the Cairo 1 extension for proper syntax highlighting and code navigation.
-Just follow the steps indicated [here](https://github.com/starkware-libs/cairo/blob/main/vscode-cairo/README.md).
-
-##### Cairo Language Server
-
-From [Step 3](#step-3-install-cairo-10-guide-by-abdel), the `cairo-language-server` binary should be built and executing this command will copy its path into your clipboard.
-
-```bash
-$ which cairo-language-server | pbcopy
-```
-
-Update the `languageServerPath` of the Cairo 1.0 extension by pasting the path.
+Scarb is distributed with the `scarb cairo-language-server` extension which is a compilation of the official [Cairo 1.0 Language Server](https://github.com/starkware-libs/cairo/tree/master/crates/cairo-lang-language-server), that is matching the version of Cairo compiler used in Scarb itself. Scarb's version of the language server is just a launcher for the original code, unmodified.
 
 ### Testing
 

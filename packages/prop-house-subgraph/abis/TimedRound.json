@@ -33,7 +33,7 @@
       },
       {
         "internalType": "address",
-        "name": "_renderer",
+        "name": "_manager",
         "type": "address"
       }
     ],
@@ -62,12 +62,22 @@
   },
   {
     "inputs": [],
+    "name": "EMERGENCY_WITHDRAWAL_NOT_AVAILABLE",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ETHER_TRANSFER_FAILED",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "FINALIZATION_NOT_AVAILABLE",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "INSUFFICIENT_ETHER_SUPPLIED",
     "type": "error"
   },
   {
@@ -113,6 +123,11 @@
   },
   {
     "inputs": [],
+    "name": "NO_META_TX_RELAYER_PROVIDED",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NO_PROPOSING_STRATEGIES_PROVIDED",
     "type": "error"
   },
@@ -133,12 +148,17 @@
   },
   {
     "inputs": [],
-    "name": "RECLAMATION_NOT_AVAILABLE",
+    "name": "ONLY_SECURITY_COUNCIL",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT",
+    "name": "PROPOSAL_PERIOD_DURATION_TOO_SHORT",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RECLAMATION_NOT_AVAILABLE",
     "type": "error"
   },
   {
@@ -281,6 +301,12 @@
   {
     "anonymous": false,
     "inputs": [],
+    "name": "RoundEmergencyCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
     "name": "RoundFinalized",
     "type": "event"
   },
@@ -314,6 +340,24 @@
         "internalType": "struct Asset[]",
         "name": "awards",
         "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "relayer",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deposit",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct MetaTransaction",
+        "name": "metaTx",
+        "type": "tuple"
       },
       {
         "indexed": false,
@@ -465,6 +509,19 @@
     ],
     "name": "URI",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "EMERGENCY_WITHDRAW_ASSETS_AFTER",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -693,6 +750,53 @@
   },
   {
     "inputs": [],
+    "name": "emergencyCancel",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum AssetType",
+            "name": "assetType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "identifier",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Asset[]",
+        "name": "assets",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "emergencyWithdrawTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "executionRelayer",
     "outputs": [
       {
@@ -765,6 +869,23 @@
             "internalType": "struct Asset[]",
             "name": "awards",
             "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "relayer",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "deposit",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct MetaTransaction",
+            "name": "metaTx",
+            "type": "tuple"
           },
           {
             "internalType": "uint248",
@@ -1013,6 +1134,19 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "manager",
+    "outputs": [
+      {
+        "internalType": "contract IManager",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1301,19 +1435,6 @@
     "name": "reclaimTo",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renderer",
-    "outputs": [
-      {
-        "internalType": "contract ITokenMetadataRenderer",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

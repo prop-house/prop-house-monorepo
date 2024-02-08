@@ -5,11 +5,11 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import { IntsSequence } from '../ints-sequence';
 import { hexToBytes } from '../bytes';
+import { encoding } from '../..';
 
 export interface ProcessBlockInputs {
   blockNumber: number;
-  blockOptions: number;
-  headerInts: IntsSequence;
+  headerInts: string[];
 }
 
 /**
@@ -29,8 +29,7 @@ export const getProcessBlockInputsForRpcBlock = async (
   const headerInts = IntsSequence.fromBytes(hexToBytes(headerRlp));
   return {
     blockNumber: BigNumber.from(block.number).toNumber(),
-    blockOptions: 8,
-    headerInts: headerInts as IntsSequence,
+    headerInts: encoding.reverseByteOrder(headerInts.values),
   };
 };
 
@@ -55,7 +54,6 @@ export const getProcessBlockInputsForBlockNumber = async (
 
   return {
     blockNumber,
-    blockOptions: 8,
-    headerInts: headerInts as IntsSequence,
+    headerInts: encoding.reverseByteOrder(headerInts.values),
   };
 };

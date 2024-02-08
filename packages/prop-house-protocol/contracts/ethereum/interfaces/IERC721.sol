@@ -44,6 +44,9 @@ interface IERC721 {
     /// @param uri The updated contract URI
     event ContractURIUpdated(string uri);
 
+    /// @notice Contract-level metadata
+    function contractURI() external view returns (string memory);
+
     /// @notice The number of tokens owned
     /// @param owner The owner address
     function balanceOf(address owner) external view returns (uint256);

@@ -1,0 +1,34 @@
+.tabs {
+  border-bottom: none;
+  justify-content: start;
+  border-bottom: 1px solid var(--brand-gray-semi-transparent);
+  margin-bottom: 1rem;
+}
+.tabs li button {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--brand-gray-transparent);
+  transition: none !important;
+  border: none !important;
+  font-weight: bold !important;
+}
+.tabs li button:hover {
+  border: none !important;
+  color: var(--brand-gray-semi-transparent);
+}
+.tabs li button[aria-selected='true'] {
+  border: none !important;
+
+  color: var(--brand-black) !important;
+
+  background-color: transparent !important;
+}
+@media (max-width: 990px) {
+  .headerCol {
+    flex-direction: column;
+  }
+  .headerCol button {
+    margin-top: 1rem;
+    width: 100%;
+  }
+}

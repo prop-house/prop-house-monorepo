@@ -1,5 +1,5 @@
 import { Address, BigInt, ByteArray, crypto, ethereum } from '@graphprotocol/graph-ts';
-import { AssetType, AssetTypeString, BIGINT_ONE, GovPowerStrategyType } from './constants';
+import { AssetType, AssetTypeString, GovPowerStrategyType, ZERO_BYTES_32 } from './constants';
 import { poseidonHashMany } from 'as-poseidon';
 
 // Common asset struct
@@ -27,30 +27,18 @@ export class AssetStruct extends ethereum.Tuple {
  */
 export function get2DArray(votingStrategyParamsFlat: BigInt[]): BigInt[][] {
   const array2D: BigInt[][] = [];
+  const numArrays = votingStrategyParamsFlat[0].toI32();
 
-  const numArrays = votingStrategyParamsFlat[0];
-  if (numArrays.toI32() == 1) {
-    array2D.push(votingStrategyParamsFlat.slice(2));
-    return array2D;
-  }
-  
-  for (let i = 0; i < numArrays.toI32(); i++) {
-    const start = votingStrategyParamsFlat[i + 1];
-    const end = votingStrategyParamsFlat[i + 2];
-    array2D.push(votingStrategyParamsFlat.slice(
-      start.plus(numArrays).plus(BIGINT_ONE).toU32(),
-      end.plus(numArrays).plus(BIGINT_ONE).toU32()),
-    );
+  // Extract the offsets from the flat array
+  const offsets = votingStrategyParamsFlat.slice(1, 1 + numArrays);
+
+  // For each offset, extract the corresponding sub-array
+  for (let i = 0; i < numArrays; i++) {
+    const start = offsets[i].toI32();
+    const end = (i === numArrays - 1) ? votingStrategyParamsFlat.length : votingStrategyParamsFlat[i + 2].toI32();
+    array2D.push(votingStrategyParamsFlat.slice(start + numArrays + 1, end + numArrays + 1));
   }
   return array2D;
-}
-
-/**
- * Pad the provided string to 32 bytes
- * @param s The string to pad
- */
-export function padBytes32(s: string): string {
-  return s.padStart(64, '0');
 }
 
 /**
@@ -67,15 +55,18 @@ export function computeGovPowerStrategyID(strategy: BigInt, params: BigInt[]): s
  * @param asset The asset information
  */
 export function computeAssetID(asset: AssetStruct): string {
-  if (asset.assetType == AssetType.NATIVE) {
-    return padBytes32(asset.assetType.toString(16));
+  switch (asset.assetType) {
+    case AssetType.NATIVE:
+      return ZERO_BYTES_32;
+    case AssetType.ERC20:
+      return `0x0${asset.assetType.toString(16)}${asset.token.toHex().substring(2)}`.padEnd(66, '0');
+    default:
+      const token = asset.token.toHex().substring(2);
+      const paddedIdentifier = asset.identifier.toHex().substring(2).padStart(64, '0');
+      const keccakHash = crypto.keccak256(ByteArray.fromHexString(`${token}${paddedIdentifier}`)).toHex().substring(2);
+
+      return `0x0${asset.assetType.toString(16)}${keccakHash}`.slice(0, 66);
   }
-  if (asset.assetType == AssetType.ERC20) {
-    return padBytes32(`${asset.assetType.toString(16)}${asset.token.toHex()}`);
-  }
-  return `${asset.assetType}${crypto.keccak256(ByteArray.fromHexString
-    (`${asset.token.toHex()}${asset.identifier.toHex()}`
-  ))}`.slice(0, 32);
 }
 
 /**
@@ -102,14 +93,28 @@ export function getAssetTypeString(assetType: AssetType): string {
  * @param addr The governance power strategy address
  */
 export function getGovPowerStrategyType(addr: string): string {
-  if (addr == '0x3d94956a6bed18f62c865f1c4c15e8197960edaa4d8b382ccc6f1fd6b9f476e' || addr == '0x77b9d96e71380b1cba3cdc6450c103c9806c7c17611fc5ac9b57943cb919cbd') {
+  if (addr == '0x6ddcc94a4225843546a9b118a2733fd924d6b8a6467279cbe6a1aea79daca54') {
     return GovPowerStrategyType.BALANCE_OF;
   }
-  if (addr == '0x37bebb719da8869531a12be866732dbaa6e840f507b94b30e0e438ac560b1a') {
+  if (addr == '0x196cf5ceba8e98abe1e633d6184cd28c1e1ebd09ea71f89867dd4c5fda97bbe') {
+    return GovPowerStrategyType.BALANCE_OF_ERC20;
+  }
+  if (addr == '0x6d22f17522d6992eb479deb850e96f9454fc2f6c127993ab2ef9d411f467e8' || addr == '0x44e3bdffcb6ce36596d0faa4316932c5dc47005b9eaaf0f7ce0f455c98b2e75') {
+    return GovPowerStrategyType.BALANCE_OF_ERC1155;
+  }
+  if (addr == '0x10f7529ec5df9069a06191deb7cd2c4158c2b59879e2544cb45dc221daff429') {
+    return GovPowerStrategyType.CHECKPOINTABLE_ERC721;
+  }
+  if (addr == '0x3daa40ef909961a576f9ba58eb063d5ebc85411063a8b29435f05af6167079c') {
     return GovPowerStrategyType.ALLOWLIST;
   }
-  if (addr == '0x23a5d2474eb348d62d9da78c9383abfe557e7b95999edc6b261bae81bf3a769') {
-    return GovPowerStrategyType.VANILLA;
-  }
   return GovPowerStrategyType.UNKNOWN;
+}
+
+/**
+ * Pad a hex string to 32 bytes
+ * @param hex The hex string to pad
+ */
+export function padHexTo32Bytes(hex: string): string {
+  return `0x${hex.substring(2).padStart(64, '0')}`;
 }

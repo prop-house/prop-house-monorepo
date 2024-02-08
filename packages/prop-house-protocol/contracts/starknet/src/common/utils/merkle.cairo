@@ -156,7 +156,6 @@ impl PedersenMerkleTreeImpl of MerkleTreeTrait<felt252> {
             match proof.pop_front() {
                 Option::Some(proof_element) => {
                     let proof_element = *proof_element;
-                    let mut node_input = ArrayTrait::<felt252>::new();
 
                     // Compute the hash of the current node and the current element of the proof.
                     // We need to check if the current node is smaller than the current element of the proof.

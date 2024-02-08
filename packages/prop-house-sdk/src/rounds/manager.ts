@@ -41,7 +41,7 @@ export class RoundManager<CS extends void | Custom = void> {
    * @param params The params required to get the round state
    */
   public static getState<RT extends RoundType>(type: RT | string, params: GetRoundStateParams<RT>) {
-    return (this.get(type as RT) as any).getState(params); // TODO
+    return (this.get(type as RT) as any).getState(params); // TODO: Fix type issue.
   }
 
   /**

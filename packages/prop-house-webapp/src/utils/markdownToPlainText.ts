@@ -7,5 +7,6 @@ import { ReactElement } from 'react-markdown/lib/react-markdown';
 export const markdownComponentToPlainText = (reactMarkdownComponent: ReactElement) => {
   const html = ReactDOMServer.renderToString(reactMarkdownComponent);
   const stripHtml = html.replace(/<\/?[^>]+(>|$)/g, '');
-  return stripHtml;
+  const stripBr = stripHtml.replace(/(<|&lt;)br\s*\/*(>|&gt;)/g, ' ');
+  return stripBr;
 };

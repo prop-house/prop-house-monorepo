@@ -154,10 +154,8 @@ abstract contract AssetController {
         IERC1155(token).safeTransferFrom(source, recipient, identifier, amount, new bytes(0));
     }
 
-    /**
-     * @dev Ensure that a given asset amount is not zero
-     * @param amount The amount to check
-     */
+    /// @dev Ensure that a given asset amount is not zero
+    /// @param amount The amount to check
     function _assertNonZeroAmount(uint256 amount) internal pure {
         // Revert if the supplied amount is equal to zero
         if (amount == 0) {

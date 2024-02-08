@@ -8,12 +8,12 @@ import Avatar from '../Avatar';
 
 const EthAddress: React.FC<{
   address: string;
+  imgSrc?: string;
   className?: string;
-  containerClassName?: string;
   addAvatar?: boolean;
-  avatarDiameter?: number;
+  avatarSize?: number;
 }> = props => {
-  const { address, className, containerClassName, addAvatar, avatarDiameter } = props;
+  const { address, imgSrc, className, addAvatar, avatarSize } = props;
 
   // create Etherscan link
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
@@ -26,12 +26,13 @@ const EthAddress: React.FC<{
   const shortAddress = trimEthAddress(address as string);
 
   return (
-    <div
-      onClick={(e: any) => e.stopPropagation()}
-      className={clsx(classes.ethAddress, containerClassName)}
-    >
+    <div onClick={(e: any) => e.stopPropagation()} className={clsx(classes.ethAddress)}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
-        {addAvatar && <Avatar address={address} diameter={avatarDiameter ? avatarDiameter : 20} />}
+        {imgSrc ? (
+          <img src={imgSrc} className={classes.img} alt="avatar" />
+        ) : (
+          addAvatar && <Avatar address={address} diameter={avatarSize ? avatarSize : 20} />
+        )}
         <span className={clsx(classes.address, className)}>{ens ? ens : shortAddress}</span>
       </a>
     </div>

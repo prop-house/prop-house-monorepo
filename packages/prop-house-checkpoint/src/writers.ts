@@ -9,7 +9,7 @@ import {
 } from './utils';
 import { validateAndParseAddress } from 'starknet';
 import { hexZeroPad } from '@ethersproject/bytes';
-import { Proposal, RoundState } from './types';
+import { RoundState } from './types';
 
 export const handleEthereumRoundRegistered: CheckpointWriter = async ({
   block,
@@ -30,6 +30,7 @@ export const handleEthereumRoundRegistered: CheckpointWriter = async ({
     txHash: tx.transaction_hash,
     state: RoundState.ACTIVE,
     proposalCount: 0,
+    votingPower: 0,
     uniqueProposers: 0,
     uniqueVoters: 0,
   };
@@ -248,7 +249,7 @@ export const handleVoteCast: CheckpointWriter = async ({
     SET @is_new_voter = IF(@voter_exists = 0 AND @added_votes = 1, 1, 0);
     SET @is_new_voter_in_round = IF(@voter_has_voted_in_round = 0 AND @added_votes = 1, 1, 0);
 
-    UPDATE rounds SET uniqueVoters = uniqueVoters + @is_new_voter_in_round WHERE id = ? LIMIT 1;
+    UPDATE rounds SET uniqueVoters = uniqueVoters + @is_new_voter_in_round, votingPower = IF(@added_votes = 1, votingPower + ?, votingPower) WHERE id = ? LIMIT 1;
     UPDATE proposals SET votingPower = IF(@added_votes = 1, votingPower + ?, votingPower) WHERE id = ? LIMIT 1;
     UPDATE accounts SET voteCount = voteCount + @added_votes WHERE id = ? LIMIT 1;
     UPDATE summaries SET uniqueVoters = uniqueVoters + @is_new_voter WHERE id = 'SUMMARY' LIMIT 1;
@@ -262,6 +263,7 @@ export const handleVoteCast: CheckpointWriter = async ({
     vote.txStatus,
     vote.receivedAt,
     vote.id,
+    power,
     round,
     power,
     proposal,

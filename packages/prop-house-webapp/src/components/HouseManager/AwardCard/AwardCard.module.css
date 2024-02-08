@@ -1,0 +1,65 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0px;
+  gap: 8px;
+  background: white;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-high);
+  border-radius: 8px;
+  flex-basis: calc(25% - 8px);
+  width: calc(25% - 8px);
+}
+.container :global(.award) {
+  border: 1px solid red !important;
+}
+.place p {
+  font-size: 12px;
+}
+.divider {
+  border: 0.5px solid var(--border-light);
+  width: 30%;
+  margin: 3px 0px;
+}
+.awardNameImg {
+  align-items: center;
+}
+.imageContainer {
+  overflow: hidden;
+  background: #fff;
+  line-height: 1px;
+  min-width: 14px;
+}
+.image {
+  height: 14px;
+  width: 14px;
+  border-radius: 0.761905px !important;
+}
+.text {
+  text-align: center;
+  max-width: 90%;
+}
+.text .awardNameImg p {
+  color: var(--brand-black);
+  font-size: 16px;
+}
+.text p {
+  color: var(--brand-gray-transparent);
+  font-weight: 700 !important;
+}
+
+@media (max-width: 1280px) {
+  .container {
+    flex-basis: calc(33.33% - 8px);
+    width: calc(33.33% - 8px);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-basis: calc(50% - 8px);
+    width: calc(50% - 8px);
+  }
+}

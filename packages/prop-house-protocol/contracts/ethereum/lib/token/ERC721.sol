@@ -22,7 +22,7 @@ abstract contract ERC721 is IERC721 {
     /// @notice The token symbol
     ImmutableStrings.ImmutableString internal immutable _symbol;
 
-    /// @notice A contract-level metadata
+    /// @notice Contract-level metadata
     string public contractURI;
 
     /// @notice The token owners

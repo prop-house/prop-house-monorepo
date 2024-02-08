@@ -8,7 +8,6 @@ import {
 } from '../../../typechain';
 import { asciiToHex } from '../utils';
 import { EIP_712_DOMAIN_SEPARATOR_GOERLI, STARKNET_MAX_FEE } from '../constants';
-import { ec } from 'starknet';
 import { RoundType } from '@prophouse/sdk';
 import { constants } from 'ethers';
 import { ChainId } from '../../../src';
@@ -29,7 +28,7 @@ export const communityHouseSetup = async () => {
   const starknetProvider = new SequencerProvider({
     baseUrl: 'http://127.0.0.1:5050',
   });
-  const starknetAccount = new Account(starknetProvider, address, ec.getKeyPair(private_key));
+  const starknetAccount = new Account(starknetProvider, address, private_key);
 
   const roundDeployerFactory = await starknet.getContractFactory('prop_house_EthereumRoundFactory');
   const ethExecutionStrategyFactory = await starknet.getContractFactory(
@@ -69,7 +68,7 @@ export const communityHouseSetup = async () => {
 
   const communityHouseImpl = await communityHouseFactory.deploy(
     config.propHouse.address,
-    constants.AddressZero,
+    config.manager.address,
     config.creatorPassIssuer.address,
   );
 
@@ -178,7 +177,7 @@ export const infiniteRoundSetup = async () => {
     config.messenger.address,
     config.roundFactory.address,
     config.ethExecutionStrategy.address,
-    constants.AddressZero,
+    config.manager.address,
   );
 
   await config.manager.registerRound(config.communityHouseImpl.address, infiniteRoundImpl.address);
@@ -282,7 +281,7 @@ export const timedRoundSetup = async () => {
     config.messenger.address,
     config.roundFactory.address,
     config.ethExecutionStrategy.address,
-    constants.AddressZero,
+    config.manager.address,
   );
 
   await config.manager.registerRound(config.communityHouseImpl.address, timedRoundImpl.address);

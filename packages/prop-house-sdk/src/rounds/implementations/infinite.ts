@@ -10,8 +10,9 @@ import { InfiniteRound__factory } from '@prophouse/protocol';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
 import { isAddress } from '@ethersproject/address';
 import { defaultAbiCoder } from '@ethersproject/abi';
+import { AddressZero } from '@ethersproject/constants';
 import { ADDRESS_ONE } from '../../constants';
-import { Account, hash } from 'starknet';
+import { Account, BlockTag, hash } from 'starknet';
 import { Time, TimeUnit } from 'time-ts';
 import { RoundBase } from './base';
 
@@ -26,6 +27,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
   // prettier-ignore
   public static CONFIG_STRUCT_TYPE = `
     tuple(
+      tuple(address relayer, uint256 deposit) metaTx,
       uint248 proposalThreshold,
       uint256[] proposingStrategies,
       uint256[] proposingStrategyParamsFlat,
@@ -40,7 +42,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
   /**
    * The minimum vote period duration
    */
-  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Hours);
+  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(60, TimeUnit.Minutes);
 
   /**
    * EIP712 infinite round types
@@ -57,7 +59,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
       { name: 'authStrategy', type: 'bytes32' },
       { name: 'round', type: 'bytes32' },
       { name: 'proposer', type: 'address' },
-      { name: 'metadataUri', type: 'string' },
+      { name: 'metadataUri', type: 'uint256[]' },
       { name: 'requestedAssets', type: 'Asset[]' },
       { name: 'usedProposingStrategies', type: 'UserStrategy[]' },
       { name: 'salt', type: 'uint256' },
@@ -68,7 +70,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
       { name: 'proposer', type: 'address' },
       { name: 'proposalId', type: 'uint32' },
       { name: 'requestedAssets', type: 'Asset[]' },
-      { name: 'metadataUri', type: 'string' },
+      { name: 'metadataUri', type: 'uint256[]' },
       { name: 'salt', type: 'uint256' },
     ],
     CancelProposal: [
@@ -146,6 +148,9 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
     if (BigNumber.from(config.quorumAgainst).isZero()) {
       throw new Error('No AGAINST quorum provided');
     }
+    if (config.metaTx && BigNumber.from(config.metaTx.deposit ?? 0).gt(0) && !config.metaTx.relayer) {
+      throw new Error('Must provide meta-transaction relayer when deposit is non-zero');
+    }
     const proposalThreshold = BigNumber.from(config.proposalThreshold ?? 0);
     if (proposalThreshold.gt(0) && !config.proposingStrategies?.length) {
       throw new Error('Round must have at least one proposing strategy when threshold is non-zero');
@@ -163,6 +168,10 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
 
     return {
       proposalThreshold,
+      metaTx: {
+        relayer: config.metaTx?.relayer ?? AddressZero,
+        deposit: config.metaTx?.deposit ?? 0,
+      },
       proposingStrategies: proposingStrategies.map(s => s.address),
       proposingStrategyParamsFlat: encoding.flatten2DArray(proposingStrategies.map(s => s.params)),
       votingStrategies: votingStrategies.map(s => s.address),
@@ -191,16 +200,19 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
 
     payload[8] = configStruct.proposalThreshold.toString();
 
-    const response = (await this._starknet.estimateMessageFee({
-      from_address: this._addresses.evm.messenger,
-      to_address: this._addresses.starknet.roundFactory,
-      entry_point_selector: hash.getSelectorFromName('register_round'),
-      payload: payload.map(p => p.toString()),
-    })) as unknown as { overall_fee: number; unit: string };
-    if (!response.overall_fee || response.unit !== 'wei') {
+    const response = await this._starknet['fetchEndpoint']('starknet_estimateMessageFee', {
+      message: {
+        from_address: this._addresses.evm.messenger,
+        to_address: this._addresses.starknet.roundFactory,
+        entry_point_selector: hash.getSelectorFromName('register_round'),
+        payload: payload.map(p => `0x${BigInt(p).toString(16)}`),
+      },
+      block_id: BlockTag.pending as any,
+    });
+    if (!response.overall_fee) {
       throw new Error(`Unexpected message fee response: ${response}`);
     }
-    return response.overall_fee.toString();
+    return response.overall_fee;
   }
 
   /**
@@ -238,6 +250,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
 
+    const metadataUriIntsSequence = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
@@ -247,13 +260,16 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
         assetId,
         amount,
       })),
-      usedProposingStrategies: [], // TODO: Add SDK support for proposing strategies
+      usedProposingStrategies: [], // TODO: SDK support for proposing strategies.
       salt: this.generateSalt(),
     };
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
       this.pick(InfiniteRound.EIP_712_TYPES, ['Propose', 'UserStrategy', 'Asset']),
-      message,
+      {
+        ...message,
+        metadataUri: metadataUriIntsSequence.values,
+      },
     );
     return {
       address,
@@ -394,16 +410,12 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
       action: Infinite.Action.VOTE,
     };
 
-    // TODO: Avoid calling these twice...
     const timestamp = await this.getSnapshotTimestamp(params.data.round);
     const { govPowerStrategiesRaw } = await this._query.getGovPowerStrategies({
       where: {
         id_in: params.data.usedVotingStrategies.map(({ id }) => id),
       },
     });
-
-    // TODO: We only need to do this if they haven't voted before.
-    // Remove asap.
     const preCalls = await this._govPower.getPreCallsForStrategies(
       params.data.voter,
       timestamp,

@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
+import { ITokenMetadataRenderer } from './interfaces/ITokenMetadataRenderer.sol';
 import { IManager } from './interfaces/IManager.sol';
 import { Ownable } from './lib/utils/Ownable.sol';
 import { IHouse } from './interfaces/IHouse.sol';
 import { IRound } from './interfaces/IRound.sol';
 
 /// @title Manager
-/// @notice This contract allows an account to manage house and round implementations
+/// @notice This contract allows an account to manage house and round implementations,
+/// metadata renderers for all protocol contracts, and the security council address.
 contract Manager is IManager, Ownable {
     /// @notice Determine if a contract is a registered house implementation
     /// @dev House Address => Registered
@@ -16,6 +18,13 @@ contract Manager is IManager, Ownable {
     /// @notice Determine if a contract is a registered round for a house implementation
     /// @dev House Address => Round Address => Is Registered
     mapping(address => mapping(address => bool)) private rounds;
+
+    /// @notice A mapping of contract addresses to their metadata renderers
+    /// @dev Contract Address => Metadata Renderer Address
+    mapping(address => address) private renderers;
+
+    /// @notice A council that has permission to execute emergency actions
+    address private securityCouncil;
 
     constructor() initializer {
         __Ownable_init(msg.sender);
@@ -32,6 +41,17 @@ contract Manager is IManager, Ownable {
     /// @param roundImpl The round implementation address
     function isRoundRegistered(address houseImpl, address roundImpl) external view returns (bool) {
         return rounds[houseImpl][roundImpl];
+    }
+
+    /// @notice Get the metadata renderer for a contract.
+    /// @param contract_ The contract address
+    function getMetadataRenderer(address contract_) external view returns (ITokenMetadataRenderer) {
+        return ITokenMetadataRenderer(renderers[contract_]);
+    }
+
+    /// @notice Get the security council address
+    function getSecurityCouncil() external view returns (address) {
+        return securityCouncil;
     }
 
     /// @notice Register a house implementation contract
@@ -66,5 +86,22 @@ contract Manager is IManager, Ownable {
         delete rounds[houseImpl][roundImpl];
 
         emit RoundUnregistered(houseImpl, roundImpl);
+    }
+
+    /// @notice Set a metadata renderer for a contract.
+    /// @param contract_ The contract address
+    /// @param renderer The renderer address
+    function setMetadataRenderer(address contract_, address renderer) external onlyOwner {
+        renderers[contract_] = renderer;
+
+        emit MetadataRendererSet(contract_, renderer);
+    }
+
+    /// @notice Sets the security council to a new account (`newSecurityCouncil`)
+    /// @param newSecurityCouncil The new security council address
+    function setSecurityCouncil(address newSecurityCouncil) external onlyOwner {
+        securityCouncil = newSecurityCouncil;
+
+        emit SecurityCouncilSet(newSecurityCouncil);
     }
 }

@@ -1,4 +1,3 @@
-import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
 import {
   TimedAuction,
@@ -37,7 +36,7 @@ import { createClient } from '@supabase/supabase-js';
 export class PropHouseWrapper {
   constructor(
     private readonly host: string,
-    private readonly signer: Signer | Wallet | null | undefined = undefined,
+    private readonly signer: Signer | null | undefined = undefined,
   ) {}
 
   async createAuction(auction: TimedAuction): Promise<StoredTimedAuction[]> {
@@ -252,7 +251,7 @@ export class PropHouseWrapper {
       );
       return (await axios.patch(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e;
     }
   }
 
@@ -445,7 +444,7 @@ export class PropHouseWrapper {
     }
   }
 
-  submitReply = async (signer: Signer, reply: Reply) => {
+  submitReply = async (signer: Signer, reply: Reply, strategy: {}) => {
     const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
     const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY;
 
@@ -457,6 +456,7 @@ export class PropHouseWrapper {
     const { data, error } = await supabase.functions.invoke('reply', {
       body: {
         ...signedPayload,
+        strategy,
       },
     });
     if (error) throw new Error(error);

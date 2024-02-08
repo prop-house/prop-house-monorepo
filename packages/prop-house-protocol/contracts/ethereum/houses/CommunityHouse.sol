@@ -3,8 +3,8 @@ pragma solidity >=0.8.17;
 
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
 import { ICreatorPassIssuer } from '../interfaces/ICreatorPassIssuer.sol';
-import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { LibClone } from 'solady/src/utils/LibClone.sol';
+import { IManager } from '../interfaces/IManager.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { ERC721 } from '../lib/token/ERC721.sol';
@@ -21,11 +21,14 @@ contract CommunityHouse is IHouse, ERC721 {
     /// @notice The entrypoint for all house and round creation
     IPropHouse public immutable propHouse;
 
-    /// @notice The Asset Metadata Renderer contract
-    ITokenMetadataRenderer public immutable renderer;
+    /// @notice The Prop House manager contract
+    IManager public immutable manager;
 
     /// @notice The round creator pass issuer contract for all houses
     ICreatorPassIssuer public immutable creatorPassIssuer;
+
+    /// @notice The house implementation contract address
+    address private immutable _implementation;
 
     /// @notice Require that the caller is the prop house contract
     modifier onlyPropHouse() {
@@ -44,18 +47,20 @@ contract CommunityHouse is IHouse, ERC721 {
     }
 
     /// @param _propHouse The address of the house and round creation contract
-    /// @param _renderer The community house renderer contract address
+    /// @param _manager The Prop House manager contract address
     /// @param _creatorPassIssuer The address of the round creator pass issuer contract
     constructor(
         address _propHouse,
-        address _renderer,
+        address _manager,
         address _creatorPassIssuer
     ) ERC721(CHMetadata.NAME, CHMetadata.SYMBOL) {
         kind = CHMetadata.TYPE;
 
         propHouse = IPropHouse(_propHouse);
-        renderer = ITokenMetadataRenderer(_renderer);
+        manager = IManager(_manager);
         creatorPassIssuer = ICreatorPassIssuer(_creatorPassIssuer);
+
+        _implementation = address(this);
     }
 
     /// @notice Get the house ID
@@ -74,7 +79,7 @@ contract CommunityHouse is IHouse, ERC721 {
     /// @notice Returns round metadata for `tokenId` as a Base64-JSON blob
     /// @param tokenId The token ID
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        return renderer.tokenURI(tokenId);
+        return manager.getMetadataRenderer(_implementation).tokenURI(tokenId);
     }
 
     /// @dev Updates the contract URI

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
+import { MetaTransaction } from '../lib/types/Common.sol';
+
 /// @notice Interface implemented by the infinite round
 interface IInfiniteRound {
     /// @notice All possible round states
@@ -13,6 +15,7 @@ interface IInfiniteRound {
 
     /// @notice The infinite round configuration
     struct RoundConfig {
+        MetaTransaction metaTx;
         uint248 proposalThreshold;
         uint256[] proposingStrategies;
         uint256[] proposingStrategyParamsFlat;
@@ -54,7 +57,14 @@ interface IInfiniteRound {
     /// @notice Thrown when no voting strategies are provided
     error NO_VOTING_STRATEGIES_PROVIDED();
 
+    /// @notice Thrown when the meta-transaction deposit amount is non-zero, but no relayer address is provided.
+    error NO_META_TX_RELAYER_PROVIDED();
+
+    /// @notice Thrown when an insufficient amount of ether is provided to `msg.value`
+    error INSUFFICIENT_ETHER_SUPPLIED();
+
     /// @notice Emitted when the round is registered on L2
+    /// @param metaTx The meta-transaction relayer and deposit amount
     /// @param proposalThreshold The proposal threshold
     /// @param proposingStrategies The proposing strategy addresses
     /// @param proposingStrategyParamsFlat The flattened proposing strategy params
@@ -65,6 +75,7 @@ interface IInfiniteRound {
     /// @param quorumFor The number of votes required to approve a proposal
     /// @param quorumAgainst The number of votes required to reject a proposal
     event RoundRegistered(
+        MetaTransaction metaTx,
         uint248 proposalThreshold,
         uint256[] proposingStrategies,
         uint256[] proposingStrategyParamsFlat,
@@ -87,6 +98,9 @@ interface IInfiniteRound {
 
     /// @notice Emitted when a round is cancelled by the round manager
     event RoundCancelled();
+
+    /// @notice Emitted when a round is cancelled by the security council in an emergency
+    event RoundEmergencyCancelled();
 
     /// @notice The current state of the infinite round
     function state() external view returns (RoundState);

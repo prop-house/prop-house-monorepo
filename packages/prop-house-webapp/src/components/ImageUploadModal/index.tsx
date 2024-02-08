@@ -4,10 +4,9 @@ import Button, { ButtonColor } from '../Button';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { NounImage } from '../../utils/getNounImage';
-import { useTranslation } from 'react-i18next';
 import DragDropFileInput from '../DragDropFileInput';
 import buildIpfsPath from '../../utils/buildIpfsPath';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 const ImageUploadModal: React.FC<{
   files: File[];
@@ -37,13 +36,13 @@ const ImageUploadModal: React.FC<{
     setDuplicateFile,
     setShowImageUploadModal,
   } = props;
-  const { t } = useTranslation();
 
   const [successfulUpload, setSuccessfulUpload] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
+
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -119,8 +118,8 @@ const ImageUploadModal: React.FC<{
 
   return (
     <Modal
-      title={
-        uploadError
+      modalProps={{
+        title: uploadError
           ? 'Error Uploading'
           : loading
           ? 'Uploading...'
@@ -128,25 +127,25 @@ const ImageUploadModal: React.FC<{
           ? 'Upload Successful'
           : files.length > 0
           ? 'Ready to upload'
-          : 'Upload files'
-      }
-      subtitle={
-        uploadError
+          : 'Upload files',
+        subtitle: uploadError
           ? `Your ${files.length === 1 ? 'file' : 'files'} could not be uploaded. Please try again.`
           : loading
           ? 'Please wait while your files are uploaded.'
           : successfulUpload
           ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
-          : 'Formats: .jpg, .png, .gif, .svg, and .mov'
-      }
-      image={
-        uploadError ? NounImage.Cone : loading ? null : successfulUpload ? NounImage.Camera : null
-      }
-      loading={loading}
-      setShowModal={setShowImageUploadModal}
-      onRequestClose={handleDismiss}
-      body={
-        uploadError ? null : loading ? null : successfulUpload ? null : (
+          : 'Formats: .jpg, .png, .gif, .svg, and .mov',
+        image: uploadError
+          ? NounImage.Cone
+          : loading
+          ? null
+          : successfulUpload
+          ? NounImage.Camera
+          : null,
+        loading: loading,
+        setShowModal: setShowImageUploadModal,
+        handleClose: handleDismiss,
+        body: uploadError ? null : loading ? null : successfulUpload ? null : (
           <DragDropFileInput
             files={files}
             onFileDrop={onFileDrop}
@@ -155,18 +154,8 @@ const ImageUploadModal: React.FC<{
             invalidFileMessage={invalidFileMessage}
             invalidFileError={invalidFileError}
           />
-        )
-      }
-      button={
-        <Button
-          text={t('Close')}
-          disabled={loading}
-          bgColor={ButtonColor.White}
-          onClick={handleDismiss}
-        />
-      }
-      secondButton={
-        uploadError ? (
+        ),
+        button: uploadError ? (
           <Button
             text={'Retry'}
             disabled={loading}
@@ -176,19 +165,19 @@ const ImageUploadModal: React.FC<{
         ) : successfulUpload ? (
           <Button
             disabled={loading || files.length === 0}
-            text={t('Upload More?')}
+            text={'Upload More?'}
             bgColor={ButtonColor.Green}
             onClick={handleUploadMore}
           />
         ) : (
           <Button
             disabled={loading || files.length === 0}
-            text={t('Upload')}
+            text={'Upload'}
             bgColor={ButtonColor.Green}
             onClick={handleImageUpload}
           />
-        )
-      }
+        ),
+      }}
     />
   );
 };

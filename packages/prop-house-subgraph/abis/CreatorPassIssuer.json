@@ -8,7 +8,7 @@
       },
       {
         "internalType": "address",
-        "name": "_renderer",
+        "name": "_manager",
         "type": "address"
       }
     ],
@@ -292,10 +292,10 @@
   },
   {
     "inputs": [],
-    "name": "propHouse",
+    "name": "manager",
     "outputs": [
       {
-        "internalType": "contract IPropHouse",
+        "internalType": "contract IManager",
         "name": "",
         "type": "address"
       }
@@ -305,10 +305,10 @@
   },
   {
     "inputs": [],
-    "name": "renderer",
+    "name": "propHouse",
     "outputs": [
       {
-        "internalType": "contract ITokenMetadataRenderer",
+        "internalType": "contract IPropHouse",
         "name": "",
         "type": "address"
       }

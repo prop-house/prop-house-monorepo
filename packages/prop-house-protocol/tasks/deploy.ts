@@ -3,7 +3,7 @@ import {
   Messenger__factory,
   CreatorPassIssuer__factory,
   PropHouse__factory,
-  StarkNetCommit__factory,
+  StarknetCommit__factory,
   CommunityHouse__factory,
   InfiniteRound__factory,
   TimedRound__factory,
@@ -146,7 +146,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const propHouseFactory = new PropHouse__factory(ethDeployer);
     const messengerFactory = new Messenger__factory(ethDeployer);
     const creatorPassIssuerFactory = new CreatorPassIssuer__factory(ethDeployer);
-    const starknetCommitFactory = new StarkNetCommit__factory(ethDeployer);
+    const starknetCommitFactory = new StarknetCommit__factory(ethDeployer);
     const communityHouseImplFactory = new CommunityHouse__factory(ethDeployer);
     const infiniteRoundImplFactory = new InfiniteRound__factory(ethDeployer);
     const timedRoundImplFactory = new TimedRound__factory(ethDeployer);
@@ -177,6 +177,9 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     );
     const ethBalanceOfGovPowerStrategyFactory = await starknet.getContractFactory(
       'prop_house_EthereumBalanceOfGovernancePowerStrategy',
+    );
+    const ethBalanceOfErc1155GovPowerStrategyFactory = await starknet.getContractFactory(
+      'prop_house_EthereumBalanceOfERC1155GovernancePowerStrategy',
     );
 
     // Infinite round factories
@@ -209,6 +212,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       vanillaGovPowerStrategyFactory,
       allowlistGovPowerStrategyFactory,
       ethBalanceOfGovPowerStrategyFactory,
+      ethBalanceOfErc1155GovPowerStrategyFactory,
       infiniteRoundEthTxAuthStrategyFactory,
       infiniteRoundEthSigAuthStrategyFactory,
       timedRoundEthTxAuthStrategyFactory,
@@ -305,6 +309,14 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       },
       { maxFee: MAX_FEE },
     );
+    const ethBalanceOfErc1155GovPowerStrategy = await starknetDeployer.deploy(
+      ethBalanceOfErc1155GovPowerStrategyFactory,
+      {
+        fact_registry: args.herodotusFactRegistry,
+        ethereum_block_registry: ethBlockRegistry.address,
+      },
+      { maxFee: MAX_FEE },
+    );
 
     // Deploy community house contract
     const communityHouseImpl = await communityHouseImplFactory.deploy(
@@ -388,7 +400,6 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     await manager.registerRound(communityHouseImpl.address, timedRoundImpl.address);
     await manager.registerRound(communityHouseImpl.address, infiniteRoundImpl.address);
 
-  
     // Add Ethereum auth strategies
     await starknetDeployer.invoke(
       roundDependencyRegistry,
@@ -434,7 +445,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
         },
       );
     }
-
+  
     // Lock round dependencies
     for (const type of Object.values(RoundType)) {
       for (const key of Object.values(DEPENDENCY_KEY)) {
@@ -473,6 +484,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           vanillaGovPowerStrategy: vanillaGovPowerStrategy.address,
           allowlistGovPowerStrategy: allowlistGovPowerStrategy.address,
           ethBalanceOfGovPowerStrategy: ethBalanceOfGovPowerStrategy.address,
+          ethBalanceOfErc1155GovPowerStrategy: ethBalanceOfErc1155GovPowerStrategy.address,
           herodotus: config.herodotus,
         },
         classHash: {

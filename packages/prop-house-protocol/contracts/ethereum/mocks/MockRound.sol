@@ -12,6 +12,8 @@ contract MockRound is IRound {
         kind = _kind;
     }
 
+    function title() external pure returns (string memory) {}
+
     function initialize(bytes calldata) external payable {}
 
     function supportsInterface(bytes4) external pure override returns (bool) {

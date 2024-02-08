@@ -1,0 +1,40 @@
+{
+  "ethereum": {
+    "address": {
+      "manager": "0xE867928874439b6C48fB42e908BA0519f287932A",
+      "propHouse": "0x000000002C93CAD6F9cFD00C603aEf62458d8A48",
+      "messenger": "0xf6A66b137B993A4571329cdC9F2523AC8da01649",
+      "creatorPassIssuer": "0x392d429Dfa457C216C35fc6EBaf34c42de4aEAB5",
+      "starknetCommit": "0x5697575017e27f2b750d20f99b04469234fd031a",
+      "communityHouseImpl": "0x92eE1cCdf3AA2E39E3F519B95fee2A601A28663D",
+      "timedRoundImpl": "0x43c015Df7f3868B287ad94D88b1E05F596BBa453",
+      "metadataEncoder": "0x44CEDe9a64bF13dB805288B77c192cA760abDc62",
+      "assetMetadataRenderer": "0x7d218de4101a8488D73485BF168b2eeA02EacAD9",
+      "communityHouseMetadataRenderer": "0xAEf1029D32A5249e27Ac3b8B29038Fd956115d50",
+      "propHouseMetadataRenderer": "0xa45AC7C9a97998c6aeb944DBE535be085f094DB8"
+    }
+  },
+  "starknet": {
+    "address": {
+      "roundFactory": "0x54b7b08b5389709af79a65b21574231b9adb0c313c1598aac94ee44fe99d213",
+      "ethExecutionStrategy": "0x5f2121d1831e68803d656f4e1632e72047faae731f3f7dd042b6efb7d6bbd4b",
+      "strategyRegistry": "0x72513cf4aad08c29c244c2704e4fe618fe6c25f065a5b495d79e25480e12c63",
+      "roundDependencyRegistry": "0x76df212bccc5a5b70aaf23aa291ae9a3ff22a1fe1c2a57864c1d144212ceed8",
+      "ethBlockRegistry": "0x2ee5cd2b5b8284527418df5d92f787ce8c8ad5fe89f5a9876766d547227a510",
+      "timedRoundEthTxAuthStrategy": "0x33bd5d29b94ae7d94b268e162a6c39f1b635b479a8ea1b36da333c22c7668d4",
+      "timedRoundEthSigAuthStrategy": "0x5319f36b15c6321a02746681158ba0614feecfbcf3cae67d3c167d408e26a64",
+      "allowlistGovPowerStrategy": "0x3daa40ef909961a576f9ba58eb063d5ebc85411063a8b29435f05af6167079c",
+      "ethBalanceOfGovPowerStrategy": "0x6ddcc94a4225843546a9b118a2733fd924d6b8a6467279cbe6a1aea79daca54",
+      "ethBalanceOfErc20GovPowerStrategy": "0x196cf5ceba8e98abe1e633d6184cd28c1e1ebd09ea71f89867dd4c5fda97bbe",
+      "ethBalanceOfErc1155GovPowerStrategy": "0x44e3bdffcb6ce36596d0faa4316932c5dc47005b9eaaf0f7ce0f455c98b2e75",
+      "ethCheckpointableErc721GovPowerStrategy": "0x10f7529ec5df9069a06191deb7cd2c4158c2b59879e2544cb45dc221daff429",
+      "herodotus": {
+        "factRegistry": "0x002081b2d3de51f295e7516257f68bd9f06acbc7f19ba49410c100afbe57540f",
+        "l1HeadersStore": "0x008caacc818a97ef9122aa67b3b0e14d10e2959b262e7e785f47e20a36ef0ce0"
+      }
+    },
+    "classHash": {
+      "timedRound": "0x683c91f8d7b069c41f6a81d9cad53b1814a9f2b9a15804c34a24a6acf798ada"
+    }
+  }
+}

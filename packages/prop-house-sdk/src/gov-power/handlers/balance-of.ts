@@ -1,11 +1,11 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { BalanceOfConfig, ChainConfig, GovPowerStrategyType, GovPowerConfig } from '../../types';
+import { BalanceOfConfig, ChainConfig, GovPowerStrategyType, GovPowerConfig, AccountField } from '../../types';
 import { ChainId } from '@prophouse/protocol';
 import { SingleSlotProofHandler } from './base';
-import { storageProofs } from '../../utils';
+import { encoding, splitUint256, storageProofs } from '../../utils';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
-import { BALANCE_OF_FUNC } from '../../constants';
+import { BALANCE_OF_SLOT_QUERY_ADDRESS, BALANCE_OF_FUNC, BALANCE_OF_SLOT_TRACER } from '../../constants';
 import { Call } from 'starknet';
 
 export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
@@ -56,9 +56,13 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
    * @param strategy The governance power strategy information
    */
   public async getStrategyParams(strategy: BalanceOfConfig): Promise<string[]> {
-    const { slotIndex } = await storageProofs.getBalanceOfEVMStorageSlotIndex(
+    const { slotIndex } = await storageProofs.getSlotIndexOfQueriedMapping(
       this._traceProvider,
       strategy.address,
+      BALANCE_OF_SLOT_TRACER,
+      BALANCE_OF_FUNC,
+      'balanceOf',
+      [BALANCE_OF_SLOT_QUERY_ADDRESS],
     );
     if (strategy.multiplier && BigNumber.from(strategy.multiplier).gt(1)) {
       return [strategy.address, slotIndex, strategy.multiplier.toString()];
@@ -66,12 +70,23 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
     return [strategy.address, slotIndex];
   }
 
-  // TODO: May need to generalize this (accept custom string[])
   public async getUserParams(account: string, timestamp: string, strategyId: string) {
-    const {
-      storageProofs: [proof],
-    } = await this.fetchProofInputs(account, timestamp, strategyId);
-    return proof;
+    const strategy = await this.getStrategyAddressAndParams(strategyId);
+    const [contractAddress, slotIndex] = strategy.params;
+
+    const slotKey = encoding.getSlotKey(account, slotIndex);
+    const slotKeyU256 = splitUint256.SplitUint256.fromHex(slotKey);
+
+    const block = await this.getBlockNumberForTimestamp(timestamp);
+    const proofInputs = await this.fetchProofInputs(contractAddress, slotKey, block);
+    return [
+      // Storage Key (u256)
+      slotKeyU256.low,
+      slotKeyU256.high,
+      // Storage Proof
+      `0x${proofInputs.storageProofSubArrayLength.toString(16)}`,
+      ...proofInputs.storageProof,
+    ]
   }
 
   public async getStrategyPreCalls(
@@ -79,26 +94,45 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
     timestamp: string,
     strategyId: string,
   ): Promise<Call[]> {
-    const proofInputs = await this.fetchProofInputs(account, timestamp, strategyId);
-    return [
-      {
-        contractAddress: this._addresses.starknet.herodotus.factRegistry,
-        entrypoint: 'prove_account',
-        calldata: [
-          proofInputs.accountOptions,
-          proofInputs.blockNumber,
-          proofInputs.ethAddress.values[0],
-          proofInputs.ethAddress.values[1],
-          proofInputs.ethAddress.values[2],
-          proofInputs.accountProofSizesBytes.length,
-          ...proofInputs.accountProofSizesBytes,
-          proofInputs.accountProofSizesWords.length,
-          ...proofInputs.accountProofSizesWords,
-          proofInputs.accountProof.length,
-          ...proofInputs.accountProof,
-        ],
-      },
-    ];
+    const strategy = await this.getStrategyAddressAndParams(strategyId);
+    const [contractAddress, slotIndex] = strategy.params;
+
+    const slotKey = encoding.getSlotKey(account, slotIndex);
+
+    const block = await this.getBlockNumberForTimestamp(timestamp);
+    const storageHash = await this.getStorageHash(contractAddress, block);
+
+    // We only need to prove the account if the storage hash hasn't been populated.
+    if (storageHash.isZero()) {
+      const [proofInputs, processBlockInputs] = await Promise.all([
+        this.fetchProofInputs(contractAddress, slotKey, block),
+        storageProofs.getProcessBlockInputsForBlockNumber(
+          this.provider,
+          block,
+          this._evmChainId,
+        ),
+      ]);
+      return [
+        {
+          contractAddress: this._addresses.starknet.herodotus.factRegistry,
+          entrypoint: 'prove_account',
+          calldata: [
+            // Account Fields
+            1,
+            AccountField.StorageHash,
+            // Block Header RLP
+            processBlockInputs.headerInts.length,
+            ...processBlockInputs.headerInts,
+            // Account
+            contractAddress,
+            // Proof
+            proofInputs.accountProofSubArrayLength,
+            ...proofInputs.accountProof,
+          ],
+        },
+      ];
+    }
+    return [];
   }
 
   /**
@@ -106,7 +140,7 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
    * @param config The governance power strategy config information
    */
   public async getPower(config: GovPowerConfig): Promise<BigNumber> {
-    const block = await this.getBlockNumberForTimestamp(config.address, config.timestamp);
+    const block = await this.getBlockNumberForTimestamp(config.timestamp);
     const token = BigNumber.from(config.params[0]).toHexString();
     const balance = await this.contractFor(token).balanceOf(config.user, {
       blockTag: block,

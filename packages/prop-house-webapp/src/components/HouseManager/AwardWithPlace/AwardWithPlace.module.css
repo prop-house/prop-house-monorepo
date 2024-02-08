@@ -1,0 +1,21 @@
+.award {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.placeCircle {
+  border: 1px solid var(--border-dark);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+}
+.place {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 0px;
+  letter-spacing: 0.02em;
+  color: var(--brand-gray);
+}

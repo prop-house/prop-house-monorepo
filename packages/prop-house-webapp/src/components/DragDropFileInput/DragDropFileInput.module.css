@@ -22,8 +22,7 @@
   background-color: var(--bg-dark) !important;
 }
 .uploadReadyTitle {
-  margin-bottom: 0;
-  margin-top: -8px;
+  margin-top: -3px;
   color: var(--brand-black);
   font-weight: 600;
 }

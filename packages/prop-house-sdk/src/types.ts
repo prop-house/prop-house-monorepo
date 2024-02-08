@@ -1,5 +1,5 @@
 import { CommunityHouseContract, InfiniteRoundContract, TimedRoundContract } from '@prophouse/protocol';
-import { SequencerProvider, SequencerProviderOptions } from 'starknet';
+import { RpcProvider as StarknetRpcProvider, RpcProviderOptions as StarknetRpcProviderOptions } from 'starknet';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/providers';
@@ -16,7 +16,7 @@ export type EVM = Signer | Provider | string;
 /**
  * Starknet connection information
  */
-export type Starknet = SequencerProvider | SequencerProviderOptions;
+export type Starknet = StarknetRpcProvider | StarknetRpcProviderOptions;
 
 export interface ChainConfig {
   evmChainId: number;
@@ -80,6 +80,26 @@ export interface PackedAsset {
 
 //#endregion
 
+//#region Meta Transactions
+
+export interface MetaTransaction {
+  relayer: string;
+  deposit: BigNumberish;
+}
+
+//#endregion
+
+//#region Storage Proofs
+
+export enum AccountField {
+  StorageHash,
+  CodeHash,
+  Balance,
+  Nonce,
+}
+
+//#endregion
+
 //#region Houses
 
 export enum HouseType {
@@ -114,11 +134,13 @@ export namespace Timed {
     NOT_STARTED,
     IN_PROPOSING_PERIOD,
     IN_VOTING_PERIOD,
+    IN_REPORTING_PERIOD,
     IN_CLAIMING_PERIOD,
     COMPLETE,
   }
   export interface Config<CS extends Custom | void> {
     awards: Asset[];
+    metaTx?: MetaTransaction;
     proposalThreshold?: BigNumberish;
     proposingStrategies?: GovPowerStrategyConfig<CS>[];
     votingStrategies: GovPowerStrategyConfig<CS>[];
@@ -129,6 +151,7 @@ export namespace Timed {
   }
   export interface ConfigStruct {
     awards: AssetStruct[];
+    metaTx: MetaTransaction;
     proposalThreshold: BigNumberish;
     proposingStrategies: BigNumberish[];
     proposingStrategyParamsFlat: BigNumberish[];
@@ -155,6 +178,11 @@ export namespace Timed {
     proposalId: number;
     metadataUri: string;
   }
+  export interface CancelProposalMessage {
+    round: string;
+    authStrategy: string;
+    proposalId: number;
+  }
   export interface VoteMessage {
     round: string;
     authStrategy: string;
@@ -166,6 +194,10 @@ export namespace Timed {
     salt: string | number;
   }
   export interface EVMSigEditProposalMessage extends EditProposalMessage {
+    proposer: string;
+    salt: string | number;
+  }
+  export interface EVMSigCancelProposalMessage extends CancelProposalMessage {
     proposer: string;
     salt: string | number;
   }
@@ -186,14 +218,34 @@ export namespace Timed {
     proposalId: number;
     metadataUri: string;
   }
+  export interface CancelProposalConfig {
+    round: string;
+    proposalId: number;
+  }
+  export interface ClaimAwardConfig {
+    round: string;
+    proposalId: number;
+  }
+  export interface ClaimAwardToConfig extends Timed.ClaimAwardConfig {
+    recipient: string;
+  }
+  export interface RoundWinner {
+    proposalId: BigNumberish;
+    position: BigNumberish;
+    proposer: string;
+    assetId: string;
+    assetAmount: BigNumberish;
+  }
   export enum Action {
     PROPOSE = 'PROPOSE',
     EDIT_PROPOSAL = 'EDIT_PROPOSAL',
+    CANCEL_PROPOSAL = 'CANCEL_PROPOSAL',
     VOTE = 'VOTE',
   }
   export interface ActionData {
     [Action.PROPOSE]: EVMSigProposeMessage;
     [Action.EDIT_PROPOSAL]: EVMSigEditProposalMessage;
+    [Action.CANCEL_PROPOSAL]: EVMSigCancelProposalMessage;
     [Action.VOTE]: EVMSigVoteMessage;
   }
   export interface RequestParams<A extends Action = Action> {
@@ -212,6 +264,10 @@ export namespace Timed {
     proposer: string;
     proposalId: number;
     metadataUri: string;
+  }
+  export interface CancelProposalCalldataConfig {
+    proposer: string;
+    proposalId: number;
   }
   export interface VoteCalldataConfig {
     voter: string;
@@ -237,6 +293,7 @@ export namespace Infinite {
     COMPLETE,
   }
   export interface Config<CS extends Custom | void> {
+    metaTx?: MetaTransaction;
     proposalThreshold?: BigNumberish;
     proposingStrategies?: GovPowerStrategyConfig<CS>[];
     votingStrategies: GovPowerStrategyConfig<CS>[];
@@ -246,6 +303,7 @@ export namespace Infinite {
     quorumAgainst: BigNumberish;
   }
   export interface ConfigStruct {
+    metaTx: MetaTransaction;
     proposalThreshold: BigNumberish;
     proposingStrategies: BigNumberish[];
     proposingStrategyParamsFlat: BigNumberish[];
@@ -392,8 +450,10 @@ export interface GovPowerChainConfig<CS extends Custom | void> extends ChainConf
 }
 
 export enum GovPowerStrategyType {
-  ERC1155_BALANCE_OF = 'ERC1155_BALANCE_OF',
+  BALANCE_OF_ERC1155 = 'BALANCE_OF_ERC1155',
+  BALANCE_OF_ERC20 = 'BALANCE_OF_ERC20',
   BALANCE_OF = 'BALANCE_OF',
+  CHECKPOINTABLE_ERC721 = 'CHECKPOINTABLE_ERC721',
   ALLOWLIST = 'ALLOWLIST',
   VANILLA = 'VANILLA',
   UNKNOWN = 'UNKNOWN',
@@ -413,11 +473,25 @@ export interface BalanceOfConfig {
   multiplier?: number;
 }
 
-export interface ERC1155BalanceOfConfig {
-  strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF;
+export interface BalanceOfERC20Config {
+  strategyType: GovPowerStrategyType.BALANCE_OF_ERC20;
+  assetType: AssetType.ERC20;
+  address: string;
+  multiplier?: number;
+}
+
+export interface BalanceOfERC1155Config {
+  strategyType: GovPowerStrategyType.BALANCE_OF_ERC1155;
   assetType: AssetType.ERC1155;
   address: string;
   tokenId: string;
+  multiplier?: number;
+}
+
+export interface CheckpointableERC721Config {
+  strategyType: GovPowerStrategyType.CHECKPOINTABLE_ERC721;
+  assetType: AssetType.ERC721;
+  address: string;
   multiplier?: number;
 }
 
@@ -439,7 +513,7 @@ export interface Custom {
   strategyType: string;
 }
 
-export type DefaultGovPowerConfigs = BalanceOfConfig | ERC1155BalanceOfConfig | AllowlistConfig | VanillaConfig;
+export type DefaultGovPowerConfigs = BalanceOfConfig | BalanceOfERC20Config | BalanceOfERC1155Config | CheckpointableERC721Config | AllowlistConfig | VanillaConfig;
 
 // prettier-ignore
 export type GovPowerStrategyConfig<C extends Custom | void = void> = C extends void ? DefaultGovPowerConfigs : DefaultGovPowerConfigs | C;
@@ -463,6 +537,15 @@ export interface GovPowerConfig {
   timestamp: string | number;
   address: string;
   params: (string | number)[];
+}
+
+export interface AllowlistJson {
+  strategyType: GovPowerStrategyType.ALLOWLIST;
+  members: AllowlistMember[];
+  tree: {
+    root: string;
+    values: string[];
+  };
 }
 
 //#region Helpers

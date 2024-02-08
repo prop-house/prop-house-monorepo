@@ -22,22 +22,22 @@ mod Selector {
 /// Infinite round EIP-712 type hashes used for authentication
 mod TypeHash {
     /// The type hash for the proposal vote struct.
-    /// keccak256("ProposalVote(uint32 proposalId, uint16 proposalVersion,uint256 votingPower,uint8 direction)")
-    const PROPOSAL_VOTE: u256 = 0x204f42f4b1c7ce0b74c4c3721e8f2787c034d63da40a4c68ddf003bd8b12efda;
+    /// keccak256("ProposalVote(uint32 proposalId,uint16 proposalVersion,uint256 votingPower,uint8 direction)")
+    const PROPOSAL_VOTE: u256 = 0x48d97eb99538f7ce7ccb6355565d4f5088861e1423d5fc23eb3fb8aa4b5a2621;
 
     /// The type hash for the propose function.
-    /// keccak256("Propose(bytes32 authStrategy,bytes32 round,address proposer,string metadataUri,Asset[] requestedAssets,UserStrategy[] usedProposingStrategies,uint256 salt)")
-    const PROPOSE: u256 = 0xdaafb6cc440106b3cc0ecc748c18bfed7d9e32b203fdaba20a581476131b8366;
+    /// keccak256("Propose(bytes32 authStrategy,bytes32 round,address proposer,uint256[] metadataUri,Asset[] requestedAssets,UserStrategy[] usedProposingStrategies,uint256 salt)Asset(uint256 assetId,uint256 amount)UserStrategy(uint256 id,uint256[] userParams)")
+    const PROPOSE: u256 = 0x2ca56ea827f1e0732a9a0815ec6abf87ebac440073e2f7c1a52ba958104a11ee;
 
     /// The type hash for the edit proposal function.
-    /// keccak256("EditProposal(bytes32 authStrategy,bytes32 round,address proposer,uint32 proposalId,string metadataUri,Asset[] requestedAssets,uint256 salt)")
-    const EDIT_PROPOSAL: u256 = 0x38350717ff2d084274290880b847e9de1c1c410985eefc65f6a4266ba16d02b2;
+    /// keccak256("EditProposal(bytes32 authStrategy,bytes32 round,address proposer,uint32 proposalId,uint256[] metadataUri,Asset[] requestedAssets,uint256 salt)Asset(uint256 assetId,uint256 amount)")
+    const EDIT_PROPOSAL: u256 = 0xf26ffed9e8e09475cec81abdcdbb59bb4c2c3c6b834827871e2f21d3873e2842;
 
     /// The type hash for the proposal cancellation function.
     /// keccak256("CancelProposal(bytes32 authStrategy,bytes32 round,address proposer,uint32 proposalId,uint256 salt)")
     const CANCEL_PROPOSAL: u256 = 0x028919d8d2d0420b53a157ead1cf69ce411b708959dae9a6acf31f6efee7ef14;
 
     /// The type hash for the vote function.
-    /// keccak256("Vote(bytes32 authStrategy,bytes32 round,address voter,ProposalVote[] proposalVotes,UserStrategy[] usedVotingStrategies,uint256 salt)")
-    const VOTE: u256 = 0x4ffe05782f7a786a66654c624e3e1bef5b322bbe86b6c7ee8cd61ed9f946a6f7;
+    /// keccak256("Vote(bytes32 authStrategy,bytes32 round,address voter,ProposalVote[] proposalVotes,UserStrategy[] usedVotingStrategies,uint256 salt)ProposalVote(uint32 proposalId,uint16 proposalVersion,uint256 votingPower,uint8 direction)UserStrategy(uint256 id,uint256[] userParams)")
+    const VOTE: u256 = 0xaf9bdd3c67fb570ce935aee4a81bb75405c9a21889fa88c72c36d13f3e19cb91;
 }

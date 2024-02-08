@@ -21,3 +21,19 @@ export const flatten2DArray = (array2D: string[][]): string[] => {
   const elements = array2D.reduce((accumulator, value) => accumulator.concat(value), []);
   return flatArray.concat(elements);
 };
+
+/**
+ * Converts little endian intsequence to a string
+ * @param intsArray The intsequence to convert to a string
+ */
+export const stringFromLE = (intsArray: string[]) => {
+  let str = '';
+  for (const intValue of intsArray) {
+      const hexStr = BigInt(intValue).toString(16);
+      const leBytes = Buffer.from(hexStr, 'hex').reverse();
+      const chunk = leBytes.toString();
+      str += chunk;
+  }
+  // If there's padding (e.g., null characters), remove them
+  return str.replace(/\0/g, '');
+};

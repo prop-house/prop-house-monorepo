@@ -1,5 +1,5 @@
 import { Maybe } from 'graphql/jsutils/Maybe';
-import { RoundType, Timed, GovPowerStrategyType, AllowlistMember, GovPowerStrategyWithID } from '../types';
+import { RoundType, Timed, GovPowerStrategyType, AllowlistMember, GovPowerStrategyWithID, Asset } from '../types';
 
 export interface GlobalStats {
   roundCount: number;
@@ -35,11 +35,25 @@ export interface BalanceOfStrategy {
   multiplier?: number;
 }
 
-export interface ERC1155BalanceOfStrategy {
+export interface BalanceOfERC20Strategy {
   id: string;
-  strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF;
+  strategyType: GovPowerStrategyType.BALANCE_OF_ERC20;
+  tokenAddress: string;
+  multiplier?: number;
+}
+
+export interface BalanceOfERC1155Strategy {
+  id: string;
+  strategyType: GovPowerStrategyType.BALANCE_OF_ERC1155;
   tokenAddress: string;
   tokenId: string;
+  multiplier?: number;
+}
+
+export interface CheckpointableERC721Strategy {
+  id: string;
+  strategyType: GovPowerStrategyType.CHECKPOINTABLE_ERC721;
+  tokenAddress: string;
   multiplier?: number;
 }
 
@@ -58,20 +72,25 @@ export interface UnknownStrategy extends GovPowerStrategyWithID {
   strategyType: GovPowerStrategyType.UNKNOWN;
 }
 
-export type ParsedGovPowerStrategy = BalanceOfStrategy | ERC1155BalanceOfStrategy | AllowlistStrategy | VanillaStrategy | UnknownStrategy;
+export type ParsedGovPowerStrategy = BalanceOfStrategy | BalanceOfERC20Strategy | BalanceOfERC1155Strategy | CheckpointableERC721Strategy | AllowlistStrategy | VanillaStrategy | UnknownStrategy;
 
 export type ProposingStrategy = ParsedGovPowerStrategy;
 export type VotingStrategy = ParsedGovPowerStrategy;
 
-export interface RoundAsset {
+export interface RawRoundAsset {
   assetType: 'NATIVE' | 'ERC20' | 'ERC721' | 'ERC1155';
   token: string;
   identifier: string;
 }
 
-export interface RoundAward {
+export interface RawRoundAward {
   amount: string;
-  asset: RoundAsset;
+  asset: RawRoundAsset;
+}
+
+export interface RawRoundBalance {
+  balance: string;
+  asset: RawRoundAsset;
 }
 
 export interface TimedRoundConfig {
@@ -84,12 +103,12 @@ export interface TimedRoundConfig {
   votePeriodEndTimestamp: number;
   votePeriodDuration: number;
   claimPeriodEndTimestamp: number;
-  awards: RoundAward[];
+  awards: Asset[];
 }
 
 export type RoundConfig = TimedRoundConfig;
 
-export type RoundState = Timed.RoundState
+export type RoundState = Timed.RoundState;
 
 export interface Round {
   address: string;
@@ -99,6 +118,7 @@ export interface Round {
   createdAt: number;
   state: RoundState;
   config: RoundConfig;
+  isFullyFunded: boolean;
   proposingStrategiesRaw: RawGovPowerStrategy[];
   votingStrategiesRaw: RawGovPowerStrategy[];
   proposingStrategies: ProposingStrategy[];
@@ -109,15 +129,23 @@ export interface RoundWithHouse extends Round {
   house: House;
 }
 
+export interface RoundBalance {
+  round: string;
+  asset: Asset;
+  updatedAt: string;
+}
+
 export interface Proposal {
   id: number;
   proposer: string;
   round: string;
   metadataURI: string;
   title: string;
+  tldr: string;
   body: string;
   isCancelled: boolean;
   isWinner: boolean;
+  winningPosition: number | null;
   receivedAt: number;
   txHash: string;
   votingPower: string;
@@ -127,13 +155,36 @@ export interface Vote {
   voter: string;
   round: string;
   proposalId: number;
+  proposalTitle: string;
   votingPower: string;
   receivedAt: number;
   txHash: string;
 }
 
-// TODO: Populate deposit and claim types
+export interface Deposit {
+  id: string;
+  txHash: string;
+  depositedAt: string;
+  depositor: string;
+  round: string;
+  asset: Asset;
+}
 
-export interface Deposit {}
+export interface Claim {
+  id: string;
+  txHash: string;
+  claimedAt: string;
+  recipient: string;
+  proposalId: string;
+  round: string;
+  asset: Asset;
+}
 
-export interface Claim {}
+export interface Reclaim {
+  id: string;
+  txHash: string;
+  reclaimedAt: string;
+  reclaimer: string;
+  round: string;
+  asset: Asset;
+}

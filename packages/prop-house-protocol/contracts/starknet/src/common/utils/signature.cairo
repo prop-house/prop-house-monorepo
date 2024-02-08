@@ -3,8 +3,11 @@ use prop_house::common::libraries::round::{Asset, UserStrategy};
 use prop_house::common::utils::constants::ETHEREUM_PREFIX;
 use prop_house::common::utils::hash::keccak_u256s_be;
 use prop_house::common::utils::constants::TypeHash;
+use prop_house::common::utils::endian::ByteReverse;
+use prop_house::common::utils::endian;
 use array::{ArrayTrait, SpanTrait};
-use traits::Into;
+use traits::{Into, TryInto};
+use option::OptionTrait;
 
 trait KeccakTypeHash<T> {
     fn hash(self: T) -> u256;
@@ -56,17 +59,47 @@ impl KeccakTypeHashAsset of KeccakTypeHash<Asset> {
     }
 }
 
-/// Hash structured EIP-712 data, including the ethereum prefix,
-// domain separator, and the message itself.
-/// * `domain_separator` - The domain separator.
-/// * `message` - The message to hash.
-fn hash_structured_data(domain_separator: u256, message: Span<u256>) -> u256 {
-    let hash_struct = keccak_u256s_be(message);
+/// Hashes typed data according to the EIP-712 specification.
+fn hash_typed_data(domain_hash: u256, message_hash: u256) -> u256 {
+    let encoded_data = add_prefix_array(
+        array![domain_hash, message_hash],
+        ETHEREUM_PREFIX
+    );
+    let (mut u64_arr, overflow) = endian::into_le_u64_array(encoded_data);
+    keccak::cairo_keccak(ref u64_arr, overflow, 2).byte_reverse()
+}
 
-    let mut data = array![
-        ETHEREUM_PREFIX.into(),
-        domain_separator,
-        hash_struct,
-    ];
-    keccak_u256s_be(data.span())
+/// Prefixes a 16 bit prefix to an array of 256 bit values.
+fn add_prefix_array(input: Array<u256>, mut prefix: u128) -> Array<u256> {
+    let mut out = ArrayTrait::<u256>::new();
+    let mut input = input;
+    loop {
+        match input.pop_front() {
+            Option::Some(num) => {
+                let (w1, high_carry) = add_prefix_u128(num.high, prefix);
+                let (w0, low_carry) = add_prefix_u128(num.low, high_carry);
+                out.append(u256 { low: w0, high: w1 });
+                prefix = low_carry;
+            },
+            Option::None(_) => {
+                // left shift so that the prefix is in the high bits
+                out.append(
+                    u256 {
+                        high: prefix * 0x10000000000000000000000000000_u128, low: 0_u128
+                    }
+                );
+                break ();
+            }
+        };
+    };
+    out
+}
+
+/// Adds a 16 bit prefix to a 128 bit input, returning the result and a carry.
+fn add_prefix_u128(input: u128, prefix: u128) -> (u128, u128) {
+    let with_prefix = u256 { low: input, high: prefix };
+    let carry = with_prefix & 0xffff;
+    // Removing the carry and shifting back.
+    let out = (with_prefix - carry) / 0x10000;
+    (out.low, carry.low)
 }

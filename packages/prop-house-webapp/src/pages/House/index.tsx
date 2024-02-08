@@ -1,199 +1,103 @@
 import classes from './House.module.css';
-import { useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useAppSelector } from '../../hooks';
 import HouseHeader from '../../components/HouseHeader';
-import React, { useEffect, useRef, useState } from 'react';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { setActiveCommunity } from '../../state/slices/propHouse';
-import { slugToName } from '../../utils/communitySlugs';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
-import RoundCard from '../../components/RoundCard';
-import HouseUtilityBar from '../../components/HouseUtilityBar';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import LoadingIndicator from '../../components/LoadingIndicator';
-import ErrorMessageCard from '../../components/ErrorMessageCard';
-import NoSearchResults from '../../components/NoSearchResults';
-import NotFound from '../../components/NotFound';
-import { sortRoundByStatus } from '../../utils/sortRoundByStatus';
-import { RoundStatus } from '../../components/StatusFilters';
+import { Proposal, Round, usePropHouse } from '@prophouse/sdk-react';
+import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
-import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
-import ReactMarkdown from 'react-markdown';
-import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
-import { useTranslation } from 'react-i18next';
-import { useSigner } from 'wagmi';
-import { isMobile } from 'web3modal';
+import { COMPLETED_ROUND_OVERRIDES, HIDDEN_ROUND_OVERRIDES } from '../../utils/roundOverrides';
+import { removeHtmlFromString } from '../../utils/removeHtmlFromString';
+import JumboRoundCard from '../../components/JumboRoundCard';
+import HouseTabBar, { SelectedTab } from '../../components/HouseTabBar';
+import HousePropCard from '../../components/HousePropCard';
 
-const House = () => {
-  const location = useLocation();
-  const slug = location.pathname.substring(1, location.pathname.length);
+const House: React.FC<{}> = () => {
+  const propHouse = usePropHouse();
 
-  const { data: signer } = useSigner();
-
-  const dispatch = useAppDispatch();
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
-
-  const [rounds, setRounds] = useState<StoredAuctionBase[]>([]);
-  const [roundsOnDisplay, setRoundsOnDisplay] = useState<StoredAuctionBase[]>([]);
-  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
-  const [input, setInput] = useState<string>('');
-  const [loadingCommunity, setLoadingCommunity] = useState(false);
-  const [failedLoadingCommunity, setFailedLoadingCommunity] = useState(false);
-  const [loadingRounds, setLoadingRounds] = useState(false);
-  const [failedLoadingRounds, setFailedLoadingRounds] = useState(false);
-  const { t } = useTranslation();
-
-  const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
-
-  // fetch community
-  useEffect(() => {
-    const fetchCommunity = async () => {
-      try {
-        setLoadingCommunity(true);
-        const community = await client.current.getCommunityWithName(slugToName(slug));
-        dispatch(setActiveCommunity(community));
-        setLoadingCommunity(false);
-      } catch (e) {
-        setLoadingCommunity(false);
-        setFailedLoadingCommunity(true);
-      }
-    };
-    fetchCommunity();
-  }, [slug, dispatch]);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
+  const [rounds, setRounds] = useState<Round[]>();
+  const [props, setProps] = useState<Proposal[]>();
+  const [selectedTab, setSelectedTab] = useState<SelectedTab>(SelectedTab.Rounds);
 
   // fetch rounds
   useEffect(() => {
-    if (!community) return;
+    if (!house || rounds) return;
 
     const fetchRounds = async () => {
-      try {
-        setLoadingRounds(true);
-        const rounds = await client.current.getAuctionsForCommunity(community.id);
-
-        setRounds(rounds);
-
-        // Number of rounds under a certain status type in a House
-        setNumberOfRoundsPerStatus([
-          // number of active rounds (proposing & voting)
-          rounds.filter(
-            r =>
-              auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-              auctionStatus(r) === AuctionStatus.AuctionVoting,
-          ).length,
-          rounds.length,
-        ]);
-
-        // if there are no active rounds, default filter by all rounds
-        rounds.filter(
-          r =>
-            auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-            auctionStatus(r) === AuctionStatus.AuctionVoting,
-        ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
-
-        setLoadingRounds(false);
-      } catch (e) {
-        setLoadingRounds(false);
-        setFailedLoadingRounds(true);
-      }
+      const rounds = (await propHouse.query.getRoundsForHouse(house.address))
+        .map(round => {
+          if (COMPLETED_ROUND_OVERRIDES[round.address]) {
+            round.state = COMPLETED_ROUND_OVERRIDES[round.address].state;
+          }
+          return round;
+        })
+        .filter(round => !HIDDEN_ROUND_OVERRIDES.includes(round.address));
+      setRounds(rounds);
     };
     fetchRounds();
-  }, [community]);
+  }, [house, propHouse.query, rounds]);
 
+  // fetch winning props
   useEffect(() => {
-    rounds &&
-      // check if searching via input
-      (input.length === 0
-        ? // if a filter has been clicked that isn't "All rounds" (default)
-          currentRoundStatus !== RoundStatus.Active
-          ? // filter by all rounds
-            setRoundsOnDisplay(rounds)
-          : // filter by active rounds (proposing & voting)
-            setRoundsOnDisplay(
-              rounds.filter(
-                r =>
-                  auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-                  auctionStatus(r) === AuctionStatus.AuctionVoting,
-              ),
-            )
-        : // filter by search input that matches round title or description
-          setRoundsOnDisplay(
-            rounds.filter(round => {
-              const query = input.toLowerCase();
-              return (
-                round.title.toLowerCase().indexOf(query) >= 0 ||
-                round.description?.toLowerCase().indexOf(query) >= 0
-              );
-            }),
-          ));
-  }, [input, currentRoundStatus, rounds]);
+    if (!rounds || props) return;
+
+    const fetchWinningProps = async () => {
+      const props = await propHouse.query.getProposals({
+        where: { round_: { sourceChainRound_in: rounds.map(r => r.address) }, isWinner: true },
+      });
+      setProps(props);
+    };
+
+    fetchWinningProps();
+  });
 
   return (
     <>
-      {community && (
+      {house && (
         <OpenGraphElements
-          title={`${community.name} Prop House`}
-          description={markdownComponentToPlainText(
-            <ReactMarkdown children={community.description.toString()} />,
-          )}
-          imageUrl={cardServiceUrl(CardType.house, community.id).href}
+          title={house && house.name ? house.name : ''}
+          description={removeHtmlFromString(house.description ?? '')}
+          imageUrl={cardServiceUrl(CardType.house, house.address).href}
         />
       )}
 
-      {loadingCommunity ? (
-        <LoadingIndicator height={isMobile() ? 288 : 349} />
-      ) : !loadingCommunity && failedLoadingCommunity ? (
-        <NotFound />
-      ) : (
-        community && (
-          <>
+      {house && (
+        <>
+          <Container>
+            <HouseHeader house={house} />
+          </Container>
+          <div className={classes.stickyContainer}>
             <Container>
-              <HouseHeader community={community} />
+              <HouseTabBar
+                rounds={rounds ?? []}
+                proposals={props ?? []}
+                selectedTab={selectedTab}
+                setSelectedTab={setSelectedTab}
+              />
             </Container>
+          </div>
 
-            <div className={classes.stickyContainer}>
-              <Container>
-                <HouseUtilityBar
-                  numberOfRoundsPerStatus={numberOfRoundsPerStatus}
-                  currentRoundStatus={currentRoundStatus}
-                  setCurrentRoundStatus={setCurrentRoundStatus}
-                  input={input}
-                  setInput={setInput}
-                />
-              </Container>
-            </div>
-
-            <div className={classes.houseContainer}>
-              <Container>
-                <Row>
-                  {loadingRounds ? (
-                    <LoadingIndicator />
-                  ) : !loadingRounds && failedLoadingRounds ? (
-                    <ErrorMessageCard message={t('noRoundsAvailable')} />
-                  ) : roundsOnDisplay.length > 0 ? (
-                    sortRoundByStatus(roundsOnDisplay).map((round, index) => (
+          <div className={classes.houseContainer}>
+            <Container>
+              <Row>
+                {selectedTab === SelectedTab.Rounds
+                  ? rounds &&
+                    rounds.map((round, index) => (
                       <Col key={index} xl={6}>
-                        <RoundCard round={round} />
+                        <JumboRoundCard round={round} house={house} />
                       </Col>
                     ))
-                  ) : input === '' ? (
-                    <Col>
-                      <ErrorMessageCard message={t('noRoundsAvailable')} />
-                    </Col>
-                  ) : (
-                    <NoSearchResults />
-                  )}
-                </Row>
-              </Container>
-            </div>
-          </>
-        )
+                  : props &&
+                    props.map((prop, i) => (
+                      <Col xl={4}>
+                        <HousePropCard proposal={prop} />
+                      </Col>
+                    ))}
+              </Row>
+            </Container>
+          </div>
+        </>
       )}
     </>
   );

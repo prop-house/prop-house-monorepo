@@ -83,6 +83,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "addr",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "renderer",
+        "type": "address"
+      }
+    ],
+    "name": "MetadataRendererSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "owner",
@@ -181,6 +200,19 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "securityCouncil",
+        "type": "address"
+      }
+    ],
+    "name": "SecurityCouncilSet",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "acceptOwnership",
     "outputs": [],
@@ -192,6 +224,38 @@
     "name": "cancelOwnershipTransfer",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "contract_",
+        "type": "address"
+      }
+    ],
+    "name": "getMetadataRenderer",
+    "outputs": [
+      {
+        "internalType": "contract ITokenMetadataRenderer",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getSecurityCouncil",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -303,6 +367,37 @@
       }
     ],
     "name": "safeTransferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "contract_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "renderer",
+        "type": "address"
+      }
+    ],
+    "name": "setMetadataRenderer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newSecurityCouncil",
+        "type": "address"
+      }
+    ],
+    "name": "setSecurityCouncil",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

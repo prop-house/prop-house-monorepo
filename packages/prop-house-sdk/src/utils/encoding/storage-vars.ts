@@ -1,8 +1,9 @@
+import { pedersen } from 'micro-starknet';
 import { hash } from 'starknet';
-import BN from 'bn.js';
+import { BN } from 'bn.js';
 
-const MAX_STORAGE_ITEM_SIZE = new BN(256);
-const ADDR_BOUND = new BN(2).pow(new BN(251)).sub(MAX_STORAGE_ITEM_SIZE);
+const MAX_STORAGE_ITEM_SIZE = BigInt(256);
+const ADDR_BOUND = BigInt(2) ** BigInt(251) - MAX_STORAGE_ITEM_SIZE;
 
 /**
  * Returns the storage address of a StarkNet storage variable given its name and arguments.
@@ -12,13 +13,10 @@ const ADDR_BOUND = new BN(2).pow(new BN(251)).sub(MAX_STORAGE_ITEM_SIZE);
  */
 export const getStorageVarAddress = (varName: string, ...args: string[]) => {
   let res = hash.starknetKeccak(varName);
-
   for (const arg of args) {
-    const computedHash = hash.pedersen([res, new BN(arg.replace('0x', ''), 'hex')]);
-
-    res = new BN(computedHash.replace('0x', ''), 'hex');
+    res = BigInt(pedersen(res, arg));
   }
-  return res.mod(ADDR_BOUND).toString();
+  return (res % ADDR_BOUND).toString();
 };
 
 export const offsetStorageVar = (address: string, offset: number) => {

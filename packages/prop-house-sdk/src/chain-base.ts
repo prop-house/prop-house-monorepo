@@ -3,7 +3,7 @@ import {
   ContractAddresses,
   getContractAddressesForChainOrThrow,
 } from '@prophouse/protocol';
-import { constants, SequencerProvider } from 'starknet';
+import { RpcProvider as StarknetRpcProvider } from 'starknet';
 import { JsonRpcProvider, JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { Signer, TypedDataSigner } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/abstract-provider';
@@ -13,16 +13,35 @@ import { ChainConfig, EVM } from './types';
 export class ChainBase {
   protected readonly _evmChainId: number;
   protected readonly _addresses: ContractAddresses;
-  protected readonly _starknet: SequencerProvider;
+  protected readonly _starknet: StarknetRpcProvider;
   protected _evm: Signer | Provider;
+  protected _defaultProvider: JsonRpcProvider;
+
+  /**
+   * Default EVM provider URLs
+   */
+  public static readonly DEFAULT_EVM_RPC: Record<number, string> = {
+    [ChainId.EthereumMainnet]: 'https://mainnet.infura.io/v3/0ad93f38d5e048a19b715f15c3bbaf5e',
+    [ChainId.EthereumGoerli]: 'https://goerli.infura.io/v3/0ad93f38d5e048a19b715f15c3bbaf5e',
+  };
 
   /**
    * EVM to Starknet chain ID mappings
    */
-  public static readonly EVM_TO_STARKNET_CHAIN_ID: Record<number, constants.StarknetChainId> = {
-    [ChainId.EthereumMainnet]: constants.StarknetChainId.MAINNET,
-    [ChainId.EthereumGoerli]: constants.StarknetChainId.TESTNET,
+  public static readonly EVM_TO_DEFAULT_STARKNET_RPC: Record<number, string> = {
+    [ChainId.EthereumMainnet]: 'https://starknet-mainnet.infura.io/v3/054a6e9257a94a9d91cdcbbdf3f7c1c6',
+    [ChainId.EthereumGoerli]: 'https://starknet-goerli.infura.io/v3/054a6e9257a94a9d91cdcbbdf3f7c1c6',
   };
+
+  /**
+   * A default EVM provider for the chain
+   */
+  public get defaultProvider() {
+    if (!this._defaultProvider) {
+      this._defaultProvider = new JsonRpcProvider(ChainBase.DEFAULT_EVM_RPC[this._evmChainId]);
+    }
+    return this._defaultProvider;
+  }
 
   /**
    * The EVM provider that was provided via the config
@@ -58,8 +77,9 @@ export class ChainBase {
     this._evmChainId = config.evmChainId;
     this._addresses = getContractAddressesForChainOrThrow(config.evmChainId);
     this._evm = this.toEVMSignerOrProvider(config.evm);
-    this._starknet = config.starknet instanceof SequencerProvider ? config.starknet : new SequencerProvider(config.starknet ?? {
-      network: ChainBase.EVM_TO_STARKNET_CHAIN_ID[config.evmChainId],
+    this._defaultProvider = new JsonRpcProvider(ChainBase.DEFAULT_EVM_RPC[config.evmChainId]);
+    this._starknet = config.starknet instanceof StarknetRpcProvider ? config.starknet : new StarknetRpcProvider(config.starknet ?? {
+      nodeUrl: ChainBase.EVM_TO_DEFAULT_STARKNET_RPC[config.evmChainId],
     });
   }
 

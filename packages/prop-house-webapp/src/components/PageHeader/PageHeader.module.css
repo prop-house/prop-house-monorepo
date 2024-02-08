@@ -1,0 +1,12 @@
+.headerRow {
+  margin-bottom: 2rem;
+}
+
+.pageTitle {
+  font-size: 38px;
+  font-weight: bold;
+}
+.pageSubtitle {
+  font-size: 20px;
+  font-weight: 500;
+}

@@ -16,12 +16,24 @@
   width: 100%;
   max-width: 500px;
   min-width: 420px;
+  max-height: 90% !important;
+  overflow-y: scroll;
+  padding-bottom: 0px !important;
 }
 .titleContainer {
   text-align: center;
+  justify-content: space-between;
+  display: flex;
+  gap: 10px;
 }
 .titleContainer p {
   margin-bottom: 0;
+}
+.titleAndSubtitleContainer {
+  width: 100%;
+}
+.gap {
+  width: 42px !important;
 }
 .modalTitle {
   font-weight: 700;
@@ -35,11 +47,12 @@
   font-weight: 500;
   font-size: 16px;
   color: var(--brand-gray);
+  text-align: center;
 }
 .modal button {
-  width: 100%;
   border-radius: 50px;
 }
+
 .buttonContainer {
   display: flex;
   gap: 8px;
@@ -50,18 +63,50 @@
 .imgContainer {
   text-align: center;
   padding: 35px 0px 25px 0px;
+  width: 100%;
 }
 .imgContainer img {
   height: 80px;
 }
 .body {
   overflow-y: scroll;
+  padding-top: 10px;
 }
-/** mobile close btn **/
-.closeBtn {
-  display: none;
+.footer {
+  position: sticky !important;
+  bottom: -1px;
+  bottom: 0px;
+  z-index: 1;
+  background: white !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
+  width: 100%;
+  max-width: 100%;
+  z-index: 10 !important;
+  padding-bottom: 18px;
+  padding-top: 18px;
+  margin-top: 18px;
 }
-
+.noFooter {
+  border-top: none !important;
+  margin-top: 0px;
+}
+.body::-webkit-scrollbar {
+  width: 7px;
+  height: 0px;
+}
+.body::-webkit-scrollbar-track {
+  border-radius: 10px;
+  margin-top: 75px;
+  margin-bottom: 20px;
+}
+.body::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: white;
+  background: var(--brand-gray-semi-transparent);
+}
+.footer .buttonContainer button {
+  width: 100% !important;
+}
 @media (max-width: 575px) {
   .modal {
     width: 90%;
@@ -79,7 +124,9 @@
     min-width: 100% !important;
     min-height: 100% !important;
   }
-  .fullScreenOnMobile .titleContainer {
+
+  .titleContainer {
+    text-align: left;
     display: flex;
   }
 
@@ -97,23 +144,24 @@
   .fullScreenOnMobile .modalTitle {
     margin-right: 5px;
   }
-  .fullScreenOnMobile .closeBtn {
-    display: flex;
-    margin-left: auto;
-    color: white;
-    background: var(--brand-pink);
-    cursor: pointer;
-    font-size: 1.25rem;
-    width: 34px;
-    height: 34px;
-    display: flex;
-    border: 1.5px solid #e02ecf;
-    padding: 4px;
-    border-radius: 10px;
-  }
   .fullScreenOnMobile .body {
     flex-grow: 1;
     display: grid;
     overflow-y: auto;
   }
+}
+.closeBtn {
+  border: 1px solid var(--border-dark);
+  color: var(--brand-gray);
+  cursor: pointer;
+  font-size: 1.25rem;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.closeBtn:hover {
+  background: var(--border-light);
 }
