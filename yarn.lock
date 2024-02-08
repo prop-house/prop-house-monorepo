@@ -5983,13 +5983,13 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@1.0.26":
-  version "1.0.26"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.26.tgz#7f04faba66e60f7f23c8cf19dc31ac87ddda4469"
-  integrity sha512-e+N26dgTnpvsWJD0PSqZWxIiPkVBE58FxWSrqeblRhhFC6AKkbFkI8e5WoQxxOtfykBFsumNhIuts7JgxKGV9A==
+"@prophouse/sdk-react@1.0.27":
+  version "1.0.27"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.27.tgz#5d9a11a701bd69305d591a17ad3c8df16c00e30f"
+  integrity sha512-n8XlCxoNe0O/Gi9kaH7VfwA8rfsR6swkc573AUW9EXYXQara9uVxtqRbiNp1tmR0egl9P6YOLJdxSCK9wsLeuA==
   dependencies:
     "@ethersproject/providers" "~5.7.0"
-    "@prophouse/sdk" "1.0.28"
+    "@prophouse/sdk" "1.0.30"
 
 "@prophouse/sdk@1.0.27":
   version "1.0.27"
@@ -6022,7 +6022,40 @@
     starknet "5.19.5"
     time-ts "^0.1.0"
 
-"@prophouse/sdk@1.0.28", "@prophouse/sdk@^1.0.7":
+"@prophouse/sdk@1.0.30":
+  version "1.0.30"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.30.tgz#a7046117bc58781750be7c52ed7ed837fb0adef7"
+  integrity sha512-cznshYcqm/JnPnM6Cs+USv9O8DE/0pIAq0Nph8ARuHMLOLhy25qcCTNtMFahKkPNoB0/BHKBG9rulnjj36icqQ==
+  dependencies:
+    "@ethersproject/abi" "~5.7.0"
+    "@ethersproject/abstract-provider" "~5.7.0"
+    "@ethersproject/abstract-signer" "~5.7.0"
+    "@ethersproject/address" "~5.7.0"
+    "@ethersproject/bignumber" "~5.7.0"
+    "@ethersproject/bytes" "~5.7.0"
+    "@ethersproject/constants" "~5.7.0"
+    "@ethersproject/contracts" "~5.7.0"
+    "@ethersproject/keccak256" "~5.7.0"
+    "@ethersproject/providers" "~5.7.0"
+    "@ethersproject/solidity" "~5.7.0"
+    "@ethersproject/strings" "~5.7.0"
+    "@ethersproject/units" "~5.7.0"
+    "@ethersproject/wallet" "^5.7.0"
+    "@graphql-typed-document-node/core" "^3.2.0"
+    "@pinata/sdk" "^2.1.0"
+    "@prophouse/protocol" "1.0.10"
+    bn.js "^5.2.1"
+    ethereumjs-fork-block "^4.2.4"
+    ethereumjs-fork-common "^3.1.3"
+    graphql "^16.5.0"
+    graphql-request "5.0.0"
+    merkletreejs "^0.3.11"
+    micro-starknet "^0.2.3"
+    randombytes "^2.1.0"
+    starknet "5.19.5"
+    time-ts "^0.1.0"
+
+"@prophouse/sdk@^1.0.7":
   version "1.0.28"
   resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.28.tgz#6b6ec93b832217aa4a0f29ea9c631f83ca2e8377"
   integrity sha512-ombEaXnlzj0qoABLuH8R/TOgZA+v5pS/c4mvAosGQORf056p3uaDn1HK0R8dtkUtBqwX5n/wQJah4eY7cpUMhw==
