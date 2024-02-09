@@ -61,9 +61,10 @@ export class StarknetProvider extends BaseProvider {
   }
 
   async processPool(blockNumber: number) {
-    const txs = await this.provider.getPendingTransactions();
+    this.log.info({ blockNumber }, 'processing pool');
+    const block = await this.provider.getBlockWithTxs('pending');
     const receipts = await Promise.all(
-      txs.map(async tx => {
+      block.transactions.map(async tx => {
         if (!tx.transaction_hash) return null;
 
         try {
@@ -78,7 +79,7 @@ export class StarknetProvider extends BaseProvider {
       }),
     );
 
-    const txsWithReceipts = txs.filter((_, index) => receipts[index] !== null) as PendingTransaction[];
+    const txsWithReceipts = block.transactions.filter((_, index) => receipts[index] !== null) as PendingTransaction[];
     const eventsMap = receipts.reduce((acc: Record<string, any>, receipt) => {
       if (receipt === null) return acc;
 
@@ -103,7 +104,7 @@ export class StarknetProvider extends BaseProvider {
       );
     }
 
-    block.transactions.forEach(tx => this.processedPoolTransactions.delete(tx.transaction_hash));
+    block.transactions.forEach((tx: any) => this.processedPoolTransactions.delete(tx.transaction_hash));
 
     this.log.debug({ blockNumber: block.block_number }, 'handling block done');
   }
