@@ -6085,10 +6085,10 @@
     starknet "5.19.5"
     time-ts "^0.1.0"
 
-"@prophouse/sdk@1.0.26":
-  version "1.0.26"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.26.tgz#4b4c305e0c35e1374f1307c67cef28309913370d"
-  integrity sha512-L6kkFD2i5f3aWqqleItDEdto5WyikI92IRBjZgfGXQbqjRvaeFlKMrgrBV5p0pT+I+lPCQ4QhkdGIaYlev69fQ==
+"@prophouse/sdk@1.0.27":
+  version "1.0.27"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.27.tgz#06fec2c4ca07a7ec9cf144621925f6d21cce4070"
+  integrity sha512-lQoa0S3fqty4ccYJ0EJoklRU3812SB3dSmR4xmw/qExCndkuqswndHzt/dZLHQwdZFJy8oHUZ1ac3TKB2SRgiw==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"

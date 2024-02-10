@@ -754,6 +754,7 @@ export class QueryWrapper {
       voter: v!.voter.id,
       round: v!.round.sourceChainRound,
       proposalId: v!.proposal.proposalId,
+      proposalTitle: v!.proposal.title,
       votingPower: v!.votingPower,
       receivedAt: v!.receivedAt,
       txHash: v!.txHash,

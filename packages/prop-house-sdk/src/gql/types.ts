@@ -155,6 +155,7 @@ export interface Vote {
   voter: string;
   round: string;
   proposalId: number;
+  proposalTitle: string;
   votingPower: string;
   receivedAt: number;
   txHash: string;
