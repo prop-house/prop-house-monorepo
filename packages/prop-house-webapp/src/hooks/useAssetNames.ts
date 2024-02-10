@@ -31,7 +31,7 @@ const useAssetNames = (assets: Asset[]): string[] | undefined => {
   });
 
   useEffect(() => {
-    if (!fetchedNames || loadingNames) return;
+    if (assets.length === 0 || !fetchedNames || loadingNames) return;
 
     const _names = fetchedNames.map(name => name.result as string);
     const updatedNames = assets.map(asset => {

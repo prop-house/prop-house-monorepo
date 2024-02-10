@@ -48,7 +48,7 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
   const names = useAssetNames(assets);
 
   useEffect(() => {
-    if (!symbols || !decimals || !tokenImgs || !names) return;
+    if (assets.length === 0 || !symbols || !decimals || !tokenImgs || !names) return;
 
     const parsedAmounts = assets.map((asset, index) => {
       switch (asset.assetType) {
@@ -80,9 +80,9 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
       const updatedAsset = updated[index];
       return (
         asset.symbol === updatedAsset.symbol &&
-          asset.decimals === updatedAsset.decimals &&
-          asset.parsedAmount === updatedAsset.parsedAmount &&
-          asset.tokenImg === updatedAsset.tokenImg &&
+        asset.decimals === updatedAsset.decimals &&
+        asset.parsedAmount === updatedAsset.parsedAmount &&
+        asset.tokenImg === updatedAsset.tokenImg &&
         asset.name === updatedAsset.name
       );
     });

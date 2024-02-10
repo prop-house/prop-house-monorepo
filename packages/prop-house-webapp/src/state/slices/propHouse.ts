@@ -61,8 +61,14 @@ export const propHouseSlice = createSlice({
                 proposal.isWinner = COMPLETED_ROUND_OVERRIDES[proposal.round].winners.includes(proposal.id);
               }
               return proposal;
-          }).sort((a, b) => Number(b.votingPower) - Number(a.votingPower));
-    },
+          }).sort((a, b) => {
+            const votingPowerDifference = Number(b.votingPower) - Number(a.votingPower);
+            if (votingPowerDifference === 0) {
+              return a.receivedAt - b.receivedAt; // Tie-Breaking
+            }
+            return votingPowerDifference;
+          });
+        },
     appendProposal: (state, action: PayloadAction<{ proposal: Proposal }>) => {
       state.activeProposals?.push(action.payload.proposal);
     },

@@ -119,7 +119,8 @@ const useAssetImages = (assets: Asset[]): string[] | undefined => {
   }, [erc721TokenUriFetch, hasErc721s, erc721Assets, loadingErc721TokenUri, erc721imgUris]);
 
   useEffect(() => {
-    if ((hasErc721s && !erc721imgUris) || (hasErc1155s && !erc1155imgUris)) return;
+    if (assets.length === 0 || (hasErc721s && !erc721imgUris) || (hasErc1155s && !erc1155imgUris))
+      return;
 
     const mappedAssets = assets.map(asset => {
       switch (asset.assetType) {
