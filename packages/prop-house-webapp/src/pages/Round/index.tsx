@@ -22,8 +22,6 @@ const Round: React.FC<{}> = () => {
   const isModalActive = useAppSelector(state => state.propHouse.modalActive);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
-  console.log(proposals && proposals);
-
   const [loadingProposals, setLoadingProposals] = useState<boolean>();
   const [loadedProposals, setLoadedProposals] = useState(false);
   const [loadingProposalsFailed, setLoadingProposalsFailed] = useState(false);

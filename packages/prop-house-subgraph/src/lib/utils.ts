@@ -59,13 +59,13 @@ export function computeAssetID(asset: AssetStruct): string {
     case AssetType.NATIVE:
       return ZERO_BYTES_32;
     case AssetType.ERC20:
-      return `0x${asset.assetType.toString(16)}${asset.token.toHex().substring(2)}`.padEnd(66, '0');
+      return `0x0${asset.assetType.toString(16)}${asset.token.toHex().substring(2)}`.padEnd(66, '0');
     default:
-      const paddedToken = asset.token.toHex().substring(2).padStart(64, '0');
+      const token = asset.token.toHex().substring(2);
       const paddedIdentifier = asset.identifier.toHex().substring(2).padStart(64, '0');
-      const keccakHash = crypto.keccak256(ByteArray.fromHexString(`${paddedToken}${paddedIdentifier}`)).toHex().substring(2);
+      const keccakHash = crypto.keccak256(ByteArray.fromHexString(`${token}${paddedIdentifier}`)).toHex().substring(2);
 
-      return `0x${asset.assetType.toString(16)}${keccakHash}`.slice(0, 66);
+      return `0x0${asset.assetType.toString(16)}${keccakHash}`.slice(0, 66);
   }
 }
 
@@ -109,4 +109,12 @@ export function getGovPowerStrategyType(addr: string): string {
     return GovPowerStrategyType.ALLOWLIST;
   }
   return GovPowerStrategyType.UNKNOWN;
+}
+
+/**
+ * Pad a hex string to 32 bytes
+ * @param hex The hex string to pad
+ */
+export function padHexTo32Bytes(hex: string): string {
+  return `0x${hex.substring(2).padStart(64, '0')}`;
 }

@@ -17,7 +17,6 @@ const HouseManager: React.FC<{}> = () => {
   const { address } = params;
 
   const [house, setHouse] = useState<House>(_stateHouse !== undefined ? _stateHouse : undefined);
-  console.log(house);
   const [loading, setLoading] = useState<boolean>();
 
   useEffect(() => {

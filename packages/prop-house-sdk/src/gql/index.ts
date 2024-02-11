@@ -50,4 +50,5 @@ export {
   Vote,
   Deposit,
   Claim,
+  Reclaim,
 } from './types';

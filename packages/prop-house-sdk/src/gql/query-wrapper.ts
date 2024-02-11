@@ -16,6 +16,8 @@ import {
   Deposit_Filter,
   Claim_Filter,
   RoundEventState,
+  Reclaim_OrderBy,
+  Reclaim_Filter,
 } from './evm/graphql';
 import {
   HouseQuery,
@@ -28,6 +30,7 @@ import {
   ManyGovPowerStrategiesQuery,
   RoundQuery,
   RoundWithHouseInfoQuery,
+  ManyReclaimsQuery,
 } from './queries.evm';
 import {
   getDefaultConfig,
@@ -56,6 +59,7 @@ import {
   RoundBalance,
   Claim,
   Deposit,
+  Reclaim,
 } from './types';
 import {
   GlobalStatsQuery,
@@ -623,6 +627,46 @@ export class QueryWrapper {
   }
 
   /**
+   * Get paginated reclaims in the provided round address
+   * @param roundAddress The round address
+   * @param config Filtering, pagination, and ordering configuration
+   */
+  public async getRoundReclaims(
+    roundAddress: Address,
+    config: Partial<QueryConfig<Reclaim_OrderBy, Reclaim_Filter>> = {},
+  ) {
+    return this.getReclaims({
+      ...config,
+      where: {
+        ...config.where,
+        round: roundAddress.toLowerCase(),
+      },
+    });
+  }
+
+  /**
+   * Get paginated reclaims
+   * @param config Filtering, pagination, and ordering configuration
+   */
+  public async getReclaims(config: Partial<QueryConfig<Reclaim_OrderBy, Reclaim_Filter>> = {}): Promise<Reclaim[]> {
+    const { reclaims } = await this._gql.evm.request(
+      ManyReclaimsQuery,
+      toPaginated(this.merge(getDefaultConfig(Reclaim_OrderBy.ReclaimedAt), config)),
+    );
+    return reclaims.map(reclaim => ({
+      id: reclaim.id,
+      txHash: reclaim.txHash,
+      reclaimedAt: reclaim.reclaimedAt,
+      reclaimer: reclaim.reclaimer.id,
+      round: reclaim.round.id,
+      asset: this.toAsset({
+        asset: reclaim.asset,
+        amount: reclaim.amount,
+      }),
+    }));
+  }
+
+  /**
    * Get paginated proposals
    * @param config Filtering, pagination, and ordering configuration
    */
@@ -710,6 +754,7 @@ export class QueryWrapper {
       voter: v!.voter.id,
       round: v!.round.sourceChainRound,
       proposalId: v!.proposal.proposalId,
+      proposalTitle: v!.proposal.title,
       votingPower: v!.votingPower,
       receivedAt: v!.receivedAt,
       txHash: v!.txHash,
