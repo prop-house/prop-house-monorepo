@@ -35,7 +35,7 @@ const Round: React.FC<{}> = () => {
         setLoadingProposals(true);
         const proposals = await propHouse.query.getProposalsForRound(round.address, {
           where: { isCancelled: false },
-          perPage: 60,
+          perPage: 100,
         });
         dispatch(setOnChainActiveProposals(proposals));
       } catch (e) {
