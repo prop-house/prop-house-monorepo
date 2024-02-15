@@ -2888,19 +2888,6 @@
     ethereum-cryptography "^1.1.2"
     readable-stream "^3.6.0"
 
-"@ethereumjs/trie@^6.1.1":
-  version "6.1.1"
-  resolved "https://registry.npmjs.org/@ethereumjs/trie/-/trie-6.1.1.tgz#c37f61e44c6b38bb59acfa002609e05ba10e18e8"
-  integrity sha512-FwHnyUok4cDTueOfIarE4n0QJs3mFjSnSENMgsd07HzL5oEuxal3aN51MBP392czj5mordNCim1YVP4oE14I3A==
-  dependencies:
-    "@ethereumjs/rlp" "^5.0.2"
-    "@ethereumjs/util" "^9.0.2"
-    "@types/readable-stream" "^2.3.13"
-    debug "^4.3.4"
-    ethereum-cryptography "^2.1.3"
-    lru-cache "^10.0.0"
-    readable-stream "^3.6.0"
-
 "@ethereumjs/tx@^5.2.1":
   version "5.2.1"
   resolved "https://registry.npmjs.org/@ethereumjs/tx/-/tx-5.2.1.tgz#c9965374eafebd3421bdd23b4f23f402e9a41037"
@@ -6038,13 +6025,13 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@1.0.28":
-  version "1.0.28"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.28.tgz#dc01856bd48def3542970eb2cdc33e5a08f958cc"
-  integrity sha512-El21+bSI4uh1NBXMwbeEmTzYDsI8IWLKWRInU/je/WYRVMzugEUG97nIm3Z5xBh7cmvub7PwX0BcXIW9rcNe8Q==
+"@prophouse/sdk-react@1.0.29":
+  version "1.0.29"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.29.tgz#82c231953c0398e5fce7a9c698b2154261ef6197"
+  integrity sha512-B7/ydzuJhwgzV8FOTxvur+KBi3ZGrVaDyQcKN9K33T5/aG48tPzcpONBLtK5Vp6G1KZ/oizzevZpQBpsZnkq4Q==
   dependencies:
     "@ethersproject/providers" "~5.7.0"
-    "@prophouse/sdk" "1.0.31"
+    "@prophouse/sdk" "1.0.32"
 
 "@prophouse/sdk@1.0.27":
   version "1.0.27"
@@ -6077,10 +6064,10 @@
     starknet "5.19.5"
     time-ts "^0.1.0"
 
-"@prophouse/sdk@1.0.31":
-  version "1.0.31"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.31.tgz#b52737ac336b36efd541cc0770cc8755bd00ce93"
-  integrity sha512-chv05CVWiYtvBDeFjqaW11SAyhPXemyDtM92WNxcC2U1BNWDDlDPshA7Bqn3rIjwepYknV+NE07J0YMBfnlmPQ==
+"@prophouse/sdk@1.0.32":
+  version "1.0.32"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.32.tgz#00e9561ee11d7c0a32d499040ea98fa27e6c4f41"
+  integrity sha512-Gn4lHGRc14wVoQNp6MrMjyLkgFcJct+FP/Abw7GR6yY1S0Bml1i2LAkCqNrHyJNfp6I4PW+UZoA7gdvyLhuUUQ==
   dependencies:
     "@ethereumjs/common" "4.2.0"
     "@ethersproject/abi" "~5.7.0"
@@ -6101,7 +6088,7 @@
     "@pinata/sdk" "^2.1.0"
     "@prophouse/protocol" "1.0.10"
     bn.js "^5.2.1"
-    ethereumjs-fork-block "^5.1.1"
+    ethereumjs-fork-block "^5.1.2"
     graphql "^16.5.0"
     graphql-request "5.0.0"
     merkletreejs "^0.3.11"
@@ -15305,17 +15292,17 @@ ethereumjs-fork-block@^4.2.4:
     ethereumjs-fork-tx "^4.1.2"
     ethers "^5.7.1"
 
-ethereumjs-fork-block@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.npmjs.org/ethereumjs-fork-block/-/ethereumjs-fork-block-5.1.1.tgz#7bf72975a2499834cfbf2504a2d80e26969938fb"
-  integrity sha512-YPK2imGZt14nbo1GAHw4qmr6N164Zg/pJ9KG8k5PrWn8vUE3UiQhEbhMFPMuXi8vpWVBOzJCWM90q4aA/++WfA==
+ethereumjs-fork-block@^5.1.2:
+  version "5.1.2"
+  resolved "https://registry.npmjs.org/ethereumjs-fork-block/-/ethereumjs-fork-block-5.1.2.tgz#e57faf235a1f748b63a1eaf0bca288d15d3b6617"
+  integrity sha512-QgO9tndTcm6lXlXkpB9M8TfToV2BzTBQIwymJqKdI3Yoy3iVzbJ+R6AiGfff6rLDMq6oBHHq4bpWl0OEV+gvVA==
   dependencies:
     "@ethereumjs/common" "^4.2.0"
     "@ethereumjs/rlp" "^5.0.2"
-    "@ethereumjs/trie" "^6.1.1"
     "@ethereumjs/tx" "^5.2.1"
     "@ethereumjs/util" "^9.0.2"
     ethereum-cryptography "^2.1.3"
+    ethereumjs-fork-trie "^6.1.1"
 
 ethereumjs-fork-common@^3.1.3:
   version "3.1.3"
@@ -15324,6 +15311,19 @@ ethereumjs-fork-common@^3.1.3:
   dependencies:
     "@ethereumjs/util" "^8.0.5"
     crc-32 "^1.2.0"
+
+ethereumjs-fork-trie@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.npmjs.org/ethereumjs-fork-trie/-/ethereumjs-fork-trie-6.1.1.tgz#e9e8a546a138b8dcc01166723a6e2e7c08b3af7b"
+  integrity sha512-RC+oU6Ta8+LLitb8m+D2vxzEil/6XjpTng+9nRp6mJM7nKFwzHp9o4QkIXw3eNFrtmhf/RX2CxbuqPzjfOuXtg==
+  dependencies:
+    "@ethereumjs/rlp" "^5.0.2"
+    "@ethereumjs/util" "^9.0.2"
+    "@types/readable-stream" "^2.3.13"
+    debug "^4.3.4"
+    ethereum-cryptography "^2.1.3"
+    lru-cache "^10.0.0"
+    readable-stream "^3.6.0"
 
 ethereumjs-fork-tx@^4.1.2:
   version "4.1.2"
