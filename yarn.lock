@@ -2860,10 +2860,22 @@
     patch-package "^6.2.2"
     postinstall-postinstall "^2.1.0"
 
+"@ethereumjs/common@4.2.0", "@ethereumjs/common@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.npmjs.org/@ethereumjs/common/-/common-4.2.0.tgz#c5ccaeb71f5a9833c66ab35c22f9f965ce462ace"
+  integrity sha512-UWqovZQksxEY9cU+s1cF3JwFyJdKrJsURM+ORHpZZLQfsqQf+1uGbD3N0AvQ7M+Jz/LxkiVY98+Cd3OMzsrOcA==
+  dependencies:
+    "@ethereumjs/util" "^9.0.2"
+
 "@ethereumjs/rlp@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@ethereumjs/rlp/-/rlp-4.0.1.tgz#626fabfd9081baab3d0a3074b0c7ecaf674aaa41"
   integrity sha512-tqsQiBQDQdmPWE1xkkBq4rlSW5QZpLOUJ5RJh2/9fug+q9tnUhuZoVLk7s0scUIKTOzEtR72DFBXI4WiZcMpvw==
+
+"@ethereumjs/rlp@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/@ethereumjs/rlp/-/rlp-5.0.2.tgz#c89bd82f2f3bec248ab2d517ae25f5bbc4aac842"
+  integrity sha512-DziebCdg4JpGlEqEdGgXmjqcFoJi+JGulUXwEjsZGAscAQ7MyD/7LE/GVCP29vEQxKc7AAwjT3A2ywHp2xfoCA==
 
 "@ethereumjs/trie@^5.0.4":
   version "5.0.4"
@@ -2875,6 +2887,29 @@
     "@types/readable-stream" "^2.3.13"
     ethereum-cryptography "^1.1.2"
     readable-stream "^3.6.0"
+
+"@ethereumjs/trie@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.npmjs.org/@ethereumjs/trie/-/trie-6.1.1.tgz#c37f61e44c6b38bb59acfa002609e05ba10e18e8"
+  integrity sha512-FwHnyUok4cDTueOfIarE4n0QJs3mFjSnSENMgsd07HzL5oEuxal3aN51MBP392czj5mordNCim1YVP4oE14I3A==
+  dependencies:
+    "@ethereumjs/rlp" "^5.0.2"
+    "@ethereumjs/util" "^9.0.2"
+    "@types/readable-stream" "^2.3.13"
+    debug "^4.3.4"
+    ethereum-cryptography "^2.1.3"
+    lru-cache "^10.0.0"
+    readable-stream "^3.6.0"
+
+"@ethereumjs/tx@^5.2.1":
+  version "5.2.1"
+  resolved "https://registry.npmjs.org/@ethereumjs/tx/-/tx-5.2.1.tgz#c9965374eafebd3421bdd23b4f23f402e9a41037"
+  integrity sha512-BzdtUaa7KtP8T5NxJWRxo/RBoJzxYeCdx2n2C4zZLuWJBYVccfcyMiyDgr6W78Utmu/jIfGXknfh2t06+rTkiw==
+  dependencies:
+    "@ethereumjs/common" "^4.2.0"
+    "@ethereumjs/rlp" "^5.0.2"
+    "@ethereumjs/util" "^9.0.2"
+    ethereum-cryptography "^2.1.3"
 
 "@ethereumjs/util@^8.0.5":
   version "8.0.5"
@@ -2893,6 +2928,14 @@
     "@ethereumjs/rlp" "^4.0.1"
     ethereum-cryptography "^2.0.0"
     micro-ftch "^0.3.1"
+
+"@ethereumjs/util@^9.0.2":
+  version "9.0.2"
+  resolved "https://registry.npmjs.org/@ethereumjs/util/-/util-9.0.2.tgz#2719337cd43d70941491c41e3367d7b87078f847"
+  integrity sha512-dasKCj6Vb5spVPnNmRDFHmbfBySvokE440F0RDroPLzO4Mb4hyDqeoOMUxlbLz/BscK2pOpWUendGA+AOvGpNQ==
+  dependencies:
+    "@ethereumjs/rlp" "^5.0.2"
+    ethereum-cryptography "^2.1.3"
 
 "@ethersproject/abi@5.0.0-beta.153":
   version "5.0.0-beta.153"
@@ -5464,6 +5507,13 @@
   dependencies:
     "@noble/hashes" "1.3.1"
 
+"@noble/curves@1.3.0", "@noble/curves@~1.3.0":
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/@noble/curves/-/curves-1.3.0.tgz#01be46da4fd195822dab821e72f71bf4aeec635e"
+  integrity sha512-t01iSXPuN+Eqzb4eBX0S5oubSqXbK/xXa1Ne18Hj8f9pStxztHCE2gfboSp/dZRLSqfuLpRK2nDXDK+W9puocA==
+  dependencies:
+    "@noble/hashes" "1.3.3"
+
 "@noble/curves@~1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.2.0.tgz#92d7e12e4e49b23105a2555c6984d41733d65c35"
@@ -5495,6 +5545,11 @@
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.2.tgz#6f26dbc8fbc7205873ce3cee2f690eba0d421b39"
   integrity sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==
+
+"@noble/hashes@1.3.3":
+  version "1.3.3"
+  resolved "https://registry.npmjs.org/@noble/hashes/-/hashes-1.3.3.tgz#39908da56a4adc270147bb07968bf3b16cfe1699"
+  integrity sha512-V7/fPHgl+jsVPXqqeOzT8egNj2iBIVt+ECeMMG8TdcnTikP3oaBtUVqpT/gYCR68aEBJSF+XbYUxStjbFMqIIA==
 
 "@noble/hashes@^1.1.2":
   version "1.1.5"
@@ -5983,13 +6038,13 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@1.0.27":
-  version "1.0.27"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.27.tgz#5d9a11a701bd69305d591a17ad3c8df16c00e30f"
-  integrity sha512-n8XlCxoNe0O/Gi9kaH7VfwA8rfsR6swkc573AUW9EXYXQara9uVxtqRbiNp1tmR0egl9P6YOLJdxSCK9wsLeuA==
+"@prophouse/sdk-react@1.0.28":
+  version "1.0.28"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.28.tgz#dc01856bd48def3542970eb2cdc33e5a08f958cc"
+  integrity sha512-El21+bSI4uh1NBXMwbeEmTzYDsI8IWLKWRInU/je/WYRVMzugEUG97nIm3Z5xBh7cmvub7PwX0BcXIW9rcNe8Q==
   dependencies:
     "@ethersproject/providers" "~5.7.0"
-    "@prophouse/sdk" "1.0.30"
+    "@prophouse/sdk" "1.0.31"
 
 "@prophouse/sdk@1.0.27":
   version "1.0.27"
@@ -6022,11 +6077,12 @@
     starknet "5.19.5"
     time-ts "^0.1.0"
 
-"@prophouse/sdk@1.0.30":
-  version "1.0.30"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.30.tgz#a7046117bc58781750be7c52ed7ed837fb0adef7"
-  integrity sha512-cznshYcqm/JnPnM6Cs+USv9O8DE/0pIAq0Nph8ARuHMLOLhy25qcCTNtMFahKkPNoB0/BHKBG9rulnjj36icqQ==
+"@prophouse/sdk@1.0.31":
+  version "1.0.31"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.31.tgz#b52737ac336b36efd541cc0770cc8755bd00ce93"
+  integrity sha512-chv05CVWiYtvBDeFjqaW11SAyhPXemyDtM92WNxcC2U1BNWDDlDPshA7Bqn3rIjwepYknV+NE07J0YMBfnlmPQ==
   dependencies:
+    "@ethereumjs/common" "4.2.0"
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
     "@ethersproject/abstract-signer" "~5.7.0"
@@ -6045,8 +6101,7 @@
     "@pinata/sdk" "^2.1.0"
     "@prophouse/protocol" "1.0.10"
     bn.js "^5.2.1"
-    ethereumjs-fork-block "^4.2.4"
-    ethereumjs-fork-common "^3.1.3"
+    ethereumjs-fork-block "^5.1.1"
     graphql "^16.5.0"
     graphql-request "5.0.0"
     merkletreejs "^0.3.11"
@@ -6376,6 +6431,11 @@
   resolved "https://registry.yarnpkg.com/@scure/base/-/base-1.1.1.tgz#ebb651ee52ff84f420097055f4bf46cfba403938"
   integrity sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==
 
+"@scure/base@~1.1.4":
+  version "1.1.5"
+  resolved "https://registry.npmjs.org/@scure/base/-/base-1.1.5.tgz#1d85d17269fe97694b9c592552dd9e5e33552157"
+  integrity sha512-Brj9FiG2W1MRQSTB212YVPRrcbjkv48FoZi/u4l/zds/ieRrqsh7aUf6CLwkAq61oKXr/ZlTzlY66gLIj3TFTQ==
+
 "@scure/bip32@1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@scure/bip32/-/bip32-1.1.5.tgz#d2ccae16dcc2e75bc1d75f5ef3c66a338d1ba300"
@@ -6403,6 +6463,15 @@
     "@noble/hashes" "~1.3.1"
     "@scure/base" "~1.1.0"
 
+"@scure/bip32@1.3.3":
+  version "1.3.3"
+  resolved "https://registry.npmjs.org/@scure/bip32/-/bip32-1.3.3.tgz#a9624991dc8767087c57999a5d79488f48eae6c8"
+  integrity sha512-LJaN3HwRbfQK0X1xFSi0Q9amqOgzQnnDngIt+ZlsBC3Bm7/nE7K0kwshZHyaru79yIVRv/e1mQAjZyuZG6jOFQ==
+  dependencies:
+    "@noble/curves" "~1.3.0"
+    "@noble/hashes" "~1.3.2"
+    "@scure/base" "~1.1.4"
+
 "@scure/bip39@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@scure/bip39/-/bip39-1.1.1.tgz#b54557b2e86214319405db819c4b6a370cf340c5"
@@ -6426,6 +6495,14 @@
   dependencies:
     "@noble/hashes" "~1.3.0"
     "@scure/base" "~1.1.0"
+
+"@scure/bip39@1.2.2":
+  version "1.2.2"
+  resolved "https://registry.npmjs.org/@scure/bip39/-/bip39-1.2.2.tgz#f3426813f4ced11a47489cbcf7294aa963966527"
+  integrity sha512-HYf9TUXG80beW+hGAt3TRM8wU6pQoYur9iNypTROm42dorCGmLnFe3eWjz3gOq6G62H2WRh0FCzAR1PI+29zIA==
+  dependencies:
+    "@noble/hashes" "~1.3.2"
+    "@scure/base" "~1.1.4"
 
 "@scure/starknet@~0.3.0":
   version "0.3.0"
@@ -15113,6 +15190,16 @@ ethereum-cryptography@^2.0.0, ethereum-cryptography@^2.1.2:
     "@scure/bip32" "1.3.1"
     "@scure/bip39" "1.2.1"
 
+ethereum-cryptography@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.npmjs.org/ethereum-cryptography/-/ethereum-cryptography-2.1.3.tgz#1352270ed3b339fe25af5ceeadcf1b9c8e30768a"
+  integrity sha512-BlwbIL7/P45W8FGW2r7LGuvoEZ+7PWsniMvQ4p5s2xCyw9tmaDlpfsN9HjAucbF+t/qpVHwZUisgfK24TCW8aA==
+  dependencies:
+    "@noble/curves" "1.3.0"
+    "@noble/hashes" "1.3.3"
+    "@scure/bip32" "1.3.3"
+    "@scure/bip39" "1.2.2"
+
 ethereum-waffle@^3.4.4:
   version "3.4.4"
   resolved "https://registry.npmjs.org/ethereum-waffle/-/ethereum-waffle-3.4.4.tgz#1378b72040697857b7f5e8f473ca8f97a37b5840"
@@ -15217,6 +15304,18 @@ ethereumjs-fork-block@^4.2.4:
     ethereumjs-fork-common "^3.1.3"
     ethereumjs-fork-tx "^4.1.2"
     ethers "^5.7.1"
+
+ethereumjs-fork-block@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.npmjs.org/ethereumjs-fork-block/-/ethereumjs-fork-block-5.1.1.tgz#7bf72975a2499834cfbf2504a2d80e26969938fb"
+  integrity sha512-YPK2imGZt14nbo1GAHw4qmr6N164Zg/pJ9KG8k5PrWn8vUE3UiQhEbhMFPMuXi8vpWVBOzJCWM90q4aA/++WfA==
+  dependencies:
+    "@ethereumjs/common" "^4.2.0"
+    "@ethereumjs/rlp" "^5.0.2"
+    "@ethereumjs/trie" "^6.1.1"
+    "@ethereumjs/tx" "^5.2.1"
+    "@ethereumjs/util" "^9.0.2"
+    ethereum-cryptography "^2.1.3"
 
 ethereumjs-fork-common@^3.1.3:
   version "3.1.3"
@@ -20952,6 +21051,11 @@ lru-cache@5.1.1, lru-cache@^5.1.1:
   integrity sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==
   dependencies:
     yallist "^3.0.2"
+
+lru-cache@^10.0.0:
+  version "10.2.0"
+  resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-10.2.0.tgz#0bd445ca57363465900f4d1f9bd8db343a4d95c3"
+  integrity sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==
 
 lru-cache@^3.2.0:
   version "3.2.0"
