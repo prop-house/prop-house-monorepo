@@ -9,7 +9,7 @@ import { NewVoter } from '../components/HouseManager/VotersConfig';
 /**
  * Known ERC721 checkpointable tokens.
  */
-const ERC721_CHECKPOINTABLE_TOKENS = ['0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03' /* Nouns */];
+const ERC721_CHECKPOINTABLE_TOKENS = ['0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03' /* Nouns */, '0x99265ce0983aab76f5a3789663fdd887de66638a' /* Nouns Goerli */];
 
 const createVoterStrategy = (voter: NewVoter): GovPowerStrategyConfig | null => {
   let s: GovPowerStrategyConfig | null = null;
