@@ -26,6 +26,11 @@ export const COMPLETED_ROUND_OVERRIDES: Record<string, { state: Timed.RoundState
     state: Timed.RoundState.COMPLETE,
     winners: [14, 23, 6, 21, 18],
   },
+  // bitRound 1
+  '0xd7fa793a4a2a3239badb60fa7d2cd9f7db2ce3ea': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [4, 13, 8, 12],
+  },
 };
 
 export const HIDDEN_ROUND_OVERRIDES = [
