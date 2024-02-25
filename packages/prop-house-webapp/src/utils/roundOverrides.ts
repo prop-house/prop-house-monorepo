@@ -31,6 +31,21 @@ export const COMPLETED_ROUND_OVERRIDES: Record<string, { state: Timed.RoundState
     state: Timed.RoundState.COMPLETE,
     winners: [4, 13, 8, 12],
   },
+  // Kontes Art
+  '0xc0f6d6df63a28e487d56f5d880908d8dcc1c13c8': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [14, 80, 54, 105, 120, 96, 100, 124, 112, 118],
+  },
+  // Kontes Builders
+  '0x408c727995e2979b5bfb22ea6ffc9e1f42f8fae3': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [1, 9, 24, 22, 2, 40, 7, 41, 17, 15],
+  },
+  // Kontes Bisnis Plan
+  '0xe5d502eb06128768ee97b459233a022fa4a128ff': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [7, 24, 51, 35, 27, 25, 54, 39, 47, 9],
+  },
 };
 
 export const HIDDEN_ROUND_OVERRIDES = [
