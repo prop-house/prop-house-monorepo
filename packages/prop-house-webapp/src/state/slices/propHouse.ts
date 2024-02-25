@@ -56,19 +56,32 @@ export const propHouseSlice = createSlice({
       state.activeProposals =
         action.payload === undefined
           ? undefined
-          : action.payload.map(proposal => {
-              if (COMPLETED_ROUND_OVERRIDES[proposal.round]) {
-                proposal.isWinner = COMPLETED_ROUND_OVERRIDES[proposal.round].winners.includes(proposal.id);
-              }
-              return proposal;
-          }).sort((a, b) => {
-            const votingPowerDifference = Number(b.votingPower) - Number(a.votingPower);
-            if (votingPowerDifference === 0) {
-              return a.receivedAt - b.receivedAt; // Tie-Breaking
-            }
-            return votingPowerDifference;
-          });
-        },
+          : action.payload
+              .map(proposal => {
+                if (COMPLETED_ROUND_OVERRIDES[proposal.round]) {
+                  proposal.isWinner = COMPLETED_ROUND_OVERRIDES[proposal.round].winners.includes(
+                    proposal.id,
+                  );
+                }
+                return proposal;
+              })
+              .sort((a, b) => {
+                const aVP = Number(a.votingPower);
+                const bVP = Number(b.votingPower);
+
+                // If both proposals have 0 voting power, sort by isWinner (override)
+                if (aVP === 0 && bVP === 0) {
+                  return a.isWinner ? -1 : 1;
+                }
+
+                // If both are tied, sort by receivedAt
+                const votingPowerDifference = aVP - bVP;
+                if (votingPowerDifference === 0) {
+                  return a.receivedAt - b.receivedAt; // Tie-Breaking
+                }
+                return votingPowerDifference;
+              });
+    },
     appendProposal: (state, action: PayloadAction<{ proposal: Proposal }>) => {
       state.activeProposals?.push(action.payload.proposal);
     },
