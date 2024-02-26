@@ -75,7 +75,7 @@ export const propHouseSlice = createSlice({
                 }
 
                 // If both are tied, sort by receivedAt
-                const votingPowerDifference = aVP - bVP;
+                const votingPowerDifference = bVP - aVP;
                 if (votingPowerDifference === 0) {
                   return a.receivedAt - b.receivedAt; // Tie-Breaking
                 }
