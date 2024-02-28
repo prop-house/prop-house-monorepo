@@ -5985,48 +5985,17 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@1.0.30":
-  version "1.0.30"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.30.tgz#92633761f7e6ada317beb8cedcfa9171994abb97"
-  integrity sha512-T5U7bRWQR24f2RUbpQF1pbp4p3lKgm/1GlibiCwzHy4GUR9ZK+PlMSWD42mC8EHV/H9Z1SvHwpm72tCWa6uzdQ==
+"@prophouse/sdk-react@1.0.31":
+  version "1.0.31"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.31.tgz#24bbe954ac2029feab7ef76369a0683bfe2cc64f"
+  integrity sha512-kaMC5KejgqDz6OwfQkswc8LOhgT6bZEcehqndFtiy2RVTvL4HbHutCn5gXj0fuyy1+Q6gxqAx4wu6tJAonmOYA==
   dependencies:
-    "@prophouse/sdk" "1.0.33"
+    "@prophouse/sdk" "1.0.34"
 
-"@prophouse/sdk@1.0.27":
-  version "1.0.27"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.27.tgz#06fec2c4ca07a7ec9cf144621925f6d21cce4070"
-  integrity sha512-lQoa0S3fqty4ccYJ0EJoklRU3812SB3dSmR4xmw/qExCndkuqswndHzt/dZLHQwdZFJy8oHUZ1ac3TKB2SRgiw==
-  dependencies:
-    "@ethersproject/abi" "~5.7.0"
-    "@ethersproject/abstract-provider" "~5.7.0"
-    "@ethersproject/abstract-signer" "~5.7.0"
-    "@ethersproject/address" "~5.7.0"
-    "@ethersproject/bignumber" "~5.7.0"
-    "@ethersproject/bytes" "~5.7.0"
-    "@ethersproject/constants" "~5.7.0"
-    "@ethersproject/contracts" "~5.7.0"
-    "@ethersproject/keccak256" "~5.7.0"
-    "@ethersproject/providers" "~5.7.0"
-    "@ethersproject/solidity" "~5.7.0"
-    "@ethersproject/strings" "~5.7.0"
-    "@ethersproject/wallet" "^5.7.0"
-    "@pinata/sdk" "^2.1.0"
-    "@prophouse/protocol" "1.0.8"
-    bn.js "^5.2.1"
-    ethereumjs-fork-block "^4.2.4"
-    ethereumjs-fork-common "^3.1.3"
-    graphql "^16.5.0"
-    graphql-request "5.0.0"
-    merkletreejs "^0.3.11"
-    micro-starknet "^0.2.3"
-    randombytes "^2.1.0"
-    starknet "5.19.5"
-    time-ts "^0.1.0"
-
-"@prophouse/sdk@1.0.33":
-  version "1.0.33"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.33.tgz#110faeb5f7ea45d8a3373937f787ebf608cd30e6"
-  integrity sha512-xSHEW+EhAyrXvlzfkLVJ0rYal8W8LL03YbRFDdXgesDq6OxKAlNmHYhDcWu5Nex1Qy+V1J5ZesTmGp544UmzIQ==
+"@prophouse/sdk@1.0.34":
+  version "1.0.34"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.34.tgz#b923a001772d0483929927443aab44385fc9798e"
+  integrity sha512-PSVfghZdVK3KKO6X10TIH9n65Sb/A2L8cycVvB1r0VCYDD7rHlbqjS5wwF2LQ3PpljL0MwxearFCRBCJhvyqVQ==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
