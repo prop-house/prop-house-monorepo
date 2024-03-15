@@ -46,6 +46,11 @@ export const COMPLETED_ROUND_OVERRIDES: Record<string, { state: Timed.RoundState
     state: Timed.RoundState.COMPLETE,
     winners: [7, 24, 51, 35, 27, 25, 54, 39, 47, 9],
   },
+  // Chamada Aberta para Roteiristas
+  '0x36ff22a111c0c33592c4df3445a81d984185927e': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [15, 18],
+  },
 };
 
 export const HIDDEN_ROUND_OVERRIDES = [
