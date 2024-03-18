@@ -1,15 +1,16 @@
 import React from 'react';
 import classes from './AddressAvatar.module.css';
-import { useEnsAvatar, useEnsName } from 'wagmi';
+import { useEnsAvatar } from 'wagmi';
 import type { GlassesParts, GlassesBgColors } from '../../utils/getNoggles';
 import { Factory } from '@cloudnouns/factory';
 import NogglesData from './noggles.json';
 import clsx from 'clsx';
+import useNnsName from '../../hooks/useNnsName';
 
 const AddressAvatar: React.FC<{ address: string; size?: number }> = props => {
   const { address, size: s = 24 } = props;
 
-  const { data: ensName } = useEnsName({
+  const { data: ensName } = useNnsName({
     address: address as `0x${string}`,
   });
   const { data: avatar } = useEnsAvatar({ name: ensName });
