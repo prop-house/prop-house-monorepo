@@ -38,7 +38,7 @@ The [Prop House protocol](./packages/prop-house-protocol) package contains the S
 
 ### @prophouse/sdk
 
-The [Prop House SDK](./prop-house-sdk) package contains utilities that simplify interaction with the Prop House protocol.
+The [Prop House SDK](./packages/prop-house-sdk) package contains utilities that simplify interaction with the Prop House protocol.
 
 ## Quick Start
 
