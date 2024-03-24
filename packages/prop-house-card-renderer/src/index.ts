@@ -82,24 +82,29 @@ const generateRemote =
         .send(fs.readFileSync(cacheFilePath));
     }
 
-    const page = await browser.newPage();
-    page.emulate({
-      viewport: {
-        width: config.cardWidth,
-        height: config.cardHeight,
-      },
-      userAgent: 'PropHouseSnapshotBot',
-    });
-    console.log(remoteCardUrl(path));
-    await page.goto(remoteCardUrl(path), {
-      waitUntil: config.remoteWaitUntil,
-    });
-    await page.screenshot({ path: cacheFilePath });
-
-    res
-      .header('X-PropHouse-Type', 'local')
-      .header('Content-Type', 'image/png')
-      .send(fs.readFileSync(cacheFilePath));
+    try {
+      const page = await browser.newPage();
+      page.emulate({
+        viewport: {
+          width: config.cardWidth,
+          height: config.cardHeight,
+        },
+        userAgent: 'PropHouseSnapshotBot',
+      });
+      console.log(remoteCardUrl(path));
+      await page.goto(remoteCardUrl(path), {
+        waitUntil: config.remoteWaitUntil,
+      });
+      await page.screenshot({ path: cacheFilePath });
+  
+      res
+        .header('X-PropHouse-Type', 'local')
+        .header('Content-Type', 'image/png')
+        .send(fs.readFileSync(cacheFilePath));
+    } catch (e) {
+      console.error(e);
+      res.status(500).send('Error generating card');
+    }
   };
 
 (async () => {
