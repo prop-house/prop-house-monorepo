@@ -74,6 +74,14 @@ const generateRemote =
     const path = req.params[0];
     const cacheFilePath = cachePath(path);
 
+    // Exit early if the file is already cached.
+    if (fs.existsSync(cacheFilePath)) {
+      return res
+        .header('X-PropHouse-Type', 'local')
+        .header('Content-Type', 'image/png')
+        .send(fs.readFileSync(cacheFilePath));
+    }
+
     const page = await browser.newPage();
     page.emulate({
       viewport: {
