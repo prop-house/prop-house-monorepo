@@ -8,7 +8,6 @@ import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 import useAssetsWithMetadata, { AssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
 import buildEtherscanPath from '../../utils/buildEtherscanPath';
 import buildOpenSeaPath from '../../utils/buildOpenSeaPath';
-import { truncateThousands } from '../../utils/truncateThousands';
 import Skeleton from 'react-loading-skeleton';
 
 const RoundAwardsDisplay: React.FC<{
@@ -44,6 +43,17 @@ const RoundAwardsDisplay: React.FC<{
       ...round.config.awards.slice(awardsToMoveCount - 1, 2 + awardsToMoveCount), // indexes of awards that shouldn't be there (eg 10, 11, 12)
     ];
   };
+
+  const formatRewardAmount = (num: number) =>
+    num >= 1000000
+      ? (num / 1000000).toFixed(0) + 'M'
+      : num >= 10000
+      ? (num / 1000).toFixed(0) + 'K'
+      : num >= 1000
+      ? (num / 1000).toFixed(1) + 'K'
+      : num >= 1
+      ? num.toFixed(0).toString()
+      : num.toFixed(4).toString();
 
   const sliderRef = useRef<SwiperRef>(null);
   const [loadingAssetsWithMetadata, assetsWithMetadata] = useAssetsWithMetadata(longAwardsFix());
@@ -111,10 +121,7 @@ const RoundAwardsDisplay: React.FC<{
               </>
             ) : (
               <>
-                {award.parsedAmount > 1000
-                  ? truncateThousands(award.parsedAmount)
-                  : award.parsedAmount}{' '}
-                {award.symbol}
+                {formatRewardAmount(award.parsedAmount)} {award.symbol}
               </>
             )}
           </div>
