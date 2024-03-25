@@ -51,6 +51,11 @@ export const COMPLETED_ROUND_OVERRIDES: Record<string, { state: Timed.RoundState
     state: Timed.RoundState.COMPLETE,
     winners: [15, 18],
   },
+  // Thread no Twitter sobre a Area404
+  '0xf55672ea1c6a26a3694d0d86c425cffd9954b434': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [14, 1, 7],
+  },
 };
 
 export const HIDDEN_ROUND_OVERRIDES = [
