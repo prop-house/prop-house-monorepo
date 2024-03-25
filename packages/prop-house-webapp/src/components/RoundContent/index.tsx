@@ -7,7 +7,6 @@ import { House, Proposal, Round, RoundType, Timed } from '@prophouse/sdk-react';
 import TimedRoundProposalCard from '../TimedRoundProposalCard';
 import TimedRoundModules from '../TimedRoundModules';
 import InfRoundModules from '../InfRoundModules';
-import { useHiddenPropIds } from '../../hooks/useHiddenPropIds';
 import { useContentModeration } from '../../hooks/useContentModeration';
 
 const RoundContent: React.FC<{
@@ -18,7 +17,7 @@ const RoundContent: React.FC<{
   const { round, proposals, house } = props;
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const { hiddenPropIds, refresh } = useHiddenPropIds(round.address);
+
   // eslint-disable-next-line
   const { isMod, hideProp, hideRound } = useContentModeration(house);
 
@@ -46,26 +45,17 @@ const RoundContent: React.FC<{
             <ErrorMessageCard message={'Submitted proposals will show up here'} />
           ) : (
             <>
-              {hiddenPropIds === undefined ? (
-                <></>
-              ) : (
-                proposals &&
-                proposals
-                  .filter(p => !hiddenPropIds.includes(p.id))
-                  .map((prop, index) => (
-                    <Col key={index}>
-                      <TimedRoundProposalCard
-                        proposal={prop}
-                        round={round}
-                        mod={isMod}
-                        hideProp={async (propId: number) => {
-                          await hideProp(round.address, propId);
-                          setTimeout(() => refresh(), 1000);
-                        }}
-                      />
-                    </Col>
-                  ))
-              )}
+              {proposals &&
+                proposals.map((prop, index) => (
+                  <Col key={index}>
+                    <TimedRoundProposalCard
+                      proposal={prop}
+                      round={round}
+                      mod={isMod}
+                      hideProp={async (propId: number) => await hideProp(round.address, propId)}
+                    />
+                  </Col>
+                ))}
             </>
           )}
         </Col>

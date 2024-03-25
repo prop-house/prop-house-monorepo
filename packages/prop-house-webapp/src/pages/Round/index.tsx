@@ -13,6 +13,7 @@ import RoundContent from '../../components/RoundContent';
 import { setVoteAllotments } from '../../state/slices/voting';
 import { removeHtmlFromString } from '../../utils/removeHtmlFromString';
 import { RoundOrHouseContentLoadingCard } from '../../components/LoadingCards';
+import { useHiddenPropIds } from '../../hooks/useHiddenPropIds';
 
 const Round: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -25,6 +26,9 @@ const Round: React.FC<{}> = () => {
   const [loadingProposals, setLoadingProposals] = useState<boolean>();
   const [loadedProposals, setLoadedProposals] = useState(false);
   const [loadingProposalsFailed, setLoadingProposalsFailed] = useState(false);
+
+  // eslint-disable-next-line
+  const { hiddenPropIds, refresh } = useHiddenPropIds(round!.address);
 
   // fetch proposals
   useEffect(() => {
@@ -54,7 +58,9 @@ const Round: React.FC<{}> = () => {
 
   return (
     <>
-      {isModalActive && proposals && <ProposalModal proposals={proposals} />}
+      {isModalActive && hiddenPropIds !== undefined && proposals && (
+        <ProposalModal proposals={proposals.filter(p => !hiddenPropIds.includes(p.id))} />
+      )}
       {round && (
         <OpenGraphElements
           title={round.title}
@@ -75,7 +81,13 @@ const Round: React.FC<{}> = () => {
                 <NotFound />
               ) : (
                 <div className={classes.propCards}>
-                  {proposals && <RoundContent round={round} house={house} proposals={proposals} />}
+                  {hiddenPropIds !== undefined && proposals && (
+                    <RoundContent
+                      round={round}
+                      house={house}
+                      proposals={proposals.filter(p => !hiddenPropIds.includes(p.id))}
+                    />
+                  )}
                 </div>
               )}
             </Container>
