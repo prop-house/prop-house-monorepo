@@ -26,6 +26,36 @@ export const COMPLETED_ROUND_OVERRIDES: Record<string, { state: Timed.RoundState
     state: Timed.RoundState.COMPLETE,
     winners: [14, 23, 6, 21, 18],
   },
+  // bitRound 1
+  '0xd7fa793a4a2a3239badb60fa7d2cd9f7db2ce3ea': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [4, 13, 8, 12],
+  },
+  // Kontes Art
+  '0xc0f6d6df63a28e487d56f5d880908d8dcc1c13c8': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [14, 80, 54, 105, 120, 96, 100, 124, 112, 118],
+  },
+  // Kontes Builders
+  '0x408c727995e2979b5bfb22ea6ffc9e1f42f8fae3': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [1, 9, 24, 22, 2, 40, 7, 41, 17, 15],
+  },
+  // Kontes Bisnis Plan
+  '0xe5d502eb06128768ee97b459233a022fa4a128ff': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [7, 24, 51, 35, 27, 25, 54, 39, 47, 9],
+  },
+  // Chamada Aberta para Roteiristas
+  '0x36ff22a111c0c33592c4df3445a81d984185927e': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [15, 18],
+  },
+  // Thread no Twitter sobre a Area404
+  '0xf55672ea1c6a26a3694d0d86c425cffd9954b434': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [14, 1, 7],
+  },
 };
 
 export const HIDDEN_ROUND_OVERRIDES = [

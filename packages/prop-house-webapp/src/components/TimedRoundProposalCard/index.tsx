@@ -17,6 +17,7 @@ import { Proposal, Round, Timed } from '@prophouse/sdk-react';
 import { useAppSelector } from '../../hooks';
 import ProposalCardClaimAwardBar from '../ProposalCardClaimAwardBar';
 import { getBlockExplorerURL } from '../../utils/getBlockExplorerUrl';
+import { getChecksumAddress } from '../../utils/getChecksumAddress';
 import { useAccount, useChainId } from 'wagmi';
 import Button, { ButtonColor } from '../Button';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
@@ -162,7 +163,7 @@ const TimedRoundProposalCard: React.FC<{
           </div>
         </Card>
         {roundEndedAndNotCancelled &&
-          account.address === proposal.proposer &&
+          account.address === getChecksumAddress(proposal.proposer) &&
           proposal.isWinner && <ProposalCardClaimAwardBar round={round} proposal={proposal} />}
       </div>
     </>
