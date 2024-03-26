@@ -407,6 +407,9 @@ type Award @entity {
   "A concatenation of the round address and award index"
   id: ID!
 
+  "The award index"
+  index: Int!
+
   "The asset information"
   asset: Asset!
 

@@ -17,7 +17,7 @@ const documents = {
     types.HouseFieldsFragmentDoc,
   '\n  fragment GovPowerStrategyFields on GovPowerStrategy {\n    id\n    type\n    address\n    params\n  }\n':
     types.GovPowerStrategyFieldsFragmentDoc,
-  '\n  fragment TimedRoundConfigFields on TimedRoundConfig {\n    winnerCount\n    proposalThreshold\n    proposalPeriodStartTimestamp\n    proposalPeriodEndTimestamp\n    proposalPeriodDuration\n    votePeriodStartTimestamp\n    votePeriodEndTimestamp\n    votePeriodDuration\n    claimPeriodEndTimestamp\n    awards {\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n    }\n  }\n':
+  '\n  fragment TimedRoundConfigFields on TimedRoundConfig {\n    winnerCount\n    proposalThreshold\n    proposalPeriodStartTimestamp\n    proposalPeriodEndTimestamp\n    proposalPeriodDuration\n    votePeriodStartTimestamp\n    votePeriodEndTimestamp\n    votePeriodDuration\n    claimPeriodEndTimestamp\n    awards(orderBy: index, orderDirection: asc) {\n      index\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n    }\n  }\n':
     types.TimedRoundConfigFieldsFragmentDoc,
   '\n  fragment RoundFields on Round {\n    id\n    type\n    title\n    description\n    createdAt\n    eventState\n    isFullyFunded\n    manager {\n      id\n    }\n    proposingStrategies {\n      strategy {\n        ...GovPowerStrategyFields\n      }\n    }\n    votingStrategies {\n      strategy {\n        ...GovPowerStrategyFields\n      }\n    }\n    timedConfig {\n      ...TimedRoundConfigFields\n    }\n  }\n':
     types.RoundFieldsFragmentDoc,
@@ -75,8 +75,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n  fragment TimedRoundConfigFields on TimedRoundConfig {\n    winnerCount\n    proposalThreshold\n    proposalPeriodStartTimestamp\n    proposalPeriodEndTimestamp\n    proposalPeriodDuration\n    votePeriodStartTimestamp\n    votePeriodEndTimestamp\n    votePeriodDuration\n    claimPeriodEndTimestamp\n    awards {\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n    }\n  }\n',
-): (typeof documents)['\n  fragment TimedRoundConfigFields on TimedRoundConfig {\n    winnerCount\n    proposalThreshold\n    proposalPeriodStartTimestamp\n    proposalPeriodEndTimestamp\n    proposalPeriodDuration\n    votePeriodStartTimestamp\n    votePeriodEndTimestamp\n    votePeriodDuration\n    claimPeriodEndTimestamp\n    awards {\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n    }\n  }\n'];
+  source: '\n  fragment TimedRoundConfigFields on TimedRoundConfig {\n    winnerCount\n    proposalThreshold\n    proposalPeriodStartTimestamp\n    proposalPeriodEndTimestamp\n    proposalPeriodDuration\n    votePeriodStartTimestamp\n    votePeriodEndTimestamp\n    votePeriodDuration\n    claimPeriodEndTimestamp\n    awards(orderBy: index, orderDirection: asc) {\n      index\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n    }\n  }\n',
+): (typeof documents)['\n  fragment TimedRoundConfigFields on TimedRoundConfig {\n    winnerCount\n    proposalThreshold\n    proposalPeriodStartTimestamp\n    proposalPeriodEndTimestamp\n    proposalPeriodDuration\n    votePeriodStartTimestamp\n    votePeriodEndTimestamp\n    votePeriodDuration\n    claimPeriodEndTimestamp\n    awards(orderBy: index, orderDirection: asc) {\n      index\n      asset {\n        assetType\n        token\n        identifier\n      }\n      amount\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

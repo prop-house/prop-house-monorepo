@@ -199,6 +199,11 @@ export enum Administrative_OrderBy {
   Manager = 'manager',
 }
 
+export enum Aggregation_Interval {
+  Day = 'day',
+  Hour = 'hour',
+}
+
 export type Asset = {
   __typename?: 'Asset';
   /** The asset type (Native | ERC20 | ERC721 | ERC1155) */
@@ -270,6 +275,8 @@ export type Award = {
   asset: Asset;
   /** A concatenation of the round address and award index */
   id: Scalars['ID'];
+  /** The award index */
+  index: Scalars['Int'];
   /** The configuration in which the awards exist */
   round: TimedRoundConfig;
 };
@@ -315,6 +322,14 @@ export type Award_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  index?: InputMaybe<Scalars['Int']>;
+  index_gt?: InputMaybe<Scalars['Int']>;
+  index_gte?: InputMaybe<Scalars['Int']>;
+  index_in?: InputMaybe<Array<Scalars['Int']>>;
+  index_lt?: InputMaybe<Scalars['Int']>;
+  index_lte?: InputMaybe<Scalars['Int']>;
+  index_not?: InputMaybe<Scalars['Int']>;
+  index_not_in?: InputMaybe<Array<Scalars['Int']>>;
   or?: InputMaybe<Array<InputMaybe<Award_Filter>>>;
   round?: InputMaybe<Scalars['String']>;
   round_?: InputMaybe<TimedRoundConfig_Filter>;
@@ -347,6 +362,7 @@ export enum Award_OrderBy {
   AssetIdentifier = 'asset__identifier',
   AssetToken = 'asset__token',
   Id = 'id',
+  Index = 'index',
   Round = 'round',
   RoundClaimPeriodEndTimestamp = 'round__claimPeriodEndTimestamp',
   RoundId = 'round__id',
@@ -1327,7 +1343,8 @@ export type Query = {
   house?: Maybe<House>;
   houseImplementation?: Maybe<HouseImplementation>;
   houseImplementations: Array<HouseImplementation>;
-  houseMetadata: Array<HouseMetadata>;
+  houseMetadata?: Maybe<HouseMetadata>;
+  houseMetadata_collection: Array<HouseMetadata>;
   houses: Array<House>;
   reclaim?: Maybe<Reclaim>;
   reclaims: Array<Reclaim>;
@@ -1502,6 +1519,12 @@ export type QueryHouseImplementationsArgs = {
 };
 
 export type QueryHouseMetadataArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+export type QueryHouseMetadata_CollectionArgs = {
   block?: InputMaybe<Block_Height>;
   first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<HouseMetadata_OrderBy>;
@@ -2508,7 +2531,8 @@ export type Subscription = {
   house?: Maybe<House>;
   houseImplementation?: Maybe<HouseImplementation>;
   houseImplementations: Array<HouseImplementation>;
-  houseMetadata: Array<HouseMetadata>;
+  houseMetadata?: Maybe<HouseMetadata>;
+  houseMetadata_collection: Array<HouseMetadata>;
   houses: Array<House>;
   reclaim?: Maybe<Reclaim>;
   reclaims: Array<Reclaim>;
@@ -2683,6 +2707,12 @@ export type SubscriptionHouseImplementationsArgs = {
 };
 
 export type SubscriptionHouseMetadataArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+export type SubscriptionHouseMetadata_CollectionArgs = {
   block?: InputMaybe<Block_Height>;
   first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<HouseMetadata_OrderBy>;
@@ -3278,6 +3308,7 @@ export type TimedRoundConfigFieldsFragment = {
   claimPeriodEndTimestamp: any;
   awards: Array<{
     __typename?: 'Award';
+    index: number;
     amount: any;
     asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
   }>;
@@ -3326,6 +3357,7 @@ export type RoundFieldsFragment = {
     claimPeriodEndTimestamp: any;
     awards: Array<{
       __typename?: 'Award';
+      index: number;
       amount: any;
       asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
     }>;
@@ -3441,6 +3473,7 @@ export type ManyRoundsQuery = {
       claimPeriodEndTimestamp: any;
       awards: Array<{
         __typename?: 'Award';
+        index: number;
         amount: any;
         asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
       }>;
@@ -3519,6 +3552,7 @@ export type ManyRoundsWithHouseInfoQuery = {
       claimPeriodEndTimestamp: any;
       awards: Array<{
         __typename?: 'Award';
+        index: number;
         amount: any;
         asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
       }>;
@@ -3575,6 +3609,7 @@ export type RoundQuery = {
       claimPeriodEndTimestamp: any;
       awards: Array<{
         __typename?: 'Award';
+        index: number;
         amount: any;
         asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
       }>;
@@ -3649,6 +3684,7 @@ export type RoundWithHouseInfoQuery = {
       claimPeriodEndTimestamp: any;
       awards: Array<{
         __typename?: 'Award';
+        index: number;
         amount: any;
         asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
       }>;
@@ -3859,9 +3895,22 @@ export const TimedRoundConfigFieldsFragmentDoc = {
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'awards' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'EnumValue', value: 'index' },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'EnumValue', value: 'asc' },
+              },
+            ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'index' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'asset' },
@@ -3998,9 +4047,22 @@ export const RoundFieldsFragmentDoc = {
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'awards' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'EnumValue', value: 'index' },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'EnumValue', value: 'asc' },
+              },
+            ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'index' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'asset' },
@@ -4367,9 +4429,22 @@ export const ManyRoundsDocument = {
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'awards' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'EnumValue', value: 'index' },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'EnumValue', value: 'asc' },
+              },
+            ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'index' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'asset' },
@@ -4596,9 +4671,22 @@ export const ManyRoundsWithHouseInfoDocument = {
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'awards' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'EnumValue', value: 'index' },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'EnumValue', value: 'asc' },
+              },
+            ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'index' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'asset' },
@@ -4823,9 +4911,22 @@ export const RoundDocument = {
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'awards' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'EnumValue', value: 'index' },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'EnumValue', value: 'asc' },
+              },
+            ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'index' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'asset' },
@@ -5009,9 +5110,22 @@ export const RoundWithHouseInfoDocument = {
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'awards' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'EnumValue', value: 'index' },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'EnumValue', value: 'asc' },
+              },
+            ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'index' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'asset' },

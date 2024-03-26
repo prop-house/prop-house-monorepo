@@ -68,8 +68,8 @@ export const RoundOrHouseContentLoadingCard = () => {
           <Col xl={8}>
             {Array(5)
               .fill(0)
-              .map(() => (
-                <Skeleton height={200} style={{ marginBottom: '12px' }} />
+              .map((item, index) => (
+                <Skeleton key={index} height={200} style={{ marginBottom: '12px' }} />
               ))}
           </Col>
           <Col>

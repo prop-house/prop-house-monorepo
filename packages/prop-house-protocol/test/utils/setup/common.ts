@@ -4,7 +4,7 @@ import {
   MockStarknetMessaging__factory,
   CreatorPassIssuer__factory,
   PropHouse__factory,
-  StarkNetCommit__factory,
+  StarknetCommit__factory,
 } from '../../../typechain';
 import { ethers } from 'hardhat';
 import { constants } from 'ethers';
@@ -17,7 +17,7 @@ export const commonL1Setup = async () => {
   const creatorPassIssuerFactory = new CreatorPassIssuer__factory(deployer);
 
   const mockStarknetMessagingFactory = new MockStarknetMessaging__factory(deployer);
-  const starknetCommitFactory = new StarkNetCommit__factory(deployer);
+  const starknetCommitFactory = new StarknetCommit__factory(deployer);
   const messengerFactory = new Messenger__factory(deployer);
 
   const manager = await managerFactory.deploy();

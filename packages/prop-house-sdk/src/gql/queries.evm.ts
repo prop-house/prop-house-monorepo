@@ -42,7 +42,8 @@ export const TimedRoundConfigFields = graphql(`
     votePeriodEndTimestamp
     votePeriodDuration
     claimPeriodEndTimestamp
-    awards {
+    awards(orderBy: index, orderDirection: asc) {
+      index
       asset {
         assetType
         token

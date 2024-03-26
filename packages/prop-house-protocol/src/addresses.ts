@@ -51,6 +51,7 @@ export interface EVMContracts {
   messenger: string;
   house: HouseImpls;
   round: RoundImpls;
+  starknetCommit: string;
 }
 
 export interface StarknetContracts {
@@ -80,6 +81,7 @@ export const contracts: Record<number, ContractAddresses> = {
         infinite: goerli.ethereum.address.infiniteRoundImpl,
         timed: goerli.ethereum.address.timedRoundImpl,
       },
+      starknetCommit: goerli.ethereum.address.starknetCommit,
     },
     starknet: {
       roundFactory: goerli.starknet.address.roundFactory,
@@ -124,6 +126,7 @@ export const contracts: Record<number, ContractAddresses> = {
         infinite: constants.HashZero,
         timed: mainnet.ethereum.address.timedRoundImpl,
       },
+      starknetCommit: mainnet.ethereum.address.starknetCommit,
     },
     starknet: {
       roundFactory: mainnet.starknet.address.roundFactory,

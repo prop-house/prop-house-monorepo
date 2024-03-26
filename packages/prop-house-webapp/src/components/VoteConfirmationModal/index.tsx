@@ -16,6 +16,9 @@ import { openInNewTab } from '../../utils/openInNewTab';
 import { GOV_POWER_OVERRIDES } from '../../utils/roundOverrides';
 import { BigNumber } from 'ethers';
 import { parsedVotingPower } from '../../utils/parsedVotingPower';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
+import { signerIsContract } from '../../utils/signerIsContract';
+import { Hex } from 'viem';
 
 const VoteConfirmationModal: React.FC<{
   round: Round;
@@ -24,6 +27,7 @@ const VoteConfirmationModal: React.FC<{
   const { setShowVoteConfirmationModal, round } = props;
 
   const propHouse = usePropHouse();
+  const provider = useEthersProvider();
   const dispatch = useDispatch();
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
@@ -64,33 +68,48 @@ const VoteConfirmationModal: React.FC<{
           return { proposalId: a.proposalId, votingPower: votes };
         });
 
-      const result = await propHouse.round.timed.voteViaSignature({
-        round: round.address,
-        votes,
-      });
+      const isContract = await signerIsContract(
+        provider,
+        (await propHouse.signer.getAddress()) as Hex,
+      );
+      if (isContract) {
+        const result = await propHouse.round.timed.voteViaCommitment({
+          round: round.address,
+          votes,
+        });
+        if (!result?.hash) {
+          throw new Error(`Vote submission failed: ${result}`);
+        }
 
-      if (!result?.transaction_hash) {
-        throw new Error(`Vote submission failed: ${result}`);
+        setCurrentModalData(contractSuccessData);
+      } else {
+        const result = await propHouse.round.timed.voteViaSignature({
+          round: round.address,
+          votes,
+        });
+        if (!result?.transaction_hash) {
+          throw new Error(`Vote submission failed: ${result}`);
+        }
+
+        setCurrentModalData(eoaSuccessData);
+
+        // refresh props with new votes
+        // check if we're updating from the round page (multiple props) or the prop page (single prop)
+        const propsToCheck = proposals ? proposals : proposal ? [proposal] : [];
+        const updatedProps = propsToCheck.map(prop => {
+          const voteForProp = votes.find(v => v.proposalId === prop.id);
+          let newProp = { ...prop };
+          if (voteForProp)
+            newProp.votingPower = parsedVotingPower(newProp.votingPower, round.address)
+              .add(parsedVotingPower(voteForProp.votingPower, round.address))
+              .toString();
+          return newProp;
+        });
+        proposals
+          ? dispatch(setOnChainActiveProposals(updatedProps))
+          : dispatch(setOnchainActiveProposal(updatedProps[0]));
+        dispatch(clearVoteAllotments());
       }
-
-      setCurrentModalData(successData);
-
-      // refresh props with new votes
-      // check if we're updating from the round page (multiple props) or the prop page (single prop)
-      const propsToCheck = proposals ? proposals : proposal ? [proposal] : [];
-      const updatedProps = propsToCheck.map(prop => {
-        const voteForProp = votes.find(v => v.proposalId === prop.id);
-        let newProp = { ...prop };
-        if (voteForProp)
-          newProp.votingPower = parsedVotingPower(newProp.votingPower, round.address)
-            .add(parsedVotingPower(voteForProp.votingPower, round.address))
-            .toString();
-        return newProp;
-      });
-      proposals
-        ? dispatch(setOnChainActiveProposals(updatedProps))
-        : dispatch(setOnchainActiveProposal(updatedProps[0]));
-      dispatch(clearVoteAllotments());
     } catch (e: any) {
       console.log(e);
       setCurrentModalData(errorData(e.message));
@@ -139,11 +158,9 @@ const VoteConfirmationModal: React.FC<{
     };
   };
 
-  const successData: ModalProps = {
+  const getSuccessData = (subtitle: string) => ({
     title: 'Nounish',
-    subtitle: `You successfully voted for ${numPropsVotedFor} ${
-      numPropsVotedFor === 1 ? 'prop' : 'props'
-    }`,
+    subtitle,
     image: NounImage.Glasses,
     button: (
       <>
@@ -166,7 +183,17 @@ const VoteConfirmationModal: React.FC<{
       </>
     ),
     setShowModal: setShowVoteConfirmationModal,
-  };
+  });
+
+  const eoaSuccessData: ModalProps = getSuccessData(
+    `You successfully voted for ${numPropsVotedFor} ${numPropsVotedFor === 1 ? 'prop' : 'props'}`,
+  );
+
+  const contractSuccessData: ModalProps = getSuccessData(
+    `You successfully submitted votes for ${numPropsVotedFor} ${
+      numPropsVotedFor === 1 ? 'prop' : 'props'
+    }, which will be confirmed shortly.`,
+  );
 
   const [currentModalData, setCurrentModalData] = React.useState<ModalProps>(confirmVoteData);
 
