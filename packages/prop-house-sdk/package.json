@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "description": "Useful tools for interacting with the Prop House protocol",
   "author": "solimander",
   "homepage": "https://prop.house",
@@ -34,7 +34,7 @@
     "@ethersproject/strings": "~5.7.0",
     "@ethersproject/wallet": "^5.7.0",
     "@pinata/sdk": "^2.1.0",
-    "@prophouse/protocol": "1.0.11",
+    "@prophouse/protocol": "1.0.12",
     "bn.js": "^5.2.1",
     "graphql": "^16.5.0",
     "graphql-request": "5.0.0",

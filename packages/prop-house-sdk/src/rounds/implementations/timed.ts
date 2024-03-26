@@ -1,4 +1,5 @@
-import { BigNumber } from '@ethersproject/bignumber';
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
+import { parseEther } from '@ethersproject/units';
 import {
   AssetType,
   Custom,
@@ -8,7 +9,7 @@ import {
   RoundEventState,
   GetRoundStateParams,
 } from '../../types';
-import { TimedRound__factory } from '@prophouse/protocol';
+import { TimedRound__factory, StarknetCommit__factory } from '@prophouse/protocol';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
 import { defaultAbiCoder } from '@ethersproject/abi';
 import { ADDRESS_ONE } from '../../constants';
@@ -556,6 +557,74 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     };
   }
 
+
+  /**
+   * Sign proposal votes and return the voter, signature, and signed message
+   * @param config The round address and proposal vote(s)
+   */
+  public async getVoteCommitment(config: Timed.VoteConfig) {
+    const address = await this.signer.getAddress();
+    const suppliedVotingPower = config.votes.reduce(
+      (acc, { votingPower }) => acc.add(votingPower),
+      BigNumber.from(0),
+    );
+    if (suppliedVotingPower.eq(0)) {
+      throw new Error('Must vote on at least one proposal');
+    }
+    const { govPowerStrategiesRaw } = await this._query.getRoundVotingStrategies(config.round);
+
+    if (isAddress(config.round)) {
+      // If the origin chain round is provided, fetch the Starknet round address
+      config.round = await this._query.getStarknetRoundAddress(config.round);
+    }
+    const timestamp = await this.getVotingPeriodSnapshotTimestamp(config.round);
+    const nonZeroStrategyVotingPowers = await this._govPower.getPowerForStrategies(
+      address,
+      timestamp,
+      govPowerStrategiesRaw,
+    );
+    const totalVotingPower = nonZeroStrategyVotingPowers.reduce(
+      (acc, { govPower }) => acc.add(govPower),
+      BigNumber.from(0),
+    );
+    const spentVotingPower = await this.getSpentVotingPower(config.round, address);
+    const remainingVotingPower = totalVotingPower.sub(spentVotingPower);
+    if (suppliedVotingPower.gt(remainingVotingPower)) {
+      throw new Error('Not enough voting power remaining');
+    }
+
+    const userParams = await this._govPower.getUserParamsForStrategies(
+      address,
+      timestamp,
+      nonZeroStrategyVotingPowers.map(s => s.strategy),
+    );
+    const commitment = encoding.getCommit(config.round, hash.getSelectorFromName('vote'), this.getVoteCalldata({
+      voter: address,
+      proposalVotes: config.votes,
+      usedVotingStrategies: nonZeroStrategyVotingPowers.map(({ strategy }, i) => ({
+        id: strategy.id,
+        userParams: userParams[i],
+      })),
+    }));
+
+    const data = {
+      round: encoding.hexPadLeft(config.round),
+      voter: address,
+      proposalVotes: config.votes,
+      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timed.sig),
+      usedVotingStrategies: nonZeroStrategyVotingPowers.map(({ strategy }, i) => ({
+        id: strategy.id,
+        userParams: userParams[i],
+      })),
+      salt: this.generateSalt(),
+    };
+    return {
+      data,
+      address,
+      commitment
+    };
+  }
+
   /**
    * Sign proposal votes and submit them to the Starknet relayer
    * @param config The round address and proposal vote(s)
@@ -568,6 +637,36 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       action: Timed.Action.VOTE,
       data: message,
     });
+  }
+
+  /**
+   * Commit proposal votes and submit them to the Starknet relayer
+   * @param config The round address and proposal vote(s)
+   * @param value The value to send with the commitment transaction. Defaults to 0.0001 ETH.
+   */
+  public async voteViaCommitment(config: Timed.VoteConfig, value: BigNumberish = parseEther('0.0001')) {
+    const { address, data, commitment } = await this.getVoteCommitment(config);
+
+    // Submit to the relayer before initiating the commitment transaction
+    // to ensure the relayer has the data.
+    await this.sendToRelayer({
+      address,
+      commitment,
+      action: Timed.Action.VOTE,
+      data,
+    });
+
+    // Create the transaction
+    return await StarknetCommit__factory.connect(
+      this._addresses.evm.starknetCommit,
+      this.signer
+    ).commit(
+      this._addresses.starknet.auth.timed.tx,
+      commitment,
+      {
+        value,
+      },
+    );
   }
 
   /**
