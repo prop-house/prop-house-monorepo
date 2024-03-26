@@ -13,7 +13,7 @@ export interface QueryConfig<OB, W> {
 export const GRAPHQL_APIS: Record<number, GraphQL> = {
   [ChainId.EthereumMainnet]: {
     evm: 'https://api.thegraph.com/subgraphs/name/prop-house/prop-house',
-    starknet: 'https://starknet-subgraph-mainnet.onrender.com',
+    starknet: 'https://starknet-subgraph-mainnet-backup.onrender.com',
   },
   [ChainId.EthereumGoerli]: {
     evm: 'https://api.thegraph.com/subgraphs/name/prop-house/prop-house-goerli-v2',

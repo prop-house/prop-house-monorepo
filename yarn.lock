@@ -2860,10 +2860,34 @@
     patch-package "^6.2.2"
     postinstall-postinstall "^2.1.0"
 
+"@ethereumjs/block@5.2.0":
+  version "5.2.0"
+  resolved "https://registry.npmjs.org/@ethereumjs/block/-/block-5.2.0.tgz#f6722dcce597150a7a8fc32803f5e8dcdfdeebeb"
+  integrity sha512-NuVDtD58zyjm5lO3AKPaelzX9VywNwRpDF7WTCY0SKFlD5OeewK5Rdb6LWhwmdQ0ngiIg0Nh/36AQ/8W1nEhjw==
+  dependencies:
+    "@ethereumjs/common" "^4.3.0"
+    "@ethereumjs/rlp" "^5.0.2"
+    "@ethereumjs/trie" "^6.2.0"
+    "@ethereumjs/tx" "^5.3.0"
+    "@ethereumjs/util" "^9.0.3"
+    ethereum-cryptography "^2.1.3"
+
+"@ethereumjs/common@4.3.0", "@ethereumjs/common@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.npmjs.org/@ethereumjs/common/-/common-4.3.0.tgz#5b45eec7dcf521fa4ddaf0b383072fbcf9913553"
+  integrity sha512-shBNJ0ewcPNTUfZduHiczPmqkfJDn0Dh/9BR5fq7xUFTuIq7Fu1Vx00XDwQVIrpVL70oycZocOhBM6nDO+4FEQ==
+  dependencies:
+    "@ethereumjs/util" "^9.0.3"
+
 "@ethereumjs/rlp@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@ethereumjs/rlp/-/rlp-4.0.1.tgz#626fabfd9081baab3d0a3074b0c7ecaf674aaa41"
   integrity sha512-tqsQiBQDQdmPWE1xkkBq4rlSW5QZpLOUJ5RJh2/9fug+q9tnUhuZoVLk7s0scUIKTOzEtR72DFBXI4WiZcMpvw==
+
+"@ethereumjs/rlp@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/@ethereumjs/rlp/-/rlp-5.0.2.tgz#c89bd82f2f3bec248ab2d517ae25f5bbc4aac842"
+  integrity sha512-DziebCdg4JpGlEqEdGgXmjqcFoJi+JGulUXwEjsZGAscAQ7MyD/7LE/GVCP29vEQxKc7AAwjT3A2ywHp2xfoCA==
 
 "@ethereumjs/trie@^5.0.4":
   version "5.0.4"
@@ -2875,6 +2899,29 @@
     "@types/readable-stream" "^2.3.13"
     ethereum-cryptography "^1.1.2"
     readable-stream "^3.6.0"
+
+"@ethereumjs/trie@^6.2.0":
+  version "6.2.0"
+  resolved "https://registry.npmjs.org/@ethereumjs/trie/-/trie-6.2.0.tgz#1ebcece0c962f90c15c189fb67b90a1409422d19"
+  integrity sha512-4k9SrfIBTMi8MROXglKxk+jS15qcELUeLwI+NnKJOTCdci2ArhoQpiuRHT6aeXB+2P2cWX2OQHbSVtW9AqabDQ==
+  dependencies:
+    "@ethereumjs/rlp" "^5.0.2"
+    "@ethereumjs/util" "^9.0.3"
+    "@types/readable-stream" "^2.3.13"
+    debug "^4.3.4"
+    ethereum-cryptography "^2.1.3"
+    lru-cache "10.1.0"
+    readable-stream "^3.6.0"
+
+"@ethereumjs/tx@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.npmjs.org/@ethereumjs/tx/-/tx-5.3.0.tgz#473f351729ef4e30eaa3a3fb5aaccd4405a7ee41"
+  integrity sha512-uv++XYuIfuqYbvymL3/o14hHuC6zX0nRQ1nI2FHsbkkorLZ2ChEIDqVeeVk7Xc9/jQNU/22sk9qZZkRlsveXxw==
+  dependencies:
+    "@ethereumjs/common" "^4.3.0"
+    "@ethereumjs/rlp" "^5.0.2"
+    "@ethereumjs/util" "^9.0.3"
+    ethereum-cryptography "^2.1.3"
 
 "@ethereumjs/util@^8.0.5":
   version "8.0.5"
@@ -2893,6 +2940,14 @@
     "@ethereumjs/rlp" "^4.0.1"
     ethereum-cryptography "^2.0.0"
     micro-ftch "^0.3.1"
+
+"@ethereumjs/util@^9.0.3":
+  version "9.0.3"
+  resolved "https://registry.npmjs.org/@ethereumjs/util/-/util-9.0.3.tgz#c2709e6127a85bbe23a71937ac78358ac93e7241"
+  integrity sha512-PmwzWDflky+7jlZIFqiGsBPap12tk9zK5SVH9YW2OEnDN7OEhCjUOMzbOqwuClrbkSIkM2ERivd7sXZ48Rh/vg==
+  dependencies:
+    "@ethereumjs/rlp" "^5.0.2"
+    ethereum-cryptography "^2.1.3"
 
 "@ethersproject/abi@5.0.0-beta.153":
   version "5.0.0-beta.153"
@@ -5464,6 +5519,13 @@
   dependencies:
     "@noble/hashes" "1.3.1"
 
+"@noble/curves@1.3.0", "@noble/curves@~1.3.0":
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/@noble/curves/-/curves-1.3.0.tgz#01be46da4fd195822dab821e72f71bf4aeec635e"
+  integrity sha512-t01iSXPuN+Eqzb4eBX0S5oubSqXbK/xXa1Ne18Hj8f9pStxztHCE2gfboSp/dZRLSqfuLpRK2nDXDK+W9puocA==
+  dependencies:
+    "@noble/hashes" "1.3.3"
+
 "@noble/curves@~1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.2.0.tgz#92d7e12e4e49b23105a2555c6984d41733d65c35"
@@ -5495,6 +5557,11 @@
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.2.tgz#6f26dbc8fbc7205873ce3cee2f690eba0d421b39"
   integrity sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==
+
+"@noble/hashes@1.3.3":
+  version "1.3.3"
+  resolved "https://registry.npmjs.org/@noble/hashes/-/hashes-1.3.3.tgz#39908da56a4adc270147bb07968bf3b16cfe1699"
+  integrity sha512-V7/fPHgl+jsVPXqqeOzT8egNj2iBIVt+ECeMMG8TdcnTikP3oaBtUVqpT/gYCR68aEBJSF+XbYUxStjbFMqIIA==
 
 "@noble/hashes@^1.1.2":
   version "1.1.5"
@@ -5971,6 +6038,13 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.0.tgz#6734f8ebc106a0860dff7f92bf90df193f0935d7"
   integrity sha512-zrsUxjLOKAzdewIDRWy9nsV1GQsKBCWaGwsZQlCgr6/q+vjyZhFgqedLfFBuI9anTPEUT4APq9Mu0SZBTzIcGQ==
 
+"@prophouse/protocol@1.0.11":
+  version "1.0.11"
+  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-1.0.11.tgz#b19a6d8e9997f26fd8668a8fc4756c3e82f9c3e0"
+  integrity sha512-oS2sCTA5Gxr+5ublNOkB9o8EiEsxlm/H7QS+7VTIJTJuhePch9TlizB6Oq/bygEUJK9ThkwxIlmD+wNEiaiNdw==
+  dependencies:
+    ethers "~5.7.2"
+
 "@prophouse/protocol@1.0.6":
   version "1.0.6"
   resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-1.0.6.tgz#242e27e9285eea0449065ad2e994256617e6d30d"
@@ -5991,37 +6065,6 @@
   integrity sha512-kaMC5KejgqDz6OwfQkswc8LOhgT6bZEcehqndFtiy2RVTvL4HbHutCn5gXj0fuyy1+Q6gxqAx4wu6tJAonmOYA==
   dependencies:
     "@prophouse/sdk" "1.0.34"
-
-"@prophouse/sdk@1.0.27":
-  version "1.0.27"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.27.tgz#06fec2c4ca07a7ec9cf144621925f6d21cce4070"
-  integrity sha512-lQoa0S3fqty4ccYJ0EJoklRU3812SB3dSmR4xmw/qExCndkuqswndHzt/dZLHQwdZFJy8oHUZ1ac3TKB2SRgiw==
-  dependencies:
-    "@ethersproject/abi" "~5.7.0"
-    "@ethersproject/abstract-provider" "~5.7.0"
-    "@ethersproject/abstract-signer" "~5.7.0"
-    "@ethersproject/address" "~5.7.0"
-    "@ethersproject/bignumber" "~5.7.0"
-    "@ethersproject/bytes" "~5.7.0"
-    "@ethersproject/constants" "~5.7.0"
-    "@ethersproject/contracts" "~5.7.0"
-    "@ethersproject/keccak256" "~5.7.0"
-    "@ethersproject/providers" "~5.7.0"
-    "@ethersproject/solidity" "~5.7.0"
-    "@ethersproject/strings" "~5.7.0"
-    "@ethersproject/wallet" "^5.7.0"
-    "@pinata/sdk" "^2.1.0"
-    "@prophouse/protocol" "1.0.8"
-    bn.js "^5.2.1"
-    ethereumjs-fork-block "^4.2.4"
-    ethereumjs-fork-common "^3.1.3"
-    graphql "^16.5.0"
-    graphql-request "5.0.0"
-    merkletreejs "^0.3.11"
-    micro-starknet "^0.2.3"
-    randombytes "^2.1.0"
-    starknet "5.19.5"
-    time-ts "^0.1.0"
 
 "@prophouse/sdk@1.0.34":
   version "1.0.34"
@@ -6342,6 +6385,11 @@
   resolved "https://registry.yarnpkg.com/@scure/base/-/base-1.1.1.tgz#ebb651ee52ff84f420097055f4bf46cfba403938"
   integrity sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==
 
+"@scure/base@~1.1.4":
+  version "1.1.6"
+  resolved "https://registry.npmjs.org/@scure/base/-/base-1.1.6.tgz#8ce5d304b436e4c84f896e0550c83e4d88cb917d"
+  integrity sha512-ok9AWwhcgYuGG3Zfhyqg+zwl+Wn5uE+dwC0NV/2qQkx4dABbb/bx96vWu8NSj+BNjjSjno+JRYRjle1jV08k3g==
+
 "@scure/bip32@1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@scure/bip32/-/bip32-1.1.5.tgz#d2ccae16dcc2e75bc1d75f5ef3c66a338d1ba300"
@@ -6369,6 +6417,15 @@
     "@noble/hashes" "~1.3.1"
     "@scure/base" "~1.1.0"
 
+"@scure/bip32@1.3.3":
+  version "1.3.3"
+  resolved "https://registry.npmjs.org/@scure/bip32/-/bip32-1.3.3.tgz#a9624991dc8767087c57999a5d79488f48eae6c8"
+  integrity sha512-LJaN3HwRbfQK0X1xFSi0Q9amqOgzQnnDngIt+ZlsBC3Bm7/nE7K0kwshZHyaru79yIVRv/e1mQAjZyuZG6jOFQ==
+  dependencies:
+    "@noble/curves" "~1.3.0"
+    "@noble/hashes" "~1.3.2"
+    "@scure/base" "~1.1.4"
+
 "@scure/bip39@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@scure/bip39/-/bip39-1.1.1.tgz#b54557b2e86214319405db819c4b6a370cf340c5"
@@ -6392,6 +6449,14 @@
   dependencies:
     "@noble/hashes" "~1.3.0"
     "@scure/base" "~1.1.0"
+
+"@scure/bip39@1.2.2":
+  version "1.2.2"
+  resolved "https://registry.npmjs.org/@scure/bip39/-/bip39-1.2.2.tgz#f3426813f4ced11a47489cbcf7294aa963966527"
+  integrity sha512-HYf9TUXG80beW+hGAt3TRM8wU6pQoYur9iNypTROm42dorCGmLnFe3eWjz3gOq6G62H2WRh0FCzAR1PI+29zIA==
+  dependencies:
+    "@noble/hashes" "~1.3.2"
+    "@scure/base" "~1.1.4"
 
 "@scure/starknet@~0.3.0":
   version "0.3.0"
@@ -15079,6 +15144,16 @@ ethereum-cryptography@^2.0.0, ethereum-cryptography@^2.1.2:
     "@scure/bip32" "1.3.1"
     "@scure/bip39" "1.2.1"
 
+ethereum-cryptography@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.npmjs.org/ethereum-cryptography/-/ethereum-cryptography-2.1.3.tgz#1352270ed3b339fe25af5ceeadcf1b9c8e30768a"
+  integrity sha512-BlwbIL7/P45W8FGW2r7LGuvoEZ+7PWsniMvQ4p5s2xCyw9tmaDlpfsN9HjAucbF+t/qpVHwZUisgfK24TCW8aA==
+  dependencies:
+    "@noble/curves" "1.3.0"
+    "@noble/hashes" "1.3.3"
+    "@scure/bip32" "1.3.3"
+    "@scure/bip39" "1.2.2"
+
 ethereum-waffle@^3.4.4:
   version "3.4.4"
   resolved "https://registry.npmjs.org/ethereum-waffle/-/ethereum-waffle-3.4.4.tgz#1378b72040697857b7f5e8f473ca8f97a37b5840"
@@ -20912,6 +20987,11 @@ lowercase-keys@^2.0.0:
   resolved "https://registry.npmjs.org/lowercase-keys/-/lowercase-keys-2.0.0.tgz#2603e78b7b4b0006cbca2fbcc8a3202558ac9479"
   integrity sha512-tqNXrS78oMOE73NMxK4EMLQsQowWf8jKooH9g7xPavRT706R6bkQJ6DY2Te7QukaZsulxa30wQ7bk0pm4XiHmA==
 
+lru-cache@10.1.0, "lru-cache@^9.1.1 || ^10.0.0":
+  version "10.1.0"
+  resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-10.1.0.tgz#2098d41c2dc56500e6c88584aa656c84de7d0484"
+  integrity sha512-/1clY/ui8CzjKFyjdvwPWJUYKiFVXG2I2cY0ssG7h4+hwk+XOIX7ZSG9Q7TW8TW3Kp3BUSqgFWBLgL4PJ+Blag==
+
 lru-cache@5.1.1, lru-cache@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-5.1.1.tgz#1da27e6710271947695daf6848e847f01d84b920"
@@ -20937,11 +21017,6 @@ lru-cache@^7.10.1:
   version "7.14.0"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.14.0.tgz#21be64954a4680e303a09e9468f880b98a0b3c7f"
   integrity sha512-EIRtP1GrSJny0dqb50QXRUNBxHJhcpxHC++M5tD7RYbvLLn5KVWKsbyswSSqDuU15UFi3bgTQIY8nhDMeF6aDQ==
-
-"lru-cache@^9.1.1 || ^10.0.0":
-  version "10.1.0"
-  resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-10.1.0.tgz#2098d41c2dc56500e6c88584aa656c84de7d0484"
-  integrity sha512-/1clY/ui8CzjKFyjdvwPWJUYKiFVXG2I2cY0ssG7h4+hwk+XOIX7ZSG9Q7TW8TW3Kp3BUSqgFWBLgL4PJ+Blag==
 
 lru_map@^0.3.3:
   version "0.3.3"

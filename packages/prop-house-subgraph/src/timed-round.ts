@@ -1,5 +1,5 @@
 import { log, BigInt } from '@graphprotocol/graph-ts';
-import { AssetClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedRound/TimedRound';
+import { AssetClaimed, RoundCancelled, RoundEmergencyCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedRound/TimedRound';
 import { Account, Asset, Award, Balance, Claim, Reclaim, Round, RoundVotingStrategy, TimedRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
 import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType, padHexTo32Bytes } from './lib/utils';
 import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_4_WEEKS_IN_SECONDS, BIGINT_ZERO } from './lib/constants';
@@ -102,6 +102,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     }
 
     const award = new Award(`${round.id}-${i}`);
+    award.index = i;
     award.asset = asset.id;
     award.amount = awardStruct.amount;
     award.round = config.id;
@@ -122,6 +123,20 @@ export function handleRoundCancelled(event: RoundCancelled): void {
   const round = Round.load(event.address.toHex());
   if (!round) {
     log.error('[handleRoundCancelled] Round not found: {}. Cancellation Hash: {}', [
+      event.address.toHex(),
+      event.transaction.hash.toHex(),
+    ]);
+    return;
+  }
+
+  round.eventState = RoundEventState.CANCELLED;
+  round.save();
+}
+
+export function handleRoundEmergencyCancelled(event: RoundEmergencyCancelled): void {
+  const round = Round.load(event.address.toHex());
+  if (!round) {
+    log.error('[handleRoundEmergencyCancelled] Round not found: {}. Cancelation Hash: {}', [
       event.address.toHex(),
       event.transaction.hash.toHex(),
     ]);

@@ -145,6 +145,8 @@ templates:
           handler: handleRoundRegistered
         - event: RoundCancelled()
           handler: handleRoundCancelled
+        - event: RoundEmergencyCancelled()
+          handler: handleRoundEmergencyCancelled
         - event: RoundFinalized()
           handler: handleRoundFinalized
         - event: AssetClaimed(uint256,address,address,(uint256,uint256))
