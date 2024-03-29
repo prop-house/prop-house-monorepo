@@ -55,7 +55,7 @@ const RoundsFeed: React.FC<{}> = () => {
         setFetchNewRounds(false);
 
         const fetchedRounds = (
-          await fetchRoundsForFilter(propHouse, favorites, roundsFilter, pageIndex, 12)
+          await fetchRoundsForFilter(propHouse, favorites, roundsFilter, pageIndex, 20)
         ).map(round => {
           if (COMPLETED_ROUND_OVERRIDES[round.address]) {
             round.state = COMPLETED_ROUND_OVERRIDES[round.address].state;
