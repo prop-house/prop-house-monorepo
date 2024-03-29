@@ -56,6 +56,11 @@ export const COMPLETED_ROUND_OVERRIDES: Record<string, { state: Timed.RoundState
     state: Timed.RoundState.COMPLETE,
     winners: [14, 1, 7],
   },
+  // Farcaster (Temporary)
+  '0x767a3bdf2aa3b3201b794927a997fcf4e50d4702': {
+    state: Timed.RoundState.COMPLETE,
+    winners: [31, 38, 21],
+  },
 };
 
 export const HIDDEN_ROUND_OVERRIDES = [
