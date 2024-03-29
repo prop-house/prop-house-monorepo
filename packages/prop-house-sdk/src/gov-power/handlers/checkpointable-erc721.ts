@@ -173,6 +173,6 @@ export class CheckpointableERC721Handler extends SingleSlotProofHandler<Checkpoi
    * @param token The token address
    */
   private contractFor(token: string) {
-    return new Contract(token, [GET_CURRENT_VOTES_FUNC, NUM_CHECKPOINTS_FUNC], this._evm);
+    return new Contract(token, [GET_CURRENT_VOTES_FUNC, NUM_CHECKPOINTS_FUNC], this._defaultProvider);
   }
 }

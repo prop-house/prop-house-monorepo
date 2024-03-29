@@ -153,6 +153,6 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
    * @param token The token address
    */
   private contractFor(token: string) {
-    return new Contract(token, [BALANCE_OF_FUNC], this._evm);
+    return new Contract(token, [BALANCE_OF_FUNC], this._defaultProvider);
   }
 }

@@ -163,6 +163,6 @@ export class BalanceOfERC20Handler extends SingleSlotProofHandler<BalanceOfERC20
    * @param token The token address
    */
   private contractFor(token: string) {
-    return new Contract(token, [BALANCE_OF_FUNC], this._evm);
+    return new Contract(token, [BALANCE_OF_FUNC], this._defaultProvider);
   }
 }
