@@ -144,7 +144,7 @@ const CreateNewHouse = () => {
                 loading
                   ? '/manager/loading.gif'
                   : round.house.image
-                  ? round.house.image.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')
+                  ? round.house.image.replace(/prophouse.mypinata.cloud/g, 'ipfs.io')
                   : '/manager/newImage.png'
               }
               alt="houseImage"

@@ -3,7 +3,7 @@
  * @param ipfsURI The IPFS hash
  * @returns formatted URL
  */
-export const buildImageURL = (ipfsURI: string | undefined, gateway = 'cloudflare-ipfs.com'): string | undefined => {
+export const buildImageURL = (ipfsURI: string | undefined, gateway = 'ipfs.io'): string | undefined => {
   if (!ipfsURI) return;
 
   if (ipfsURI.startsWith('ipfs://')) {

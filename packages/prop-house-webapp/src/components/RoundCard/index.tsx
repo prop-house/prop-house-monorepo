@@ -79,7 +79,7 @@ const RoundCard: React.FC<{
                   address={house.address}
                   imgSrc={house.imageURI?.replace(
                     /prophouse.mypinata.cloud/g,
-                    'cloudflare-ipfs.com',
+                    'ipfs.io',
                   )}
                   addAvatar={true}
                   className={classes.roundCreator}
