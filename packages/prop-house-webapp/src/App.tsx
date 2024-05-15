@@ -35,6 +35,7 @@ import Home from './pages/Home';
 import HouseManager from './pages/HouseManager';
 import { useAppSelector } from './hooks';
 import mixpanel from 'mixpanel-browser';
+import Banner from './components/Banner';
 
 const { chains, publicClient } = configureChains([mainnet], [publicProvider()]);
 
@@ -101,6 +102,23 @@ function App() {
                 <div
                   className={clsx(bgColorFor(BgColorElement.Home, location.pathname), 'wrapper')}
                 >
+                  <Banner
+                    content={
+                      <div>
+                        prop.house will begin its sunsetting starting June 1st, 2024.{' '}
+                        <a
+                          href={
+                            'https://mirror.xyz/seneca.eth/tmgZJiD3JeOaul-N-8_ImtxtM2UJT4HPtq_XJCIkhj0'
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Learn more here
+                        </a>
+                        .
+                      </div>
+                    }
+                  />
                   <NavBar />
                   <Routes>
                     <Route
