@@ -105,7 +105,7 @@ function App() {
                   <Banner
                     content={
                       <div>
-                        prop.house will begin its sunsetting starting June 1st, 2024.{' '}
+                        Prop House will begin sunsetting starting June 1st, 2024.{' '}
                         <a
                           href={
                             'https://mirror.xyz/seneca.eth/tmgZJiD3JeOaul-N-8_ImtxtM2UJT4HPtq_XJCIkhj0'
@@ -113,7 +113,7 @@ function App() {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          Learn more here
+                          Learn more
                         </a>
                         .
                       </div>
