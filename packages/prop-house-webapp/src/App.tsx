@@ -22,7 +22,7 @@ import {
   lightTheme,
   RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
-import { PropHouseProvider } from '@prophouse/sdk-react';
+import { PropHouseProvider, ipfs } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
 import CreateRound from './pages/CreateRound';
 import MainApp from './pages/MainApp';
@@ -36,6 +36,24 @@ import HouseManager from './pages/HouseManager';
 import { useAppSelector } from './hooks';
 import mixpanel from 'mixpanel-browser';
 import Banner from './components/Banner';
+
+// Override default IPFS gateway
+(ipfs.getUrl as Function) = (uri: string, gateway = 'ipfs.nftstorage.link') => {
+  const ipfsGateway = `https://${gateway}`;
+  if (!uri) return null;
+  if (
+    !uri.startsWith('ipfs://') &&
+    !uri.startsWith('ipns://') &&
+    !uri.startsWith('https://') &&
+    !uri.startsWith('http://')
+  )
+    return `${ipfsGateway}/ipfs/${uri}`;
+
+  const uriScheme = uri.split('://')[0];
+  if (uriScheme === 'ipfs') return uri.replace('ipfs://', `${ipfsGateway}/ipfs/`);
+  if (uriScheme === 'ipns') return uri.replace('ipns://', `${ipfsGateway}/ipns/`);
+  return uri;
+};
 
 const { chains, publicClient } = configureChains([mainnet], [publicProvider()]);
 
