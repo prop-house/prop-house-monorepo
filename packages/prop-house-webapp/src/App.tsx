@@ -152,7 +152,6 @@ function App() {
                       path="/create-prop"
                       element={showCreatePropPage ? <CreateProp /> : <MainApp />}
                     />
-                    <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/houses" element={<Communities />} />
                     <Route path="*" element={<NotFound />} />

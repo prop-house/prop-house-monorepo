@@ -35,18 +35,6 @@ const NavBar = () => {
           <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
             <div className={classes.buttonGroup}>
               <Nav.Link as="div" className={classes.connectBtnContainer}>
-                <Button
-                  text="Create a round"
-                  bgColor={ButtonColor.Purple}
-                  onClick={() => {
-                    mixpanel.track('Clicked Create Round');
-                    navigate('/create-round');
-                  }}
-                  classNames={classes.navBarBtn}
-                />
-              </Nav.Link>
-
-              <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <ConnectButton
                   showBalance={false}
                   label={'Connect'}
