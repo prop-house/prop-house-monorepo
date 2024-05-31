@@ -8,7 +8,6 @@ import { isMobile } from 'web3modal';
 import Button, { ButtonColor } from '../Button';
 import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
 import { IoSettingsSharp } from 'react-icons/io5';
-import mixpanel from 'mixpanel-browser';
 
 const NavBar = () => {
   const location = useLocation();
@@ -34,18 +33,6 @@ const NavBar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
             <div className={classes.buttonGroup}>
-              <Nav.Link as="div" className={classes.connectBtnContainer}>
-                <Button
-                  text="Create a round"
-                  bgColor={ButtonColor.Purple}
-                  onClick={() => {
-                    mixpanel.track('Clicked Create Round');
-                    navigate('/create-round');
-                  }}
-                  classNames={classes.navBarBtn}
-                />
-              </Nav.Link>
-
               <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <ConnectButton
                   showBalance={false}
