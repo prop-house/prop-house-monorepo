@@ -8,7 +8,6 @@ import { isMobile } from 'web3modal';
 import Button, { ButtonColor } from '../Button';
 import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
 import { IoSettingsSharp } from 'react-icons/io5';
-import mixpanel from 'mixpanel-browser';
 
 const NavBar = () => {
   const location = useLocation();

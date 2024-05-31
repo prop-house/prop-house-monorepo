@@ -24,7 +24,6 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { PropHouseProvider, ipfs } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
-import CreateRound from './pages/CreateRound';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 import bgColorFor, { BgColorElement } from './utils/bgColorFor';
