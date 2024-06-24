@@ -38,7 +38,7 @@ import mixpanel from 'mixpanel-browser';
 import Banner from './components/Banner';
 
 // Override default IPFS gateway
-(ipfs.getUrl as Function) = (uri: string, gateway = 'ipfs.nftstorage.link') => {
+(ipfs.getUrl as Function) = (uri: string, gateway = 'ipfs.io') => {
   const ipfsGateway = `https://${gateway}`;
   if (!uri) return null;
   if (
