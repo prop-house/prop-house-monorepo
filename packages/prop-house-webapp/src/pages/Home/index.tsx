@@ -24,11 +24,6 @@ const Home = () => {
             </p>
             <div className={classes.btnContainer}>
               <Button
-                text="Create a round"
-                bgColor={ButtonColor.White}
-                onClick={() => navigate('/create-round')}
-              />
-              <Button
                 text="View rounds"
                 bgColor={ButtonColor.Pink}
                 onClick={() => navigate('/app')}
