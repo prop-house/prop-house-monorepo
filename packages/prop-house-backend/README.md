@@ -99,7 +99,7 @@ Within each query we can choose to load its related entities or not, we could ev
 }
 ```
 
-This could be the case where we are attempting to render a single proposal but want to fetch some information about the other proposals int he same Auction. With a REST API this would require a handful of requests or the API would return too much data. With GraphQL we can ask for just what we need.
+This could be the case where we are attempting to render a single proposal but want to fetch some information about the other proposals in the same Auction. With a REST API this would require a handful of requests or the API would return too much data. With GraphQL we can ask for just what we need.
 
 The Auctions query allows for providing a partial `Auction` to match against. Note that the where will match all properties with a logical `AND`.
 
