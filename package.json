@@ -1,27 +1,15 @@
 {
-  "name": "prop-house",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "git@github.com:cryptoseneca/prop-house.git",
-  "author": "cryptoseneca <85328329+cryptoseneca@users.noreply.github.com>",
-  "license": "MIT",
-  "private": "true",
+  "name": "lilrounds",
+  "private": true,
   "scripts": {
-    "build": "yarn workspace @prophouse/communities build && yarn workspace @nouns/prop-house-wrapper build"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/**"
-    ],
-    "nohoist": [
-      "**/@nestjs/**"
-    ]
-  },
-  "resolutions": {
-    "graphql": "16.5.0"
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,json,sol}\""
   },
   "devDependencies": {
-    "prettier": "^2.8.0",
-    "typescript": "5.1"
+    "prettier": "^3.3.0",
+    "turbo": "^2.1.0"
   }
 }

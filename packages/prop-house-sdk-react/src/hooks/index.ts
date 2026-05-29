@@ -1,1 +1,0 @@
-export { usePropHouse } from './usePropHouse';
